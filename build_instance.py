@@ -1,3 +1,6 @@
+from packing_algorithms import first_fit
+from solution_checker import check_solution
+
 import sqlite3
 
 machine_id = 12
@@ -80,7 +83,18 @@ for case in cases:
         totals[4],
         sep=" | ",
     )
+    
+    hosts = first_fit(requests)
+    valid, message = check_solution(requests, hosts)
+
+    print(
+        "FF hosts:", len(hosts),
+        "| Valid:", valid,
+        "|", message,
+    )
 
 print(summarize_requests([(0, 0, 0, 0.2, 0.2)]))
+
+
 
 connection.close()
