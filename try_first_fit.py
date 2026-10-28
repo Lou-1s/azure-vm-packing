@@ -52,12 +52,16 @@ checks = [
         [requests[0]],
     ]),
     ("CPU Overload", [
-            [requests[0], requests[1]],
-            [requests[2], requests[3], requests[4]],            
+        [requests[0], requests[1]],
+        [requests[2]],
+        [requests[3]],
+        [requests[4]],
     ]),
     ("Memory Overload", [
-                [requests[2], requests[3]],
-                [requests[0], requests[1], requests[4]],            
+        [requests[2], requests[3]],
+        [requests[0]],
+        [requests[1]],
+        [requests[4]],
     ]),
 ]
 

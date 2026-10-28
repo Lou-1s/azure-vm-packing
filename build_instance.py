@@ -1,4 +1,9 @@
-from packing_algorithms import first_fit
+from packing_algorithms import (
+    first_fit,
+    best_fit,
+    first_fit_decreasing,
+    best_fit_decreasing,
+)
 from solution_checker import check_solution
 
 import sqlite3
@@ -83,15 +88,24 @@ for case in cases:
         totals[4],
         sep=" | ",
     )
-    
-    hosts = first_fit(requests)
-    valid, message = check_solution(requests, hosts)
+    results = [
+        ("FF", first_fit(requests)),
+        ("BF", best_fit(requests)),
+        ("FFD", first_fit_decreasing(requests)),
+        ("BFD", best_fit_decreasing(requests)),
+    ]
 
-    print(
-        "FF hosts:", len(hosts),
-        "| Valid:", valid,
-        "|", message,
-    )
+    for result in results:
+        hosts = result[1]
+        valid, message = check_solution(requests, hosts)
+
+        print(
+            result[0], "Hosts:", len(hosts),
+            "| Valid:", valid,
+            "|", message,
+        )
+
+    
 
 print(summarize_requests([(0, 0, 0, 0.2, 0.2)]))
 
