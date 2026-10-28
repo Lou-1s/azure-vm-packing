@@ -1,7 +1,12 @@
+# 虚拟环境和自动生成的 Python 缓存不纳入版本管理。
 .venv/
 __pycache__/
 *.pyc
+
+# 原始数据、下载压缩包体积较大，保留在本机。
 data/raw/
 *.zip
+
+# 编辑器个人设置与学习过程记录不随项目提交。
 .vscode/
 LEARNING_LOG.md

@@ -1,4 +1,9 @@
-# Python 与 SQL 速查
+# Python、SQL 与 Gurobi 速查
+
+- [一、虚拟环境](#一虚拟环境)
+- [二、Python 基础](#二python-基础)
+- [三、SQLite 与 SQL](#三sqlite-与-sql)
+- [四、Gurobi](#四gurobi)
 
 ## 一、虚拟环境
 
@@ -169,6 +174,47 @@ CPU | Memory
 
 [官方教程：基本用法](https://docs.python.org/zh-cn/3.12/tutorial/introduction.html) · [控制流与函数](https://docs.python.org/zh-cn/3.12/tutorial/controlflow.html)
 
+### 7. 列表操作、循环控制与排序
+
+```python
+hosts = []
+hosts.append([request])       # 追加一个装有 request 的新主机；request 是一条已有请求
+print(len(hosts))             # 主机数
+
+best_host = None              # 暂时没有选中的主机
+if best_host is None:
+    print("需要新开主机")
+
+vm_ids = [10, 11, 12]
+print(11 in vm_ids)           # True：是否存在
+print(11 not in vm_ids)       # False：是否不存在
+print(vm_ids.index(11))       # 1：该值第一次出现的位置
+```
+
+`append(元素)` 修改原列表，不要写成 `hosts = hosts.append(...)`。`break` 退出当前所在的最内层循环；`return` 结束整个函数。`None` 表示暂时没有值，不等于空列表 `[]`。
+
+本项目的请求记录为 `(vmId, vmTypeId, starttime, core, memory)`：
+
+```python
+def decreasing_key(request):
+    return -max(request[3], request[4]), request[0]
+
+ordered_requests = sorted(requests, key=decreasing_key)
+```
+
+`sorted(待排序列表, key=评分函数)` 返回新列表，不改变原列表；它会逐条调用评分函数。上例按 CPU/内存较大值降序，同分按请求编号升序。负号将“大值优先”转换成默认的升序比较。
+
+```python
+for i in range(3):            # 依次取 0、1、2；不包含 3
+    print(i)
+
+valid, message = check_solution(requests, hosts)  # 接收检查器返回的两个值
+if not valid:                # valid 为 False 时进入
+    raise ValueError(message)  # 抛出错误；未被捕获时停止程序
+```
+
+`from packing_algorithms import first_fit` 从同目录模块导入函数；文件应先保存，且函数名要对应。
+
 ## 三、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
@@ -189,9 +235,9 @@ ORDER BY vmTypeId ASC
 LIMIT ?
 """
 
-cursor = connection.execute(sql, (12, 5))
-rows = cursor.fetchall()
-connection.close()
+cursor = connection.execute(sql, (12, 5))  # SQL 文本；两个 ? 按顺序取 12 和 5
+rows = cursor.fetchall()                  # 取回结果，得到“列表中的元组”
+connection.close()                       # 关闭连接，已取回的 rows 仍可使用
 
 for row in rows:
     print(row)
@@ -200,74 +246,10 @@ for row in rows:
 - `uri=True`：按文件 URI 格式解析地址；`file:` 指向文件，`?` 后是连接选项。
 - `mode=ro`：只读打开数据库。
 
-**`execute` 接收什么？**
-
-```python
-cursor = connection.execute(sql, (12, 5))
-```
-
-这个调用有两个参数：
-
-1. `sql`：要执行的 SQL 字符串。它写明查哪张表、返回哪些字段、怎样筛选和排序。
-2. `(12, 5)`：一个参数元组，提供 SQL 中两个 `?` 对应的实际值。
-
-元组里的 12 和 5 按 `?` 出现的先后顺序对应：
-
-```sql
-WHERE machineId = ?   -- 第一个值 12：选择硬件 12
-LIMIT ?               -- 第二个值 5：最多取五条
-```
-
-因此，这次执行的查询含义等同于：
-
-```sql
-SELECT vmTypeId, core, memory
-FROM vmType
-WHERE machineId = 12
-ORDER BY vmTypeId ASC
-LIMIT 5
-```
-
-外层是两个参数：`sql` 与 `(12, 5)`；元组内部的两个数是一次查询所需的两个值。12 和 5 的用途由它们对应的 SQL 位置决定。如果写成 `(5, 12)`，含义就变成“硬件 5，最多十二条”。
-
-**`execute` 返回什么？游标是什么？**
-
-`execute` 将这条查询交给数据库执行，并返回一个游标对象，由左侧的 `cursor` 接收。可以把游标理解为“本次查询结果的读取器”：通过它取出记录，它会记录结果读到了哪里。
-
-此时的 `cursor` 还不是我们熟悉的结果列表。要把记录取回成 Python 列表，接着写：
-
-```python
-rows = cursor.fetchall()
-```
-
-`fetchall()` 不需要再传入 `sql`，因为 `cursor` 已经对应刚才执行的那次查询。它把尚未取出的记录组织成一个列表并返回，由 `rows` 接收。第一次读取前还没取过记录，所以这里会得到本次查询的全部五条。
-
-本例第一条结果是 `(0, 0.00275, 0.00146484375)`，依次对应 `SELECT` 中的类型编号、CPU、内存。取回后就可以使用列表的常见操作：
-
-```python
-print(len(rows))       # 5：取回五条记录
-print(rows[0])         # 第一条记录
-print(rows[0][1])      # 第一条记录的 CPU：0.00275
-for row in rows:
-    print(row)
-```
-
-**“剩余结果”是什么意思？**
-
-游标读取后会前进，不会每次自动从头开始。在连接尚未关闭时，可以用下面这段代码观察：
-
-```python
-cursor = connection.execute(sql, (12, 5))  # 执行一次查询，获得新游标
-rows = cursor.fetchall()                 # 取完五条记录
-again = cursor.fetchall()                # 已经取完，返回 []
-
-print(len(rows))                         # 5
-print(again)                             # []
-```
-
-第二次取回为空，不会清空先前的 `rows`。如果需要重新查询，就再次调用 `execute`；如果查询本来没有匹配记录，第一次 `fetchall()` 就返回 `[]`。
-
-`connection.close()` 放在查询和取结果之后，用于关闭连接。已经取回的 `rows` 仍可使用。`print(sql)` 只显示查询文本，不会执行查询。
+- `execute(sql, 参数元组)`：执行查询，返回用于读取结果的游标。这里 `sql` 是查询文本，`(12, 5)` 分别对应硬件编号与最多返回的行数。
+- `fetchall()`：把游标尚未取出的记录取回为列表；无结果或已经取完时返回 `[]`。
+- `len(rows)` 是结果行数，`rows[0]` 是第一行，`rows[0][1]` 是第一行第二项。
+- `print(sql)` 只显示 SQL 字符串；查询在 `execute` 时执行。
 
 [Python sqlite3 文档](https://docs.python.org/3.12/library/sqlite3.html#how-to-work-with-sqlite-uris)
 
@@ -329,19 +311,7 @@ parameters = (12, 5)
 cursor = connection.execute(sql, parameters)
 ```
 
-这和 `connection.execute(sql, (12, 5))` 是同一种用法，只是把参数元组先保存到了变量 `parameters` 中。
-
-需要根据需求改值时，可以写成：
-
-```python
-machine_id = 1
-request_count = 10
-parameters = (machine_id, request_count)
-cursor = connection.execute(sql, parameters)
-rows = cursor.fetchall()
-```
-
-现在查的是硬件 1，最多十条；SQL 结构不需要改变。参数数量必须与 `?` 的数量一致，顺序也要对应。
+`parameters` 保存要传入的值；修改元组即可改变硬件与数量，不必改 SQL 结构。值的数量和顺序必须与 `?` 对应。
 
 只有一个 `?` 时，使用单元素元组：
 
@@ -395,3 +365,130 @@ PRAGMA table_info(vmType)
 第一个查询列出表名；第二个查看字段结构，其结果中 `[1]` 是字段名、`[2]` 是声明类型。
 
 [SQLite SELECT 文档](https://www.sqlite.org/lang_select.html) · [聚合函数](https://www.sqlite.org/lang_aggfunc.html) · [字段结构](https://www.sqlite.org/pragma.html#pragma_table_info)
+
+## 四、Gurobi
+
+### 1. 导入模块与许可证
+
+```python
+import gurobipy as gp          # 给模块起简称，后面用 gp 调用
+from gurobipy import GRB       # 导入变量类型、优化方向和状态等常量
+from packing_algorithms import first_fit  # 导入已有的 FF 算法
+from solution_checker import check_solution  # 导入独立检查器
+
+print(gp.gurobi.version())     # 查看 Gurobi 版本
+```
+
+`gurobipy` 是 Python 调用 Gurobi 的接口，需安装在当前解释器的环境中。本项目依赖已记在 `requirements.txt`：
+
+```powershell
+Set-Location "D:\PythonProjects\azure-vm-packing"
+& ".\.venv\Scripts\python.exe" -m pip install -r requirements.txt
+
+# 指定已有许可证文件，再运行模型
+$env:GRB_LICENSE_FILE = "D:\gurobi1302\gurobi.lic"
+& ".\.venv\Scripts\python.exe" ".\try_milp.py"
+```
+
+### 2. 创建模型、变量与参数
+
+请求列表 `requests` 沿用 [try_milp.py](D:/PythonProjects/azure-vm-packing/try_milp.py) 中的人工例；每条为 `(vmId, vmTypeId, starttime, core, memory)`。
+
+```python
+initial_hosts = first_fit(requests)       # 先取得 FF 可行方案
+valid, message = check_solution(requests, initial_hosts)
+if not valid:
+    raise ValueError(message)            # 上界方案不合法时停止
+
+model = gp.Model("vm_packing")  # 新建模型，括号内是模型名称
+model.Params.OutputFlag = 0     # 关闭求解过程日志
+model.Params.TimeLimit = 30     # 求解时间上限：30 秒
+model.Params.MIPGap = 0         # 将相对 gap 停止阈值设为 0
+model.Params.FeasibilityTol = 1e-9  # 约束可行性容差
+model.Params.IntFeasTol = 1e-9      # 整数变量容差
+
+n = len(requests)              # 请求数
+host_limit = len(initial_hosts)  # 已通过检查的 FF 方案提供候选主机数上界
+x = model.addVars(n, host_limit, vtype=GRB.BINARY, name="x")
+y = model.addVars(host_limit, vtype=GRB.BINARY, name="y")
+```
+
+`addVars` 创建变量并返回可按索引访问的变量集合。前面的数字指定各维长度；`vtype` 指定类型，`GRB.BINARY` 表示只能取 0 或 1；`name` 是变量名称前缀。
+
+- `x[i, j] = 1`：第 `i` 条请求放到候选主机 `j`；共有 `n × host_limit` 个变量。
+- `y[j] = 1`：启用主机 `j`；共有 `host_limit` 个变量。
+- `i` 是请求列表位置，`j` 是候选主机编号，分别区别于 `vmId`、`machineId`。
+
+此时创建的是待求值的变量；求解后才能读取具体取值。
+
+### 3. 目标与约束
+
+```python
+model.setObjective(
+    gp.quicksum(y[j] for j in range(host_limit)),  # 目标表达式：启用主机数
+    GRB.MINIMIZE,                                # 优化方向：最小化
+)
+
+for i in range(n):
+    model.addConstr(
+        gp.quicksum(x[i, j] for j in range(host_limit)) == 1  # 每条请求恰好放一次
+    )
+
+for j in range(host_limit):
+    model.addConstr(
+        gp.quicksum(requests[i][3] * x[i, j] for i in range(n)) <= y[j]  # CPU 容量
+    )
+    model.addConstr(
+        gp.quicksum(requests[i][4] * x[i, j] for i in range(n)) <= y[j]  # 内存容量
+    )
+    model.addConstr(y[j] <= gp.quicksum(x[i, j] for i in range(n)))  # 启用须非空
+    for i in range(n):
+        model.addConstr(x[i, j] <= y[j])  # 只有启用的主机才能接收请求
+```
+
+`quicksum(逐项表达式)` 构造求和表达式，例如三台主机时 `quicksum(y[j] for j in range(3))` 对应 `y[0] + y[1] + y[2]`。`addConstr(约束关系)` 把等式或不等式加入模型，并返回约束对象。
+
+CPU 和内存分别以 1 为单机容量；`y[j]=0` 时不接收请求，`y[j]=1` 时允许使用容量 1。候选主机数限制搜索范围，不固定 FF 的分组。
+
+### 4. 求解、读取结果与重建方案
+
+```python
+model.optimize()               # 按已建立的目标、约束和参数求解
+print(model.Status)            # 求解状态
+print(model.SolCount)          # 已保存的可行解数量
+print(model.ObjBound)          # 最小化问题的全局下界
+
+if model.SolCount > 0:         # 有可行解才读取解属性
+    print(model.ObjVal)        # 当前最好可行解的目标值，即主机数
+    print(model.MIPGap)        # 当前可行目标与下界之间的相对差距
+
+    hosts = []
+    for j in range(host_limit):
+        host = []
+        for i in range(n):
+            if x[i, j].X > 0.5:  # .X 读取数值；将二元解判断为 1
+                host.append(requests[i])
+        if len(host) > 0:
+            hosts.append(host)
+
+    valid, message = check_solution(requests, hosts)  # 用独立检查器复核方案
+    print(valid, message)
+else:
+    print("No feasible solution available.")
+
+model.dispose()                # 释放模型占用的资源
+```
+
+在当前主机数最小化模型中，相对 gap 为 `|ObjVal - ObjBound| / |ObjVal|`；目标为 0 等特殊情况按 Gurobi 的定义处理。`Solutions` 是解的数量，`Objective` 才是主机数。数值容差设置不能代替方案检查。
+
+### 5. 常见求解状态
+
+| 状态 | 数值 | 含义 |
+|---|---|---|
+| `GRB.OPTIMAL` | 2 | 在求解容差内证明最优 |
+| `GRB.INFEASIBLE` | 3 | 当前模型没有可行解 |
+| `GRB.TIME_LIMIT` | 9 | 达到时间上限；是否已有解需看 `SolCount` |
+
+`model.Status == GRB.OPTIMAL` 返回是否最优的布尔值。达到时限不等于证明最优；`SolCount=0` 表示尚无可用方案，不能记成用了 0 台主机。人工强制 `host_limit=1` 后不可行，仅说明该请求集装不进一台。
+
+[Gurobi Python Model](https://docs.gurobi.com/projects/optimizer/en/current/reference/python/model.html) · [模型结果属性](https://docs.gurobi.com/projects/optimizer/en/current/reference/attributes/model.html) · [求解状态](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html)

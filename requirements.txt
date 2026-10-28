@@ -1,1 +1,2 @@
+# 固定项目依赖版本；在项目虚拟环境中用 python -m pip install -r requirements.txt 安装。
 gurobipy==13.0.3
