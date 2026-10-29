@@ -95,3 +95,76 @@ def best_fit_decreasing(requests):
     # 使用与 FFD 相同的排序规则，再复用 Best Fit。
     ordered_requests = sorted(requests, key=decreasing_key)
     return best_fit(ordered_requests)
+
+def request_id_key(request):
+    return request[0]
+
+
+def dot_product(requests):
+    # 单条需求必须能放进空主机，避免反复开机却无法放置。
+    for request in requests:
+        if not (0 < request[3] <= 1 and 0 < request[4] <= 1):
+            raise ValueError("Invalid resource demand")
+
+    # sorted 返回新列表，不改变原输入。
+    # 按 ID 排列，使后面评分相同时优先选择较小 ID。
+    remaining = sorted(requests, key=request_id_key)
+    hosts = []
+
+    # 外层循环：还有未放置请求，就开始填一台新主机。
+    while len(remaining) > 0:
+        host = []
+        cpu_total = 0
+        memory_total = 0
+
+        # 内层循环：不断为当前主机挑选下一条请求。
+        while True:
+            remaining_cpu = 1 - cpu_total
+            remaining_memory = 1 - memory_total
+            best_index = None
+            best_score = -1
+
+            # 先完整扫描候选，扫描过程中不删除元素。
+            for i in range(len(remaining)):
+                request = remaining[i]
+                fits = (
+                    cpu_total + request[3] <= 1 + 1e-9
+                    and memory_total + request[4] <= 1 + 1e-9
+                )
+
+                if fits:
+                    score = (
+                        request[3] * remaining_cpu
+                        + request[4] * remaining_memory
+                    )
+
+                    # 严格更高才更新，同分保留先扫描到的较小 ID。
+                    if score > best_score:
+                        best_index = i
+                        best_score = score
+
+            if best_index is None:
+                # 没有请求还能放入，退出内层循环。
+                break
+
+            # 按位置删除并取出选中的请求。
+            selected = remaining.pop(best_index)
+            host.append(selected)
+            cpu_total += selected[3]
+            memory_total += selected[4]
+
+            # 下一轮重新计算剩余容量，并重新扫描候选。
+
+        hosts.append(host)
+
+    return hosts
+
+
+def sum_decreasing_key(request):
+    # 对 CPU + 内存整体加负号；同分仍按 ID 升序。
+    return -(request[3] + request[4]), request[0]
+
+
+def first_fit_decreasing_sum(requests):
+    ordered_requests = sorted(requests, key=sum_decreasing_key)
+    return first_fit(ordered_requests)

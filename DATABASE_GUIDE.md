@@ -239,6 +239,19 @@ seconds = perf_counter() - started  # 两次计时值的差，单位为秒
 
 `perf_counter()` 的单个数值不表示日期；两次调用之差才是经过的时间。计时起止位置决定包含哪些工作。[Python 文档](https://docs.python.org/zh-cn/3.12/library/time.html#time.perf_counter)
 
+### 10. while 循环与 pop
+
+```python
+remaining = [10, 20, 30]
+while len(remaining) > 0:       # 每轮先判断；列表非空就继续
+    selected = remaining.pop(0)  # 删除索引 0 的元素，并返回它
+    print(selected, remaining)
+```
+
+`pop(位置)` 同时修改原列表并返回被删除的元素。删除位置 0 后，后续元素向前移动；位置与元素值不同，例如 `pop(0)` 取出的是第一项 10。
+
+`while True:` 持续循环，直到执行其中的 `break`。嵌套循环中，`break` 只退出它所在的最内层循环。选择候选时先完整扫描，再删除选中项，避免遍历过程中索引发生移动。[Python 列表文档](https://docs.python.org/zh-cn/3.12/tutorial/datastructures.html)
+
 ## 三、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库

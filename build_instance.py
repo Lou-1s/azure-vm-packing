@@ -4,6 +4,8 @@ from packing_algorithms import (
     best_fit,
     first_fit_decreasing,
     best_fit_decreasing,
+    dot_product,
+    first_fit_decreasing_sum,
 )
 from solution_checker import check_solution
 from milp_solver import solve_milp
@@ -137,11 +139,20 @@ for case in cases:
     #         "| Valid:", valid,
     #         "|", message,
     #     )
+    # results = [
+    #     ("FF", first_fit(requests)),
+    #     ("BF", best_fit(requests)),
+    #     ("FFD", first_fit_decreasing(requests)),
+    #     ("BFD", best_fit_decreasing(requests)),
+    # ]
+
     results = [
         ("FF", first_fit(requests)),
         ("BF", best_fit(requests)),
-        ("FFD", first_fit_decreasing(requests)),
+        ("FFD-max", first_fit_decreasing(requests)),
         ("BFD", best_fit_decreasing(requests)),
+        ("DP", dot_product(requests)),
+        ("FFD-sum", first_fit_decreasing_sum(requests)),
     ]
 
     # 先以 FF 为候选；各方案通过检查后，比较主机数。
@@ -162,7 +173,7 @@ for case in cases:
             "| Valid:", valid, "|", message,
         )
 
-    # 四种贪心均检查完成后，再把最佳方案交给 MILP 提供上界。
+    # 以上启发式均检查完成后，再把最佳方案交给 MILP 提供上界。
     milp = solve_milp(requests, best_hosts)
 
     print(
