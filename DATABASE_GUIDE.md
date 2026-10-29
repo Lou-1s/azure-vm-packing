@@ -1,9 +1,10 @@
 # Python、SQL 与 Gurobi 速查
 
 - [一、虚拟环境](#一虚拟环境)
-- [二、Python 基础](#二python-基础)
-- [三、SQLite 与 SQL](#三sqlite-与-sql)
-- [四、Gurobi](#四gurobi)
+- [二、常见文件格式](#二常见文件格式)
+- [三、Python 基础](#三python-基础)
+- [四、SQLite 与 SQL](#四sqlite-与-sql)
+- [五、Gurobi](#五gurobi)
 
 ## 一、虚拟环境
 
@@ -42,7 +43,55 @@ deactivate
 
 VS Code：`Ctrl+Shift+P` → `Python: Select Interpreter` → 选择项目 `.venv\Scripts\python.exe`。选择解释器与激活终端是两项操作。
 
-## 二、Python 基础
+## 二、常见文件格式
+
+文件名末尾的 `.py`、`.json` 等称为**扩展名**，用于提示文件的内容格式和常用处理方式。例如 `example.py` 中，`example` 是名称主体，`.py` 是扩展名。
+
+| 扩展名 | 常见内容与用途 | 通常怎样查看或使用 |
+|---|---|---|
+| `.py` | Python 源代码；本项目的算法和实验程序 | VS Code 编辑，Python 解释器运行 |
+| `.json` | 结构化文本，可保存键值、列表和多层嵌套数据；本项目保存实例、分组和运行信息 | VS Code 查看，Python 的 `json` 模块读写 |
+| `.csv` | 行列形式的文本表格；本项目保存每种算法的汇总结果 | VS Code、Excel 或 WPS 查看，Python 的 `csv` 模块读写 |
+| `.html` | 网页的内容与结构，如标题、段落、表格 | VS Code 编辑，浏览器解析并显示页面 |
+| `.css`、`.js` | CSS 常用于网页样式；JavaScript 常用于网页交互逻辑 | VS Code 编辑，由浏览器等相应环境处理 |
+| `.md` | Markdown 文本，用简单标记组织标题、列表和代码块 | VS Code 编辑或预览；常用于项目说明、复习资料 |
+| `.txt` | 普通文本，可保存说明、记录或依赖清单 | 记事本、VS Code 等文本编辑器 |
+| `.sqlite`、`.db` | 数据库文件常见后缀；`.db` 不一定是 SQLite | 本项目的 `.sqlite` 用 SQLite 工具或 Python 的 `sqlite3` 读取 |
+| `.xlsx` | Excel 工作簿，可含多个工作表、公式和格式 | Excel、WPS 等表格软件 |
+| `.zip` | 压缩包，可包含多个文件和文件夹 | 用解压工具展开后再使用内部文件 |
+| `.ps1` | PowerShell 脚本；激活虚拟环境所用脚本属于此类 | PowerShell 执行，VS Code 可查看代码 |
+| `.exe` | Windows 可执行程序，Python 解释器也属于此类 | 双击或从终端调用 |
+| `.png`、`.jpg` | 图片，如图表或截图 | 图片查看器、浏览器等 |
+| `.pdf` | 文档，通常保留固定的页面排版 | PDF 阅读器、浏览器等 |
+
+例如，JSON 可以直接保存“每台主机上有哪些请求”这种多层结构：
+
+```json
+{
+  "method": "FF",
+  "hosts": [[10, 11], [12]]
+}
+```
+
+CSV 适合保存每行列结构相同的结果：
+
+```csv
+method,host_count
+FF,2
+```
+
+HTML 用标记表达网页内容；`<h1>` 表示一级标题，`<p>` 表示段落：
+
+```html
+<h1>实验结果</h1>
+<p>FF 使用了 2 台主机。</p>
+```
+
+**改扩展名不会转换内容格式。** 把 `.csv` 改名为 `.xlsx`，文件内容仍是 CSV 文本。CSV 也不能保存 Excel 工作簿的多工作表、单元格样式等信息。
+
+`.venv` 和 `.git` 是本项目中的**文件夹**：前者保存虚拟环境，后者保存 Git 版本信息。`.gitignore` 是一个文本配置**文件**，用于规定 Git 忽略哪些路径；它没有常规的扩展名。名称以点开头，并不等于某种文件格式。
+
+## 三、Python 基础
 
 ### 1. 赋值、输出与注释
 
@@ -310,7 +359,7 @@ for name, algorithm in methods:  # 分别接收元组中的名称和函数
 
 若写成 `("FF", first_fit(requests))`，算法会在创建列表时执行；要测量调用耗时，应把计时放在实际调用的前后。
 
-## 三、SQLite 与 SQL
+## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
 
@@ -461,7 +510,7 @@ PRAGMA table_info(vmType)
 
 [SQLite SELECT 文档](https://www.sqlite.org/lang_select.html) · [聚合函数](https://www.sqlite.org/lang_aggfunc.html) · [字段结构](https://www.sqlite.org/pragma.html#pragma_table_info)
 
-## 四、Gurobi
+## 五、Gurobi
 
 ### 1. 导入模块与许可证
 
