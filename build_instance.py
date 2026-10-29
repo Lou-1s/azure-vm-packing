@@ -186,11 +186,8 @@ for case in cases:
             "| Valid:", valid, "|", message,
         )
     
-
 # 单独核对 CPU 与内存份额相等的请求是否计入 equal_count。
-print(summarize_requests([(0, 0, 0, 0.2, 0.2)]))
-
-
+# print(summarize_requests([(0, 0, 0, 0.2, 0.2)]))
 
 # 结束所有查询后释放数据库连接。
 connection.close()
