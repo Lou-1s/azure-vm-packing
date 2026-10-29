@@ -252,6 +252,64 @@ while len(remaining) > 0:       # 每轮先判断；列表非空就继续
 
 `while True:` 持续循环，直到执行其中的 `break`。嵌套循环中，`break` 只退出它所在的最内层循环。选择候选时先完整扫描，再删除选中项，避免遍历过程中索引发生移动。[Python 列表文档](https://docs.python.org/zh-cn/3.12/tutorial/datastructures.html)
 
+### 11. 路径、文件与 JSON
+
+```python
+from pathlib import Path
+import json
+
+root = Path(__file__).resolve().parent  # 当前脚本所在目录
+path = root / "results" / "demo.json"  # / 用于拼接路径
+path.parent.mkdir(parents=True, exist_ok=True)  # 创建父目录，已存在则继续
+
+with path.open("w", encoding="utf-8") as file:
+    json.dump({"host_count": 2}, file, ensure_ascii=False, indent=2)
+
+with path.open("r", encoding="utf-8") as file:
+    result = json.load(file)
+```
+
+`with` 在代码块结束时自动关闭文件。`"w"` 创建或覆盖文件，`"r"` 读取现有文件；`encoding` 指定文字编码。
+
+`json.dump(data, file)` 将第一项数据写进第二项文件；`json.load(file)` 从文件读回数据。`ensure_ascii=False` 让中文直接显示，`indent=2` 控制缩进；`allow_nan=False` 禁止写入NaN和无穷值。JSON中的数组读回为列表，需要时用 `tuple(row)` 恢复元组。
+
+```python
+n = 20
+name = f"case_n{n}.json"        # f 字符串得到 case_n20.json
+paths = sorted(root.glob("*.json"))  # 查找并排序匹配的文件路径
+```
+
+`path.name` 是文件名，`path.read_bytes()` 读取原始字节。`sha256(path.read_bytes()).hexdigest()` 可生成文件内容指纹，需要先 `from hashlib import sha256`。
+
+[Path 文档](https://docs.python.org/zh-cn/3.12/library/pathlib.html) · [JSON 文档](https://docs.python.org/zh-cn/3.12/library/json.html)
+
+### 12. 字典列表写入 CSV
+
+```python
+import csv
+
+fields = ["method", "host_count"]  # 输出列名及顺序
+rows = [{"method": "FF", "host_count": 2}]
+path = root / "results" / "demo.csv"
+
+with path.open("w", newline="", encoding="utf-8-sig") as file:
+    writer = csv.DictWriter(file, fieldnames=fields)
+    writer.writeheader()       # 写列名
+    writer.writerows(rows)     # 把每个字典写成一行
+```
+
+`DictWriter` 第一个参数是已打开的文件，`fieldnames` 指定列名及顺序；每行按对应键名取值。`None` 或缺少的键写为空字段，不表示数值0。`newline=""` 交给CSV模块处理换行，`utf-8-sig` 便于Excel识别编码。CSV读回的单元格通常是字符串。[CSV 文档](https://docs.python.org/zh-cn/3.12/library/csv.html)
+
+### 13. 把函数放入列表
+
+```python
+methods = [("FF", first_fit)]   # 不加括号，保存函数本身
+for name, algorithm in methods:  # 分别接收元组中的名称和函数
+    hosts = algorithm(requests)  # 在这里实际调用
+```
+
+若写成 `("FF", first_fit(requests))`，算法会在创建列表时执行；要测量调用耗时，应把计时放在实际调用的前后。
+
 ## 三、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库

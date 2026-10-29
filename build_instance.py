@@ -10,6 +10,7 @@ from packing_algorithms import (
 from solution_checker import check_solution
 from milp_solver import solve_milp
 import sqlite3
+from instance_io import INSTANCE_DIR, write_json, load_instance
 
 # 固定候选硬件规格，不表示这些请求在原系统中实际部署到了硬件 12。
 machine_id = 12
@@ -108,6 +109,37 @@ for case in cases:
 
     totals = summarize_requests(requests)
 
+    # f 字符串把大括号内的值放入名称。
+    instance_id = f"real_m{machine_id}_w{case[0]}_{case[1]}_n{case[2]}"
+
+    instance = {
+        "instance_id": instance_id,
+        "source": "packing_trace_zone_a_v1.sqlite",
+        "machine_id": machine_id,
+        "start": case[0],
+        "end": case[1],
+        "n": len(requests),
+        "field_order": ["vmId", "vmTypeId", "starttime", "core", "memory"],
+        "order_by": ["starttime", "vmId"],
+        "model": "static_no_release",
+        "cpu_total": totals[0],
+        "memory_total": totals[1],
+        "cpu_heavy": totals[2],
+        "memory_heavy": totals[3],
+        "equal": totals[4],
+        "requests": requests,
+    }
+
+    path = INSTANCE_DIR / f"{instance_id}.json"
+    write_json(path, instance)
+
+    # 保存后立即读回，检查内容和顺序是否完全一致。
+    restored = load_instance(path)
+    if restored["requests"] != requests:
+        raise ValueError("Saved requests changed")
+
+    print("Saved:", path.name, "| Rows:", len(requests), "| Same: True")
+
     # round(..., 6) 只调整本次输出的小数位，不改 requests 中的原始数值。
     # sep=" | " 指定 print 各项之间的分隔文字。
     print(
@@ -196,6 +228,7 @@ for case in cases:
             "MILP Hosts:", len(milp["hosts"]),
             "| Valid:", valid, "|", message,
         )
+    
     
 # 单独核对 CPU 与内存份额相等的请求是否计入 equal_count。
 # print(summarize_requests([(0, 0, 0, 0.2, 0.2)]))
