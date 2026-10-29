@@ -64,6 +64,8 @@
 
 截至2026-10-28，已核实的实现里程碑约50%：环境与数据准备10/10、Python/Git基础9/15、数据理解与提取10/15、启发式与检查器16/20、MILP 5/20、正式实验与复现交付0/20。用户已完成FF/BF/FFD/BFD、独立检查器、五批真实请求比较及人工MILP，最近实现提交为f8fa4ec；后续仍需MILP函数化与真实批次接入、DotProduct和统一实验。尚未建立远程仓库或保存正式实例文件。百分比按项目交付内容粗估，不代表知识掌握率。
 
+当前教学批次：用户新建MILP函数模块，传入非空请求、经检查的贪心上界方案及默认30秒时限，返回状态、解数量、目标、下界、gap、分组和两种耗时的字典；无求解器可行解时用None。上界检查和最终检查均在模型计时之外，单列求解器Runtime；暂不作为完整算法时间比较。真实窗口按既定计划补齐三窗各20/40/80共九批。上述实现及用户运行验收仍待完成，教师预先核对不计入进度。
+
 ## 选型依据
 
 - Panigrahy等，Heuristics for Vector Bin Packing (2011)：https://www.microsoft.com/en-us/research/wp-content/uploads/2011/01/VBPackingESA11.pdf 。直接研究同型主机的多资源装箱，给出DotProduct与Norm-based Greedy等方法。

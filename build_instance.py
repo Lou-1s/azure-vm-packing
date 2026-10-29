@@ -6,7 +6,7 @@ from packing_algorithms import (
     best_fit_decreasing,
 )
 from solution_checker import check_solution
-
+from milp_solver import solve_milp
 import sqlite3
 
 # 固定候选硬件规格，不表示这些请求在原系统中实际部署到了硬件 12。
@@ -68,12 +68,23 @@ def summarize_requests(requests):
     return cpu_total, memory_total, cpu_heavy, memory_heavy, equal_count
 
 # 每组为 (窗口起点, 窗口终点, 请求数量)；同一窗口的大批次包含小批次前缀。
+# cases = [
+#     (1, 2, 20),
+#     (1, 2, 40),
+#     (1, 2, 80),
+#     (2, 3, 20),
+#     (3,4,20),
+# ]
 cases = [
     (1, 2, 20),
     (1, 2, 40),
     (1, 2, 80),
     (2, 3, 20),
-    (3,4,20),
+    (2, 3, 40),
+    (2, 3, 80),
+    (3, 4, 20),
+    (3, 4, 40),
+    (3, 4, 80),
 ]
 
 print("Start | End | N | CPU | Memory | CPU>Memory | Memory>CPU | Equal")
@@ -88,6 +99,11 @@ for case in cases:
     )
 
     requests = load_requests(connection, sql, parameters)
+
+    # 防止实际只取到较少记录，却仍把它当成指定规模的实验。
+    if len(requests) != case[2]:
+        raise ValueError("Not enough compatible requests")
+
     totals = summarize_requests(requests)
 
     # round(..., 6) 只调整本次输出的小数位，不改 requests 中的原始数值。
@@ -103,7 +119,24 @@ for case in cases:
         totals[4],
         sep=" | ",
     )
-    # 每项保存 (算法名称, 该算法返回的主机分组)，供下面统一检查和输出。
+    # # 每项保存 (算法名称, 该算法返回的主机分组)，供下面统一检查和输出。
+    # results = [
+    #     ("FF", first_fit(requests)),
+    #     ("BF", best_fit(requests)),
+    #     ("FFD", first_fit_decreasing(requests)),
+    #     ("BFD", best_fit_decreasing(requests)),
+    # ]
+
+    # for result in results:
+    #     hosts = result[1]
+    #     # 检查器返回 (是否可行, 原因)，不能只凭主机数判断算法是否正确。
+    #     valid, message = check_solution(requests, hosts)
+
+    #     print(
+    #         result[0], "Hosts:", len(hosts),
+    #         "| Valid:", valid,
+    #         "|", message,
+    #     )
     results = [
         ("FF", first_fit(requests)),
         ("BF", best_fit(requests)),
@@ -111,17 +144,47 @@ for case in cases:
         ("BFD", best_fit_decreasing(requests)),
     ]
 
+    # 先以 FF 为候选；各方案通过检查后，比较主机数。
+    best_hosts = results[0][1]
+
     for result in results:
         hosts = result[1]
-        # 检查器返回 (是否可行, 原因)，不能只凭主机数判断算法是否正确。
         valid, message = check_solution(requests, hosts)
+        if not valid:
+            raise ValueError(result[0] + ": " + message)
+
+        # 保留使用主机最少的贪心方案；相同时保留原候选。
+        if len(hosts) < len(best_hosts):
+            best_hosts = hosts
 
         print(
             result[0], "Hosts:", len(hosts),
-            "| Valid:", valid,
-            "|", message,
+            "| Valid:", valid, "|", message,
         )
 
+    # 四种贪心均检查完成后，再把最佳方案交给 MILP 提供上界。
+    milp = solve_milp(requests, best_hosts)
+
+    print(
+        "MILP Status:", milp["status"],
+        "| Solutions:", milp["sol_count"],
+        "| Objective:", milp["objective"],
+        "| Bound:", milp["bound"],
+        "| Gap:", milp["gap"],
+    )
+    print(
+        "ModelSeconds:", round(milp["model_seconds"], 6),
+        "| SolveSeconds:", round(milp["solve_seconds"], 6),
+    )
+
+    if milp["hosts"] is None:
+        print("MILP: No feasible solution available.")
+    else:
+        valid, message = check_solution(requests, milp["hosts"])
+        print(
+            "MILP Hosts:", len(milp["hosts"]),
+            "| Valid:", valid, "|", message,
+        )
     
 
 # 单独核对 CPU 与内存份额相等的请求是否计入 equal_count。

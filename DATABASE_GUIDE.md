@@ -215,6 +215,30 @@ if not valid:                # valid 为 False 时进入
 
 `from packing_algorithms import first_fit` 从同目录模块导入函数；文件应先保存，且函数名要对应。
 
+### 8. 字典与默认参数
+
+```python
+result = {"status": 2, "objective": 2.0, "gap": 0.0}  # 用“键: 值”保存结果
+print(result["objective"])     # 按键名读取：2.0
+result["gap"] = None           # 修改该键对应的值；None 表示暂时没有值
+```
+
+字典用 `{}`，每项是 `键: 值`，各项之间用逗号分开。`result["objective"]` 按名称取值；键名必须与保存时一致。
+
+函数定义中的 `time_limit=30` 指定默认值：调用时省略它就用 30，写 `time_limit=0` 则用 0。它与调用时的关键字参数写法相似，但默认值在定义函数时指定。
+
+### 9. 测量耗时
+
+```python
+from time import perf_counter  # 引入适合测量短时间间隔的计时函数
+
+started = perf_counter()       # 记录开始时的计时值
+hosts = first_fit(requests)    # 实际运行要测量的代码
+seconds = perf_counter() - started  # 两次计时值的差，单位为秒
+```
+
+`perf_counter()` 的单个数值不表示日期；两次调用之差才是经过的时间。计时起止位置决定包含哪些工作。[Python 文档](https://docs.python.org/zh-cn/3.12/library/time.html#time.perf_counter)
+
 ## 三、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
@@ -490,5 +514,16 @@ model.dispose()                # 释放模型占用的资源
 | `GRB.TIME_LIMIT` | 9 | 达到时间上限；是否已有解需看 `SolCount` |
 
 `model.Status == GRB.OPTIMAL` 返回是否最优的布尔值。达到时限不等于证明最优；`SolCount=0` 表示尚无可用方案，不能记成用了 0 台主机。人工强制 `host_limit=1` 后不可行，仅说明该请求集装不进一台。
+
+### 6. 封装后的结果与计时
+
+项目封装接口为 `solve_milp(requests, upper_bound_hosts, time_limit=30)`：传入非空请求、已有可行分组和时限，返回结果字典。上界方案须通过检查，只用其主机数量限制候选数量，不固定原分组。
+
+- `result["hosts"]`：求解器的主机分组；无可行解时为 `None`，不要对它调用 `len`。
+- `result["objective"]`、`result["gap"]`：有可行解才填入数值，否则为 `None`；原贪心方案单独保留。
+- `result["model_seconds"]`：从上界检查后开始，包含建模、求解、结果读取与分组重建，不含最终检查。
+- `result["solve_seconds"]`：`model.Runtime`，仅求解器优化过程的耗时。
+
+上述模型耗时也不含数据库读取或产生贪心上界的时间。做完整算法耗时比较时，要统一并说明这些范围。短时限下的 `bound=-inf` 表示尚未取得有限下界，不能据此说模型无界。
 
 [Gurobi Python Model](https://docs.gurobi.com/projects/optimizer/en/current/reference/python/model.html) · [模型结果属性](https://docs.gurobi.com/projects/optimizer/en/current/reference/attributes/model.html) · [求解状态](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html)
