@@ -1,16 +1,16 @@
 # from 模块名 import 函数名：复用同目录文件中已经定义好的函数。
-from packing_algorithms import (
-    first_fit,
-    best_fit,
-    first_fit_decreasing,
-    best_fit_decreasing,
-    dot_product,
-    first_fit_decreasing_sum,
-)
-from solution_checker import check_solution
-from milp_solver import solve_milp
+# from packing_algorithms import (
+#     first_fit,
+#     best_fit,
+#     first_fit_decreasing,
+#     best_fit_decreasing,
+#     dot_product,
+#     first_fit_decreasing_sum,
+# )
+# from solution_checker import check_solution
+# from milp_solver import solve_milp
 import sqlite3
-from instance_io import INSTANCE_DIR, write_json, load_instance
+from instance_io import ROOT, write_json, load_instance
 
 # 固定候选硬件规格，不表示这些请求在原系统中实际部署到了硬件 12。
 machine_id = 12
@@ -78,17 +78,34 @@ def summarize_requests(requests):
 #     (2, 3, 20),
 #     (3,4,20),
 # ]
-cases = [
-    (1, 2, 20),
-    (1, 2, 40),
-    (1, 2, 80),
-    (2, 3, 20),
-    (2, 3, 40),
-    (2, 3, 80),
-    (3, 4, 20),
-    (3, 4, 40),
-    (3, 4, 80),
-]
+# cases = [
+#     (1, 2, 20),
+#     (1, 2, 40),
+#     (1, 2, 80),
+#     (2, 3, 20),
+#     (2, 3, 40),
+#     (2, 3, 80),
+#     (3, 4, 20),
+#     (3, 4, 40),
+#     (3, 4, 80),
+# ]
+DATASET = "real_large"
+INSTANCE_DIR = ROOT / "data" / "instances" / DATASET
+
+if DATASET == "real_small":
+    cases = [
+        (1, 2, 20), (1, 2, 40), (1, 2, 80),
+        (2, 3, 20), (2, 3, 40), (2, 3, 80),
+        (3, 4, 20), (3, 4, 40), (3, 4, 80),
+    ]
+elif DATASET == "real_large":
+    cases = [
+        (1, 2, 200), (1, 2, 1000),
+        (2, 3, 200), (2, 3, 1000),
+        (3, 4, 200), (3, 4, 1000),
+    ]
+else:
+    raise ValueError("Unknown dataset")
 
 print("Start | End | N | CPU | Memory | CPU>Memory | Memory>CPU | Equal")
 
@@ -178,56 +195,56 @@ for case in cases:
     #     ("BFD", best_fit_decreasing(requests)),
     # ]
 
-    results = [
-        ("FF", first_fit(requests)),
-        ("BF", best_fit(requests)),
-        ("FFD-max", first_fit_decreasing(requests)),
-        ("BFD", best_fit_decreasing(requests)),
-        ("DP", dot_product(requests)),
-        ("FFD-sum", first_fit_decreasing_sum(requests)),
-    ]
+    # results = [
+    #     ("FF", first_fit(requests)),
+    #     ("BF", best_fit(requests)),
+    #     ("FFD-max", first_fit_decreasing(requests)),
+    #     ("BFD", best_fit_decreasing(requests)),
+    #     ("DP", dot_product(requests)),
+    #     ("FFD-sum", first_fit_decreasing_sum(requests)),
+    # ]
 
-    # 先以 FF 为候选；各方案通过检查后，比较主机数。
-    best_hosts = results[0][1]
+    # # 先以 FF 为候选；各方案通过检查后，比较主机数。
+    # best_hosts = results[0][1]
 
-    for result in results:
-        hosts = result[1]
-        valid, message = check_solution(requests, hosts)
-        if not valid:
-            raise ValueError(result[0] + ": " + message)
+    # for result in results:
+    #     hosts = result[1]
+    #     valid, message = check_solution(requests, hosts)
+    #     if not valid:
+    #         raise ValueError(result[0] + ": " + message)
 
-        # 保留使用主机最少的贪心方案；相同时保留原候选。
-        if len(hosts) < len(best_hosts):
-            best_hosts = hosts
+    #     # 保留使用主机最少的贪心方案；相同时保留原候选。
+    #     if len(hosts) < len(best_hosts):
+    #         best_hosts = hosts
 
-        print(
-            result[0], "Hosts:", len(hosts),
-            "| Valid:", valid, "|", message,
-        )
+    #     print(
+    #         result[0], "Hosts:", len(hosts),
+    #         "| Valid:", valid, "|", message,
+    #     )
 
-    # 以上启发式均检查完成后，再把最佳方案交给 MILP 提供上界。
-    milp = solve_milp(requests, best_hosts)
+    # # 以上启发式均检查完成后，再把最佳方案交给 MILP 提供上界。
+    # milp = solve_milp(requests, best_hosts)
 
-    print(
-        "MILP Status:", milp["status"],
-        "| Solutions:", milp["sol_count"],
-        "| Objective:", milp["objective"],
-        "| Bound:", milp["bound"],
-        "| Gap:", milp["gap"],
-    )
-    print(
-        "ModelSeconds:", round(milp["model_seconds"], 6),
-        "| SolveSeconds:", round(milp["solve_seconds"], 6),
-    )
+    # print(
+    #     "MILP Status:", milp["status"],
+    #     "| Solutions:", milp["sol_count"],
+    #     "| Objective:", milp["objective"],
+    #     "| Bound:", milp["bound"],
+    #     "| Gap:", milp["gap"],
+    # )
+    # print(
+    #     "ModelSeconds:", round(milp["model_seconds"], 6),
+    #     "| SolveSeconds:", round(milp["solve_seconds"], 6),
+    # )
 
-    if milp["hosts"] is None:
-        print("MILP: No feasible solution available.")
-    else:
-        valid, message = check_solution(requests, milp["hosts"])
-        print(
-            "MILP Hosts:", len(milp["hosts"]),
-            "| Valid:", valid, "|", message,
-        )
+    # if milp["hosts"] is None:
+    #     print("MILP: No feasible solution available.")
+    # else:
+    #     valid, message = check_solution(requests, milp["hosts"])
+    #     print(
+    #         "MILP Hosts:", len(milp["hosts"]),
+    #         "| Valid:", valid, "|", message,
+    #     )
     
     
 # 单独核对 CPU 与内存份额相等的请求是否计入 equal_count。

@@ -288,6 +288,15 @@ seconds = perf_counter() - started  # 两次计时值的差，单位为秒
 
 `perf_counter()` 的单个数值不表示日期；两次调用之差才是经过的时间。计时起止位置决定包含哪些工作。[Python 文档](https://docs.python.org/zh-cn/3.12/library/time.html#time.perf_counter)
 
+```python
+from statistics import median  # Python 自带，无需安装
+
+times = [0.04, 0.08, 0.05]
+seconds = median(times)        # 排序后取中间值，得到 0.05
+```
+
+重复测量时，把每次耗时放进 `times`，再取中位数，减少某一次异常快慢的影响。此时 `seconds` 代表单次调用耗时的中位数，不是几次测量的时间总和。
+
 ### 10. while 循环与 pop
 
 ```python
