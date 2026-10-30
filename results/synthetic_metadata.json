@@ -1,0 +1,25 @@
+{
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "gurobi": [
+    13,
+    0,
+    3
+  ],
+  "time_limit": 30,
+  "dataset": "synthetic",
+  "run_milp": true,
+  "timing_repetitions": 3,
+  "heuristic_timing": "median of timed function calls, including sorting; excludes checker",
+  "milp_timing": "sum of upper-bound heuristic call times plus model_seconds; excludes checker",
+  "instance_sha256": {
+    "synthetic_complementary_s0_n80": "9fe610d04bcd99f6270d9542e112828b808e4f43026bbd2b4b90fb310af9e574",
+    "synthetic_complementary_s1_n80": "ef0f2c15075fb2fdb9e5f8e086c5b58e7de5764d3d9df40cb0c8b2b730035edc",
+    "synthetic_complementary_s2_n80": "d18cacc35e050fc44bfcc75f5c55f4ed8a176720998318b0c0d9c5608828c4c7",
+    "synthetic_independent_s0_n80": "11383b4e26de9319e970f3d20cc074ec056ff7710c97e56e902dbce25735fffc",
+    "synthetic_independent_s1_n80": "7e39be724247e97c7667128f6ad2cd95cec600a013e19ec1a7ed8826f0db32ce",
+    "synthetic_independent_s2_n80": "1419383c1c9beb7cd08dcec40f41a65f4be777203213dfb349d990765215a915",
+    "synthetic_positive_s0_n80": "719090097d1fc05c1c27d5238e07c98312ed62cbe54368256e0a809cebb48b34",
+    "synthetic_positive_s1_n80": "ad7c22347e5ea15b6746e182c01fde2409ac687668cc53de8edf35bd957a99f6",
+    "synthetic_positive_s2_n80": "64015f2b6e21b7a6e5ebffc1b3c86d4ff548b32a4f7b020866d5220abd906f06"
+  }
+}

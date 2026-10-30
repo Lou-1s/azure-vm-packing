@@ -29,8 +29,13 @@ from statistics import median  # Python自带，用于计算中位数。
 #     ("FFD-sum", first_fit_decreasing_sum),
 # ]
 
-DATASET = "real_large"
+# DATASET = "real_large"
+# TIME_LIMIT = 30
+DATASET = "synthetic"
 TIME_LIMIT = 30
+
+# 真实数据默认使用这个文件名模式。
+file_pattern = "real_m12_*.json"
 
 methods = [
     ("FF", first_fit),
@@ -51,6 +56,12 @@ elif DATASET == "real_large":
     run_milp = False
     repeats = 3
     result_prefix = "large_real"
+elif DATASET == "synthetic":
+    expected_instances = 9
+    run_milp = True
+    repeats = 3
+    result_prefix = "synthetic"
+    file_pattern = "synthetic_*.json"
 else:
     raise ValueError("Unknown dataset")
 
@@ -67,7 +78,8 @@ fields = [
 # paths = sorted(INSTANCE_DIR.glob("real_m12_*.json"))
 # if len(paths) != 9:
 #     raise ValueError("Expected 9 saved real-small instances")
-paths = sorted(INSTANCE_DIR.glob("real_m12_*.json"))
+# paths = sorted(INSTANCE_DIR.glob("real_m12_*.json"))
+paths = sorted(INSTANCE_DIR.glob(file_pattern))
 if len(paths) != expected_instances:
     raise ValueError("Saved instance count mismatch")
 

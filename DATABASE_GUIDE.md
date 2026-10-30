@@ -368,6 +368,18 @@ for name, algorithm in methods:  # 分别接收元组中的名称和函数
 
 若写成 `("FF", first_fit(requests))`，算法会在创建列表时执行；要测量调用耗时，应把计时放在实际调用的前后。
 
+### 14. 固定随机种子
+
+```python
+import random
+
+rng = random.Random(0)        # 用种子0创建独立生成器，放在取样循环之前
+a = rng.randint(8, 48)        # 取得8到48之间的一个整数，包含两端
+b = rng.randint(8, 48)        # 继续取得下一个数，并非每次都返回同一个值
+```
+
+在相同Python版本、代码和调用顺序下，使用同一种子可以重现同一串数据。种子不是样本数量；改种子通常会改变样本。固定种子用于复现实验，不意味着某一个种子代表全部情况。[random文档](https://docs.python.org/zh-cn/3.12/library/random.html)
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
