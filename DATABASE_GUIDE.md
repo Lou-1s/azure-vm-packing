@@ -380,6 +380,26 @@ b = rng.randint(8, 48)        # 继续取得下一个数，并非每次都返回
 
 在相同Python版本、代码和调用顺序下，使用同一种子可以重现同一串数据。种子不是样本数量；改种子通常会改变样本。固定种子用于复现实验，不意味着某一个种子代表全部情况。[random文档](https://docs.python.org/zh-cn/3.12/library/random.html)
 
+```python
+value_rng = random.Random("alpha_v2|n=100|seed=0|values")
+direction_rng = random.Random("alpha_v2|n=100|seed=0|directions")
+u = value_rng.random()       # 返回[0,1)内的浮点数
+order = list(range(100))     # 编号0至99
+direction_rng.shuffle(order) # 原地打乱；不要写成order = ...shuffle(order)
+memory_ids = set(order[:20]) # 随机优先序的前20个编号
+```
+
+Random也接受字符串种子。项目把版本、n、seed、用途组成标签，分别控制取值与方向；标签中不放alpha，同一基础样本的五个alpha便可共享数值和方向优先序。只打乱用于选方向的order，输出请求仍按原ID排列。
+
+采样循环中的continue跳过本轮剩余语句，进入下一轮；break则结束整个当前循环。sum(memory > cpu for ...)统计条件成立次数，因为True参与求和按1、False按0。
+
+```python
+if __name__ == "__main__":
+    main()
+```
+
+直接运行这个.py文件时执行main()；被其他文件import时只提供定义，不自动执行main()。因此可以复用生成函数，而不重新生成整批文件。
+
 ### 15. enumerate、set与all
 
 ```python
