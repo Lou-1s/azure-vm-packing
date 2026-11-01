@@ -415,3 +415,187 @@ def solve_synthetic_milp(requests, initial_hosts, time_limit=300):
         "total_seconds": perf_counter() - started,
         "trials": trials,
     }
+
+
+def solve_aggregated_milp(requests, initial_hosts, time_limit=300):
+    started = perf_counter()
+
+    valid, message = check_solution(requests, initial_hosts)
+    if not valid:
+        raise ValueError("Invalid initial solution: " + message)
+    if not requests:
+        raise ValueError("Empty request batch")
+
+    # 一、按完全相同的CPU、内存需求分组，保存原始请求。
+    groups = {}
+    for request in requests:
+        demand = (request[3], request[4])
+        if demand not in groups:
+            groups[demand] = []
+        groups[demand].append(request)
+
+    types = sorted(groups)  # 排序字典的键，得到资源组合列表。
+    type_count = len(types)
+    counts = [len(groups[demand]) for demand in types]
+
+    # 通过资源组合，反查对应的类型编号。
+    type_index = {demand: t for t, demand in enumerate(types)}
+    host_limit = len(initial_hosts)
+
+    # 每种类型在单台主机上的数量上限。
+    limits = []
+    for t, (cpu, memory) in enumerate(types):
+        limits.append(min(
+            counts[t],
+            math.floor((1 + 1e-9) / cpu),
+            math.floor((1 + 1e-9) / memory),
+        ))
+
+    # 由两种资源总量取得主机数下界。
+    resource_bound = math.ceil(max(
+        math.fsum(request[3] for request in requests),
+        math.fsum(request[4] for request in requests),
+    ) / (1 + 1e-9))
+
+    # 先保留有效初解，求解停止时仍有可用方案。
+    result = {
+        "hosts": initial_hosts,
+        "initial_host_count": host_limit,
+        "objective": host_limit,
+        "bound": resource_bound,
+        "solver_status": None,
+        "solver_bound": None,
+        "solver_gap": None,
+        "type_count": type_count,
+        "count_variables": type_count * host_limit,
+        "binary_variables": host_limit,
+        "prep_seconds": perf_counter() - started,
+    }
+    build_started = perf_counter()
+
+    with gp.Model("type_count_packing") as model:
+        model.Params.OutputFlag = 0
+        model.Params.Threads = 1
+        model.Params.Method = 1       # 根节点松弛使用对偶单纯形。
+        model.Params.TimeLimit = time_limit
+        model.Params.MIPGap = 0
+        model.Params.SoftMemLimit = 2.0  # Gurobi约2GB软内存限额。
+        model.Params.FeasibilityTol = 1e-9
+        model.Params.IntFeasTol = 1e-9
+
+        # 二、创建数量整数变量q和主机启用变量y。
+        upper_bounds = {
+            (t, j): limits[t]
+            for t in range(type_count)
+            for j in range(host_limit)
+        }
+        q = model.addVars(
+            type_count, host_limit,
+            vtype=GRB.INTEGER,       # 可取0、1、2等整数。
+            ub=upper_bounds,         # 每个变量的数量上限。
+            name="q",
+        )
+        y = model.addVars(host_limit, vtype=GRB.BINARY, name="y")
+        model.setObjective(gp.quicksum(y.values()), GRB.MINIMIZE)
+
+        # 三、每类请求全部放完。
+        for t in range(type_count):
+            model.addConstr(
+                gp.quicksum(q[t, j] for j in range(host_limit))
+                == counts[t]
+            )
+
+        # 每台主机的CPU、内存容量。
+        for j in range(host_limit):
+            model.addConstr(
+                gp.quicksum(
+                    types[t][0] * q[t, j] for t in range(type_count)
+                ) <= y[j]
+            )
+            model.addConstr(
+                gp.quicksum(
+                    types[t][1] * q[t, j] for t in range(type_count)
+                ) <= y[j]
+            )
+
+        # 启用的主机排在前面，减少编号交换造成的对称性。
+        for j in range(host_limit - 1):
+            model.addConstr(y[j] >= y[j + 1])
+
+        # 目标值不可能比 resource_bound 更小，剪枝。
+        model.addConstr(gp.quicksum(y.values()) >= resource_bound)
+
+        # 四、把初始分组转换为各主机的类型数量。
+        for j, host in enumerate(initial_hosts):
+            amounts = [0] * type_count
+            for request in host:
+                t = type_index[(request[3], request[4])]
+                amounts[t] += 1
+
+            for t in range(type_count):
+                q[t, j].Start = amounts[t]  # 提供初值。
+            y[j].Start = 1
+
+        model.update()
+        result["build_seconds"] = perf_counter() - build_started
+        model.optimize()
+
+        result["solver_status"] = model.Status
+        result["solve_seconds"] = model.Runtime
+
+        if math.isfinite(model.ObjBound):
+            result["solver_bound"] = model.ObjBound
+            # 减去微小数，避免整数附近的浮点误差造成错误进位。
+            result["bound"] = max(
+                resource_bound, math.ceil(model.ObjBound - 1e-6)
+            )
+
+        # 五、有求解器方案时，按数量恢复原始请求。
+        if model.SolCount > 0:
+            if math.isfinite(model.MIPGap):
+                result["solver_gap"] = model.MIPGap
+
+            positions = [0] * type_count  # 每类已经取走多少条。
+            hosts = []
+            for j in range(host_limit):
+                host = []
+                for t, demand in enumerate(types):
+                    amount = int(round(q[t, j].X))
+                    begin = positions[t]
+                    end = begin + amount
+                    host.extend(groups[demand][begin:end])
+                    positions[t] = end
+
+                if host:
+                    hosts.append(host)
+
+            result["hosts"] = hosts
+            result["objective"] = len(hosts)
+
+        if model.Status == GRB.OPTIMAL:
+            result["bound"] = result["objective"]
+
+    # 六、独立检查恢复后的完整方案。
+    valid, message = check_solution(requests, result["hosts"])
+    if not valid:
+        raise ValueError("Invalid aggregated solution: " + message)
+    if result["bound"] > result["objective"]:
+        raise ValueError("Lower bound exceeds valid upper bound")
+
+    result["optimal"] = result["bound"] == result["objective"]
+    if result["optimal"]:
+        result["stop_reason"] = "optimal"
+        result["proof_source"] = (
+            "solver_optimal"
+            if result["solver_status"] == GRB.OPTIMAL
+            else "bound_match"
+        )
+    else:
+        result["stop_reason"] = "solver_stopped"
+        result["proof_source"] = None
+
+    result["gap_to_bound"] = (
+        result["objective"] - result["bound"]
+    ) / result["bound"]
+    result["total_seconds"] = perf_counter() - started
+    return result

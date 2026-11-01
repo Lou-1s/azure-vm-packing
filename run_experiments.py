@@ -31,7 +31,8 @@ from statistics import median  # Python自带，用于计算中位数。
 
 # DATASET = "real_large"
 # TIME_LIMIT = 30
-DATASET = "synthetic"
+# 旧三组合成实验已清理；新alpha实验完成后再接入对应配置。
+DATASET = "real_large"
 TIME_LIMIT = 30
 
 # 真实数据默认使用这个文件名模式。
@@ -56,12 +57,6 @@ elif DATASET == "real_large":
     run_milp = False
     repeats = 3
     result_prefix = "large_real"
-elif DATASET == "synthetic":
-    expected_instances = 9
-    run_milp = True
-    repeats = 3
-    result_prefix = "synthetic"
-    file_pattern = "synthetic_*.json"
 else:
     raise ValueError("Unknown dataset")
 

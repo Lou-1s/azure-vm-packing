@@ -68,7 +68,7 @@ def show_optimal_hits(rows):
             print(f"{method}: {hits}/{known}")
 
 
-for filename in ("small_real.csv", "large_real.csv", "synthetic.csv"):
+for filename in ("small_real.csv", "large_real.csv"):
     print("\n" + filename)
 
     rows = read_results(filename)

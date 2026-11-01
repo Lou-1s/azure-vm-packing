@@ -733,3 +733,44 @@ remaining_time = time_limit - solve_seconds，其中solve_seconds累计各次Gur
 返回objective是当前最好主机数、bound是有效下界、hosts是当前最好分组。即使时间预算为0，初始有效方案仍保留。proof_source说明证优方式：bound_match表示上下界相等，fixed_k_infeasible表示排除了少一台的可能；尚未证优时为None。
 
 trials为字典列表，逐次保存K、可行性、状态和试探前后的上下界。gap_to_bound=(U-L)/L是相对下界的差距，与Gurobi原生MIPGap分开。固定K的solver_status=2说明该K可行，整个装箱问题的最优性由外层optimal及证据共同判断。
+
+### 9. 类型聚合、整数变量与初始解
+
+资源需求完全相同的请求可以按数量建模。例如同为(CPU=0.1,Memory=0.2)的100条请求是一组；保留原记录，求解后再恢复各自ID。这里的类型由资源二元组确定，不直接使用vmTypeId。
+
+```python
+groups = {}
+for request in requests:
+    demand = (request[3], request[4])
+    if demand not in groups:
+        groups[demand] = []           # 第一次遇到这个资源组合
+    groups[demand].append(request)   # 保存该组的一条原始请求
+
+types = sorted(groups)              # 排序字典的键，得到资源组合列表
+counts = [len(groups[demand]) for demand in types]
+type_index = {demand: t for t, demand in enumerate(types)}
+```
+
+types[t]是第t组的资源需求；counts[t]是该组的请求数量；type_index将资源组合反查为组编号。同一组内请求在当前模型中可以互换，因为约束和目标只使用CPU、内存需求。
+
+```python
+q = model.addVars(type_count, host_limit, vtype=GRB.INTEGER,
+                  ub=upper_bounds, name="q")
+q[0, 2].Start = 3
+```
+
+q[t,j]表示主机j接收第t类的数量，可以取0、1、2等整数，默认下界为0；ub按索引给出数量上限。若有T类、H台候选主机，就创建T×H个数量变量，另有H个主机启用变量y[j]。
+
+.Start给求解器提供初始值；上述语句建议先在主机2放3条第0类请求，没有增加q[0,2]==3的约束。完整初始分组需要逐台统计各类数量，并分别赋给q[t,j].Start和y[j].Start。[Gurobi初始解说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/attributes/variable.html#attr:Start)
+
+```python
+amount = int(round(q[t, j].X))
+begin = positions[t]
+end = begin + amount
+host.extend(groups[demand][begin:end])
+positions[t] = end
+```
+
+整数变量的.X仍是浮点数，round后转为Python整数。positions[t]记录第t组已经取走多少条；列表[begin:end]包含begin、不包含end；extend将这些记录逐条加入主机列表。每次推进位置，恢复后再由检查器核对ID、次数和容量。
+
+参数Threads=1使用一个求解线程；Method=1为根节点松弛选择对偶单纯形；SoftMemLimit=2.0设置Gurobi约2GB软内存限额，停止后仍可读取已有解。[Gurobi参数说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html#parameter:SoftMemLimit)
