@@ -380,6 +380,41 @@ b = rng.randint(8, 48)        # 继续取得下一个数，并非每次都返回
 
 在相同Python版本、代码和调用顺序下，使用同一种子可以重现同一串数据。种子不是样本数量；改种子通常会改变样本。固定种子用于复现实验，不意味着某一个种子代表全部情况。[random文档](https://docs.python.org/zh-cn/3.12/library/random.html)
 
+### 15. enumerate、set与all
+
+```python
+for j, i in enumerate([3, 2]):
+    print(j, i)          # 依次输出0 3、1 2：同时取得位置和元素
+
+anchored = set([3, 2])   # 集合，用于快速判断元素是否存在
+print(3 in anchored)     # True
+
+print(all(x > 0 for x in [0.4, 0.7]))  # True：每一项都必须满足
+```
+
+all会逐项判断；遇到不满足的项就返回False，全部满足返回True。空集合中没有反例，所以all在空序列上返回True；贪心团因此可以加入第一个请求。
+
+### 16. lambda与列表推导
+
+```python
+key = lambda i: (-requests[i][3], requests[i][0])
+ordered = sorted(range(len(requests)), key=key)  # CPU降序，同分按ID
+remaining = [i for i in range(len(requests)) if i not in anchored]
+hosts = [[] for _ in range(3)]  # 创建三个不同的空列表
+```
+
+lambda写一个短函数，冒号前是参数，后面是返回值。列表推导把循环产生的值收集成列表，可用if筛选。此处i是列表位置；requests[i][0]才是请求ID。
+
+### 17. 求和与向上取整
+
+```python
+import math
+cpu_total = math.fsum(request[3] for request in requests)
+resource_bound = math.ceil(cpu_total / (1 + 1e-9))
+```
+
+fsum对浮点数求和，减少累计舍入误差；ceil向上取整，例如ceil(2.1)=3。这里除以检查器采用的单机容量1+1e-9，再取整得到CPU资源下界；实际下界还要与内存、团下界取最大值。[math文档](https://docs.python.org/3.12/library/math.html)
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
@@ -653,6 +688,7 @@ model.dispose()                # 释放模型占用的资源
 | `GRB.OPTIMAL` | 2 | 在求解容差内证明最优 |
 | `GRB.INFEASIBLE` | 3 | 当前模型没有可行解 |
 | `GRB.TIME_LIMIT` | 9 | 达到时间上限；是否已有解需看 `SolCount` |
+| `GRB.SOLUTION_LIMIT` | 10 | 找到规定数量的解后结束；固定K找到方案即确认可行 |
 
 `model.Status == GRB.OPTIMAL` 返回是否最优的布尔值。达到时限不等于证明最优；`SolCount=0` 表示尚无可用方案，不能记成用了 0 台主机。人工强制 `host_limit=1` 后不可行，仅说明该请求集装不进一台。
 
@@ -668,3 +704,32 @@ model.dispose()                # 释放模型占用的资源
 上述模型耗时也不含数据库读取或产生贪心上界的时间。做完整算法耗时比较时，要统一并说明这些范围。短时限下的 `bound=-inf` 表示尚未取得有限下界，不能据此说模型无界。
 
 [Gurobi Python Model](https://docs.gurobi.com/projects/optimizer/en/current/reference/python/model.html) · [模型结果属性](https://docs.gurobi.com/projects/optimizer/en/current/reference/attributes/model.html) · [求解状态](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html)
+
+
+### 7. 固定K判定与稀疏变量
+
+```python
+pairs = [(0, 0), (0, 1), (4, 1)]
+with gp.Model("fixed_k") as model:
+    x = model.addVars(pairs, vtype=GRB.BINARY, name="x")
+    model.setObjective(0, GRB.MINIMIZE)  # 只找可行分组
+    model.Params.SolutionLimit = 1      # 找到一个可行解即可结束
+    # 添加约束、optimize，并在with内部读取解
+```
+
+addVars第一个参数可以是索引对列表，此处只创建x[0,0]、x[0,1]、x[4,1]三个变量；没有x[4,0]。这用来省去无法放置的位置。with结束时释放模型；需要的状态、数值和分组先保存成普通Python数据。
+
+固定K函数的feasible返回True表示找到有效方案，False表示已证明装不下，None表示尚未确定。solver_status保存Gurobi实际状态；预处理已经排除时没有调用求解器，保留None。目标常数0不表示用了0台，实际台数通过len(hosts)读取。
+
+本轮solve_fixed_k(requests, host_limit, time_limit=300)处理一次给定K；后续外层搜索把300秒总优化预算分配到各次调用。返回prep_seconds、build_seconds、solve_seconds与total_seconds，最后一项包含结果恢复和独立检查。
+
+
+### 8. 外层搜索与上下界
+
+solve_synthetic_milp(requests, initial_hosts, time_limit=300)以初始有效分组确定上界U，以资源总量和团确定下界L。每次测试K=U-1：可行则更新U，不可行则L=K+1，尚未确定则保留现有结果。L=U时optimal=True。
+
+remaining_time = time_limit - solve_seconds，其中solve_seconds累计各次Gurobi Runtime；因此每次调用取得剩余预算。total_seconds另外包含检查、团计算、建模和分组恢复。
+
+返回objective是当前最好主机数、bound是有效下界、hosts是当前最好分组。即使时间预算为0，初始有效方案仍保留。proof_source说明证优方式：bound_match表示上下界相等，fixed_k_infeasible表示排除了少一台的可能；尚未证优时为None。
+
+trials为字典列表，逐次保存K、可行性、状态和试探前后的上下界。gap_to_bound=(U-L)/L是相对下界的差距，与Gurobi原生MIPGap分开。固定K的solver_status=2说明该K可行，整个装箱问题的最优性由外层optimal及证据共同判断。
