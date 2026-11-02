@@ -1,0 +1,206 @@
+{
+  "stage": "pipeline_pilot",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "gurobi": [
+    13,
+    0,
+    3
+  ],
+  "time_limit": 300,
+  "timing_repetitions": 3,
+  "heuristic_timing": "median of calls; sorting included, checker excluded",
+  "upper_bound_timing": "sum of first call times of all six heuristics",
+  "milp_timing": "upper_bound_seconds + mip_total_seconds",
+  "instance_sha256": {
+    "real_m12_w2_3_n40": "14f2b8f4ffbd46eaff555cead174604f8101a57a1fad2e0a24d6cbc857d51c16",
+    "real_m12_w1_2_n1000": "80022fa1f4f65b9fa7e6a8934b4fc9ec4738986e5825314934eaec7617760c77",
+    "synthetic_v2_a10_s0_n100": "8b668825dcc843b60979098b658b7fc5b1050473641d58107f3d2b693de92721",
+    "synthetic_v2_a20_s0_n100": "185a639cdff6bf4933e7ad9600a7ca357fe83a7b23d14380e0c9ad2d8111a6e5",
+    "synthetic_v2_a30_s0_n100": "48926bed38e4b897e036e9e2b2b07db17916850225b7195a00661da900ccf1e4",
+    "synthetic_v2_a40_s0_n100": "bc56f075f9c5ce6d2941d320c59c37557d8474023d5cea19ad85a1947e77ea54",
+    "synthetic_v2_a50_s0_n100": "1f4bb9dae9b6b963f5b7315b59c066968a9d0642aedca14be5becd55d6361485"
+  },
+  "mip_details": {
+    "real_m12_w2_3_n40": {
+      "initial_host_count": 8,
+      "objective": 8,
+      "bound": 8,
+      "solver_status": 2,
+      "solver_bound": 8.0,
+      "solver_gap": 0.0,
+      "type_count": 5,
+      "count_variables": 40,
+      "binary_variables": 8,
+      "prep_seconds": 0.00039160000005722395,
+      "build_seconds": 0.010330700000395154,
+      "solve_seconds": 0.0010001659393310547,
+      "optimal": true,
+      "stop_reason": "optimal",
+      "proof_source": "solver_optimal",
+      "gap_to_bound": 0.0,
+      "total_seconds": 0.012344499999926484
+    },
+    "real_m12_w1_2_n1000": {
+      "initial_host_count": 134,
+      "objective": 134,
+      "bound": 134,
+      "solver_status": 2,
+      "solver_bound": 134.0,
+      "solver_gap": 0.0,
+      "type_count": 29,
+      "count_variables": 3886,
+      "binary_variables": 134,
+      "prep_seconds": 0.012488500000017666,
+      "build_seconds": 0.019546900000023015,
+      "solve_seconds": 0.006000041961669922,
+      "optimal": true,
+      "stop_reason": "optimal",
+      "proof_source": "solver_optimal",
+      "gap_to_bound": 0.0,
+      "total_seconds": 0.05676339999990887
+    },
+    "synthetic_v2_a10_s0_n100": {
+      "initial_host_count": 66,
+      "objective": 66,
+      "bound": 66,
+      "optimal": true,
+      "proof_source": "fixed_k_infeasible",
+      "stop_reason": "optimal",
+      "gap_to_bound": 0.0,
+      "solve_seconds": 0.003999948501586914,
+      "total_seconds": 0.010355899999922258,
+      "trials": [
+        {
+          "k": 65,
+          "feasible": false,
+          "solver_status": 3,
+          "reason": "solver_infeasible",
+          "candidate_count": 694,
+          "solve_seconds": 0.003999948501586914,
+          "total_seconds": 0.008905299999696581,
+          "lower_before": 65,
+          "upper_before": 66,
+          "lower_after": 66,
+          "upper_after": 66
+        }
+      ]
+    },
+    "synthetic_v2_a20_s0_n100": {
+      "initial_host_count": 63,
+      "objective": 63,
+      "bound": 63,
+      "optimal": true,
+      "proof_source": "fixed_k_infeasible",
+      "stop_reason": "optimal",
+      "gap_to_bound": 0.0,
+      "solve_seconds": 0.003000020980834961,
+      "total_seconds": 0.00864369999999326,
+      "trials": [
+        {
+          "k": 62,
+          "feasible": false,
+          "solver_status": 3,
+          "reason": "solver_infeasible",
+          "candidate_count": 728,
+          "solve_seconds": 0.003000020980834961,
+          "total_seconds": 0.007160300000123243,
+          "lower_before": 61,
+          "upper_before": 63,
+          "lower_after": 63,
+          "upper_after": 63
+        }
+      ]
+    },
+    "synthetic_v2_a30_s0_n100": {
+      "initial_host_count": 60,
+      "objective": 59,
+      "bound": 59,
+      "optimal": true,
+      "proof_source": "fixed_k_infeasible",
+      "stop_reason": "optimal",
+      "gap_to_bound": 0.0,
+      "solve_seconds": 0.02700018882751465,
+      "total_seconds": 0.035080699999980425,
+      "trials": [
+        {
+          "k": 59,
+          "feasible": true,
+          "solver_status": 2,
+          "reason": "solution_found",
+          "candidate_count": 688,
+          "solve_seconds": 0.018000125885009766,
+          "total_seconds": 0.023437600000306702,
+          "lower_before": 57,
+          "upper_before": 60,
+          "lower_after": 57,
+          "upper_after": 59
+        },
+        {
+          "k": 58,
+          "feasible": false,
+          "solver_status": 3,
+          "reason": "solver_infeasible",
+          "candidate_count": 645,
+          "solve_seconds": 0.009000062942504883,
+          "total_seconds": 0.010175999999773921,
+          "lower_before": 57,
+          "upper_before": 59,
+          "lower_after": 59,
+          "upper_after": 59
+        }
+      ]
+    },
+    "synthetic_v2_a40_s0_n100": {
+      "initial_host_count": 58,
+      "objective": 58,
+      "bound": 58,
+      "optimal": true,
+      "proof_source": "fixed_k_infeasible",
+      "stop_reason": "optimal",
+      "gap_to_bound": 0.0,
+      "solve_seconds": 0.0,
+      "total_seconds": 0.006106199999976525,
+      "trials": [
+        {
+          "k": 57,
+          "feasible": false,
+          "solver_status": 3,
+          "reason": "solver_infeasible",
+          "candidate_count": 642,
+          "solve_seconds": 0.0,
+          "total_seconds": 0.004630500000075699,
+          "lower_before": 57,
+          "upper_before": 58,
+          "lower_after": 58,
+          "upper_after": 58
+        }
+      ]
+    },
+    "synthetic_v2_a50_s0_n100": {
+      "initial_host_count": 58,
+      "objective": 58,
+      "bound": 58,
+      "optimal": true,
+      "proof_source": "fixed_k_infeasible",
+      "stop_reason": "optimal",
+      "gap_to_bound": 0.0,
+      "solve_seconds": 0.0,
+      "total_seconds": 0.0061826000001019565,
+      "trials": [
+        {
+          "k": 57,
+          "feasible": false,
+          "solver_status": 3,
+          "reason": "solver_infeasible",
+          "candidate_count": 639,
+          "solve_seconds": 0.0,
+          "total_seconds": 0.004744099999697937,
+          "lower_before": 57,
+          "upper_before": 58,
+          "lower_after": 58,
+          "upper_after": 58
+        }
+      ]
+    }
+  }
+}

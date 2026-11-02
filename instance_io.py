@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-# 当前模块所在的项目目录，不依赖终端当前在哪个文件夹。
+# 当前模块所在的项目目录，不依赖终端当前在哪个文件夹。I/O表示input/output（输入/输出）。
 ROOT = Path(__file__).resolve().parent
 INSTANCE_DIR = ROOT / "data" / "instances" / "real_small"
 RESULT_DIR = ROOT / "results"

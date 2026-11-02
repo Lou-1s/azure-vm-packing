@@ -1,280 +1,231 @@
 import csv
-import math
 import sys
-from hashlib import sha256       # 生成文件内容指纹。
+from hashlib import sha256
+from statistics import median
 from time import perf_counter
+
 import gurobipy as gp
-from gurobipy import GRB
 
 from instance_io import ROOT, RESULT_DIR, load_instance, write_json
 from packing_algorithms import (
-    first_fit,
-    best_fit,
-    first_fit_decreasing,
-    best_fit_decreasing,
-    dot_product,
-    first_fit_decreasing_sum,
+    first_fit, best_fit, first_fit_decreasing,
+    first_fit_decreasing_sum, best_fit_decreasing, dot_product,
 )
-from milp_solver import solve_milp
+from milp_solver import solve_synthetic_milp, solve_aggregated_milp
 from solution_checker import check_solution
-from statistics import median  # Python自带，用于计算中位数。
 
-# # 保存函数本身，循环中再调用。
-# methods = [
-#     ("FF", first_fit),
-#     ("BF", best_fit),
-#     ("FFD-max", first_fit_decreasing),
-#     ("BFD", best_fit_decreasing),
-#     ("DP", dot_product),
-#     ("FFD-sum", first_fit_decreasing_sum),
-# ]
 
-# DATASET = "real_large"
-# TIME_LIMIT = 30
-# 旧三组合成实验已清理；新alpha实验完成后再接入对应配置。
-DATASET = "real_large"
-TIME_LIMIT = 30
+TIME_LIMIT = 300
+REPEATS = 3
+RESULT_PREFIX = "pilot_v2"
 
-# 真实数据默认使用这个文件名模式。
-file_pattern = "real_m12_*.json"
-
-methods = [
+# 保存函数本身，在循环中调用。
+METHODS = [
     ("FF", first_fit),
     ("BF", best_fit),
     ("FFD-max", first_fit_decreasing),
-    ("BFD", best_fit_decreasing),
+    ("FFD-sum", first_fit_decreasing_sum),
+    ("BFD-max", best_fit_decreasing),
     ("DP", dot_product),
 ]
 
-if DATASET == "real_small":
-    expected_instances = 9
-    run_milp = True
-    repeats = 1
-    result_prefix = "small_real"
-    methods.append(("FFD-sum", first_fit_decreasing_sum))
-elif DATASET == "real_large":
-    expected_instances = 6
-    run_milp = False
-    repeats = 3
-    result_prefix = "large_real"
-else:
-    raise ValueError("Unknown dataset")
-
-INSTANCE_DIR = ROOT / "data" / "instances" / DATASET
-
-# CSV 列名及排列顺序。
-fields = [
-    "instance_id", "n", "method", "host_count", "valid", "seconds",
-    "prep_seconds", "model_seconds", "solve_seconds",
-    "solver_status", "sol_count", "lower_bound", "solver_gap", "gap_to_opt",
+FIELDS = [
+    "instance_id", "source", "n", "alpha", "seed", "method",
+    "host_count", "valid", "seconds", "upper_bound_seconds",
+    "mip_total_seconds", "solve_seconds", "lower_bound", "optimum",
+    "ratio_to_opt", "gap_to_opt", "hit_optimum",
+    "ratio_to_bound", "gap_to_bound", "proof_source", "stop_reason",
+    "solver_status", "solver_gap",
 ]
 
-# # 只读取这个目录中硬件 12 的真实小实例。
-# paths = sorted(INSTANCE_DIR.glob("real_m12_*.json"))
-# if len(paths) != 9:
-#     raise ValueError("Expected 9 saved real-small instances")
-# paths = sorted(INSTANCE_DIR.glob("real_m12_*.json"))
-paths = sorted(INSTANCE_DIR.glob(file_pattern))
-if len(paths) != expected_instances:
-    raise ValueError("Saved instance count mismatch")
 
-# rows	当前实例的七条汇总结果
-# all_rows	九个实例的全部 63 条汇总结果
-# placements	每个实例、每种方法的完整主机分组
-# metadata	软件版本、时限、计时规则和实例指纹
-all_rows = []
-placements = {}
-# metadata = {
-#     "python": sys.version,
-#     "gurobi": gp.gurobi.version(),
-#     "time_limit": TIME_LIMIT,
-#     "timing_repetitions": 1,
-#     "heuristic_timing": "function call, including sorting; excludes checker",
-#     "milp_timing": "six heuristic calls plus model_seconds; excludes checker",
-#     "instance_sha256": {},
-# }
-metadata = {
-    "python": sys.version,
-    "gurobi": gp.gurobi.version(),
-    "time_limit": TIME_LIMIT,
-    "dataset": DATASET,
-    "run_milp": run_milp,
-    "timing_repetitions": repeats,
-    "heuristic_timing":
-        "median of timed function calls, including sorting; excludes checker",
-    "milp_timing":
-        "sum of upper-bound heuristic call times plus model_seconds; excludes checker",
-    "instance_sha256": {},
-}
+def measure_heuristic(algorithm, requests):
+    times = []
+    first_hosts = None
+    first_seconds = None
 
-for path in paths:
-    instance = load_instance(path)
+    for repeat in range(REPEATS):
+        started = perf_counter()
+        hosts = algorithm(requests)
+        elapsed = perf_counter() - started
+
+        # 每次检查均在算法计时之外。
+        valid, message = check_solution(requests, hosts)
+        if not valid:
+            raise ValueError(message)
+
+        times.append(elapsed)
+        if repeat == 0:
+            first_hosts = hosts
+            first_seconds = elapsed
+
+    # 第一遍方案用于产生初解；三遍中位数用于比较算法耗时。
+    return first_hosts, median(times), first_seconds
+
+
+def evaluate_instance(instance):
     requests = instance["requests"]
-    instance_id = instance["instance_id"]
-
     rows = []
-    placements[instance_id] = {}
-
-    # 记录文件内容指纹，便于确认结果对应哪份实例。
-    metadata["instance_sha256"][instance_id] = sha256(
-        path.read_bytes()
-    ).hexdigest()
-
-    prep_seconds = 0
+    placements = {}
     best_hosts = None
+    upper_bound_seconds = 0
 
-    # 每个元组中的两项分别交给 name 和 algorithm。
-    for name, algorithm in methods:
-        # started = perf_counter()
-        # hosts = algorithm(requests)
-        # seconds = perf_counter() - started
-
-        # # 检查器放在计时之外。
-        # valid, message = check_solution(requests, hosts)
-        # if not valid:
-        #     raise ValueError(name + ": " + message)
-        times = []
-
-        # 每次调用独立计时；检查器仍在计时之外。
-        for repeat in range(repeats):
-            started = perf_counter()
-            hosts = algorithm(requests)
-            elapsed = perf_counter() - started
-
-            valid, message = check_solution(requests, hosts)
-            if not valid:
-                raise ValueError(name + ": " + message)
-
-            times.append(elapsed)
-
-        seconds = median(times)
-
-        prep_seconds += seconds
-
-        if best_hosts is None:
-            best_hosts = hosts
-        elif len(hosts) < len(best_hosts):
-            best_hosts = hosts
+    for name, algorithm in METHODS:
+        hosts, seconds, first_seconds = measure_heuristic(
+            algorithm, requests
+        )
+        upper_bound_seconds += first_seconds
+        placements[name] = hosts
 
         rows.append({
-            "instance_id": instance_id,
-            "n": len(requests),
             "method": name,
             "host_count": len(hosts),
-            "valid": valid,
+            "valid": True,
             "seconds": seconds,
         })
-        placements[instance_id][name] = hosts
 
-    # milp = solve_milp(requests, best_hosts, time_limit=TIME_LIMIT)
+        # 台数相同时保留先得到的方案。
+        if best_hosts is None or len(hosts) < len(best_hosts):
+            best_hosts = hosts
 
-    # host_count = None
-    # valid = None
-    # if milp["hosts"] is not None:
-    #     valid, message = check_solution(requests, milp["hosts"])
-    #     if not valid:
-    #         raise ValueError("MILP: " + message)
-    #     host_count = len(milp["hosts"])
+    # 两条MIP路径都接收当前最好有效初解。
+    if instance["source"] == "synthetic":
+        mip = solve_synthetic_milp(
+            requests, best_hosts, time_limit=TIME_LIMIT
+        )
+    else:
+        mip = solve_aggregated_milp(
+            requests, best_hosts, time_limit=TIME_LIMIT
+        )
 
-    # rows.append({
-    #     "instance_id": instance_id,
-    #     "n": len(requests),
-    #     "method": "MILP",
-    #     "host_count": host_count,
-    #     "valid": valid,
-    #     # MILP 的计算时间包含产生候选上界所需的六次算法调用。
-    #     "seconds": prep_seconds + milp["model_seconds"],
-    #     "prep_seconds": prep_seconds,
-    #     "model_seconds": milp["model_seconds"],
-    #     "solve_seconds": milp["solve_seconds"],
-    #     "solver_status": milp["status"],
-    #     "sol_count": milp["sol_count"],
-    #     "solver_gap": milp["gap"],
-    # })
-    # placements[instance_id]["MILP"] = milp["hosts"]
+    valid, message = check_solution(requests, mip["hosts"])
+    if not valid:
+        raise ValueError("MILP: " + message)
 
-    # # 没有有限下界时留空。
-    # bound = None
-    # if math.isfinite(milp["bound"]):
-    #     bound = milp["bound"]
+    placements["MILP"] = mip["hosts"]
+    rows.append({
+        "method": "MILP",
+        "host_count": mip["objective"],
+        "valid": True,
+        "seconds": upper_bound_seconds + mip["total_seconds"],
+        "upper_bound_seconds": upper_bound_seconds,
+        "mip_total_seconds": mip["total_seconds"],
+        "solve_seconds": mip["solve_seconds"],
+        "proof_source": mip["proof_source"],
+        "stop_reason": mip["stop_reason"],
+        # 合成外层没有单一Gurobi状态，各次状态保存在trials。
+        "solver_status": mip.get("solver_status"),
+        "solver_gap": mip.get("solver_gap"),
+    })
 
-    # optimum = None
-    # if milp["status"] == GRB.OPTIMAL and milp["hosts"] is not None:
-    #     optimum = len(milp["hosts"])
-
-    # 未求最优值时保持 None。
-    bound = None
-    optimum = None
-
-    if run_milp:
-        milp = solve_milp(requests, best_hosts, time_limit=TIME_LIMIT)
-
-        host_count = None
-        valid = None
-        if milp["hosts"] is not None:
-            valid, message = check_solution(requests, milp["hosts"])
-            if not valid:
-                raise ValueError("MILP: " + message)
-            host_count = len(milp["hosts"])
-
-        rows.append({
-            "instance_id": instance_id,
-            "n": len(requests),
-            "method": "MILP",
-            "host_count": host_count,
-            "valid": valid,
-            "seconds": prep_seconds + milp["model_seconds"],
-            "prep_seconds": prep_seconds,
-            "model_seconds": milp["model_seconds"],
-            "solve_seconds": milp["solve_seconds"],
-            "solver_status": milp["status"],
-            "sol_count": milp["sol_count"],
-            "solver_gap": milp["gap"],
-        })
-        placements[instance_id]["MILP"] = milp["hosts"]
-
-        if math.isfinite(milp["bound"]):
-            bound = milp["bound"]
-
-        if milp["status"] == GRB.OPTIMAL and milp["hosts"] is not None:
-            optimum = len(milp["hosts"])
+    bound = mip["bound"]
+    optimum = mip["objective"] if mip["optimal"] else None
 
     for row in rows:
-        row["lower_bound"] = bound
-        row["gap_to_opt"] = None
+        # update将这些键值加入原字典；同名键会被覆盖。
+        row.update({
+            "instance_id": instance["instance_id"],
+            "source": instance["source"],
+            "n": len(requests),
+            "alpha": instance.get("alpha"),
+            "seed": instance.get("seed"),
+            "lower_bound": bound,
+            "optimum": optimum,
+            "ratio_to_opt": None,
+            "gap_to_opt": None,
+            "hit_optimum": None,
+            "ratio_to_bound": row["host_count"] / bound,
+            "gap_to_bound": (row["host_count"] - bound) / bound,
+        })
 
-        # 只有已证明最优，才计算相对最优值的差距。
-        if optimum is not None and row["host_count"] is not None:
+        # 只有证明最优，才计算与OPT有关的指标。
+        if optimum is not None:
+            row["ratio_to_opt"] = row["host_count"] / optimum
             row["gap_to_opt"] = (
                 row["host_count"] - optimum
             ) / optimum
+            row["hit_optimum"] = row["host_count"] == optimum
 
-    # 把这一批的各个结果行加入总列表。
-    all_rows += rows
-    print(instance_id, "| Rows:", len(rows), "| Optimum:", optimum)
+    # 分组单独保存；其余模型字段保留，包括固定K的trials。
+    details = {
+        key: value for key, value in mip.items()
+        if key != "hosts"
+    }
+    return rows, placements, details
 
-# 全部实例运行成功后，集中写入结果。
-RESULT_DIR.mkdir(parents=True, exist_ok=True)
-# csv_path = RESULT_DIR / "small_real.csv"
-csv_path = RESULT_DIR / f"{result_prefix}.csv"
 
-# 缺少的键和 None 会写为空字段
-with csv_path.open("w", newline="", encoding="utf-8-sig") as file:
-    writer = csv.DictWriter(file, fieldnames=fields)
-    writer.writeheader()
-    writer.writerows(all_rows)
+def main():
+    paths = [
+        ROOT / "data/instances/real_small/real_m12_w2_3_n40.json",
+        ROOT / "data/instances/real_large/real_m12_w1_2_n1000.json",
+    ] + [
+        ROOT / "data/instances/synthetic_alpha"
+        / f"synthetic_v2_a{percent}_s0_n100.json"
+        for percent in (10, 20, 30, 40, 50)
+    ]
 
-# # 保存完整分组；不直接保存可能含 -inf 的整个求解结果字典。
-# write_json(RESULT_DIR / "small_real_placements.json", placements)
-# write_json(RESULT_DIR / "small_real_metadata.json", metadata)
-write_json(
-    RESULT_DIR / f"{result_prefix}_placements.json",
-    placements,
-)
-write_json(
-    RESULT_DIR / f"{result_prefix}_metadata.json",
-    metadata,
-)
+    all_rows = []
+    all_placements = {}
 
-print("Saved:", csv_path, "| Rows:", len(all_rows))
-# CSV 适合查看平整的行列表格，JSON 适合保存“实例 → 方法 → 主机 → 请求”这种多层结构
+    metadata = {
+        "stage": "pipeline_pilot",
+        "python": sys.version,
+        "gurobi": gp.gurobi.version(),
+        "time_limit": TIME_LIMIT,
+        "timing_repetitions": REPEATS,
+        "heuristic_timing":
+            "median of calls; sorting included, checker excluded",
+        "upper_bound_timing":
+            "sum of first call times of all six heuristics",
+        "milp_timing":
+            "upper_bound_seconds + mip_total_seconds",
+        "instance_sha256": {},
+        "mip_details": {},
+    }
+
+    for path in paths:
+        instance = load_instance(path)
+        instance_id = instance["instance_id"]
+        rows, placements, details = evaluate_instance(instance)
+
+        all_rows.extend(rows)
+        all_placements[instance_id] = placements
+        metadata["instance_sha256"][instance_id] = sha256(
+            path.read_bytes()
+        ).hexdigest()
+        metadata["mip_details"][instance_id] = details
+
+        print(
+            instance_id,
+            "| Rows:", len(rows),
+            "| Best:", details["objective"],
+            "| LB:", details["bound"],
+            "| Optimal:", details["optimal"],
+        )
+
+    RESULT_DIR.mkdir(parents=True, exist_ok=True)
+    csv_path = RESULT_DIR / f"{RESULT_PREFIX}.csv"
+
+    with csv_path.open("w", newline="", encoding="utf-8-sig") as file:
+        writer = csv.DictWriter(file, fieldnames=FIELDS)
+        writer.writeheader()
+        writer.writerows(all_rows)
+
+    write_json(
+        RESULT_DIR / f"{RESULT_PREFIX}_placements.json",
+        all_placements,
+    )
+    write_json(
+        RESULT_DIR / f"{RESULT_PREFIX}_metadata.json",
+        metadata,
+    )
+
+    print(
+        "Saved:", csv_path.name,
+        "| Instances:", len(paths),
+        "| Rows:", len(all_rows),
+    )
+
+
+if __name__ == "__main__":
+    main()

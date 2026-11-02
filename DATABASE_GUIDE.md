@@ -274,6 +274,13 @@ result["gap"] = None           # 修改该键对应的值；None 表示暂时没
 
 字典用 `{}`，每项是 `键: 值`，各项之间用逗号分开。`result["objective"]` 按名称取值；键名必须与保存时一致。
 
+```python
+alpha = instance.get("alpha")  # 没有alpha这个键时返回None，不抛出KeyError
+row.update({"lower_bound": 58, "optimum": None})  # 加入或覆盖这些键值
+```
+
+get只读取；update直接修改原字典，不需要把它的返回值重新赋给row。
+
 函数定义中的 `time_limit=30` 指定默认值：调用时省略它就用 30，写 `time_limit=0` 则用 0。它与调用时的关键字参数写法相似，但默认值在定义函数时指定。
 
 ### 9. 测量耗时
@@ -794,3 +801,19 @@ positions[t] = end
 整数变量的.X仍是浮点数，round后转为Python整数。positions[t]记录第t组已经取走多少条；列表[begin:end]包含begin、不包含end；extend将这些记录逐条加入主机列表。每次推进位置，恢复后再由检查器核对ID、次数和容量。
 
 参数Threads=1使用一个求解线程；Method=1为根节点松弛选择对偶单纯形；SoftMemLimit=2.0设置Gurobi约2GB软内存限额，停止后仍可读取已有解。[Gurobi参数说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/parameters.html#parameter:SoftMemLimit)
+
+### 10. 实验结果中的质量与计时
+
+A是算法使用的主机数，OPT是已证明最优值，L是有效下界。
+
+| 字段 | 计算方法 |
+|---|---|
+| ratio_to_opt | A/OPT，越接近1越好 |
+| gap_to_opt | (A-OPT)/OPT |
+| hit_optimum | A是否等于OPT；已知最优实例上的True比例为命中率 |
+| ratio_to_bound | A/L，是相对下界的比值 |
+| gap_to_bound | (A-L)/L |
+
+只有证优后才填写optimum及前三个指标，否则保存None，在CSV中为空字段。ratio_to_bound在OPT未知时仍能计算，不能将下界冒充最优值。
+
+启发式seconds为三次函数调用耗时的中位数。upper_bound_seconds累计各方法第一遍调用的实际耗时，对应产生初始上界；mip_total_seconds为MIP封装函数全程，solve_seconds仅为Gurobi优化时间。MILP行seconds为upper_bound_seconds+mip_total_seconds；其他重复调用只用于测量启发式时间，不再次计入初解生成。
