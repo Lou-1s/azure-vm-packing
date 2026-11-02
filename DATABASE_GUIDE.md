@@ -499,6 +499,17 @@ print(before)           # [1, 2]
 
 list(values)创建的是浅复制：外层列表独立，元素仍是原来的元素。请求记录使用不可修改的元组时，可用list(small)记录调用前的列表内容，再与调用后的small比较。
 
+### 21. append与extend
+
+```python
+hosts = [["VM0"]]
+bunch = [["VM1"], ["VM2"]]
+hosts.extend(bunch)
+print(hosts)  # [["VM0"], ["VM1"], ["VM2"]]
+```
+
+append把传入对象作为一个元素加入；extend把传入列表中的元素逐个加入。收集主机组时，每个元素是一台主机，因此用all_hosts.extend(bunch["hosts"])把组内各台主机加入总列表。
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
