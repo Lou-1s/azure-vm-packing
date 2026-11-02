@@ -470,6 +470,35 @@ vm_id in originals判断字典中是否有这个键；vm_id in assigned_ids判�
 
 缓存FF/BF省去反复求和，仍需扫描候选主机，最坏时间仍可达到O(n²)。字典/集合检查器在正常哈希查找下随请求数近似线性增长。
 
+### 19. 二分试探、负无穷与空列表
+
+```python
+middle = (left + right) // 2  # //返回向下取整的商，例如5 // 2为2
+best_score = float("-inf")   # 负无穷，任何有限评分都比它大
+used_hosts = [host for host in hosts if host]  # 只保留非空主机
+```
+
+空列表在条件中为False，因此while remaining表示还有未处理项时继续。函数返回None不会自动抛异常；调用处可以判断结果并选择后续操作。检查器返回(False,原因)时也只是返回结果，由调用处的raise决定是否抛错。
+
+MB试放的None表示这次贪心未放完，并不证明给定主机数不可行。MIP固定K函数的feasible=False则表示已由预处理或求解器证明不可行。MB二分中的left是搜索位置，不能当作新的最优下界。
+
+### 20. 列表参数与浅复制
+
+```python
+def append_item(items, item):
+    items.append(item)  # 修改传入的列表
+
+values = [1, 2]
+before = list(values)   # 新建一份列表，内容先与values相同
+append_item(values, 3)
+print(values)           # [1, 2, 3]
+print(before)           # [1, 2]
+```
+
+函数收到列表后，append等操作会作用于调用处传入的那个列表。KK子过程kk_place(host, load, request)因此能同时更新主机和负载；它没有return语句，默认返回None。
+
+list(values)创建的是浅复制：外层列表独立，元素仍是原来的元素。请求记录使用不可修改的元组时，可用list(small)记录调用前的列表内容，再与调用后的small比较。
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
