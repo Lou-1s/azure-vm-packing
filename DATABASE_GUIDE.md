@@ -510,6 +510,46 @@ print(hosts)  # [["VM0"], ["VM1"], ["VM2"]]
 
 append把传入对象作为一个元素加入；extend把传入列表中的元素逐个加入。收集主机组时，每个元素是一台主机，因此用all_hosts.extend(bunch["hosts"])把组内各台主机加入总列表。
 
+### 22. deque：从队首取出和放回
+
+```python
+from collections import deque
+
+queue = deque([10, 11, 12])
+print(queue[0])          # 10：只查看队首
+request = queue.popleft()  # 取出并删除队首10，队列变成[11, 12]
+queue.appendleft(10)    # 从左边放回10，恢复[10, 11, 12]
+```
+
+deque是双端队列，适合反复从头部取数据；列表的pop(0)每次需要移动后续元素。KK用它处理剩余小请求。while queue表示队列不为空时继续。
+
+一次放回多条时，要保持原次序：
+
+```python
+queue = deque([20, 21])
+returned = [10, 11]
+for request in reversed(returned):  # 先11，后10
+    queue.appendleft(request)
+print(list(queue))                 # [10, 11, 20, 21]
+```
+
+reversed返回反向遍历次序，不修改returned；如果直接按10、11依次appendleft，队首会变成11、10。
+
+### 23. 展开嵌套列表与字典
+
+```python
+hosts = [[10, 11], [12]]
+requests = [request for host in hosts for request in host]
+print(requests)  # [10, 11, 12]
+
+info = {"paired_groups": 1}
+details = {**info, "small_actions": ["merge_one"]}
+```
+
+两个for依次遍历“主机列表里的每台主机、该主机里的每条请求”，将两层列表展开成一层。字典中的**info将info的键值加入新字典，再补上small_actions；不修改原info。
+
+KK默认调用hosts = kellerer_kotov(requests)，只得到分组；写hosts, info = kellerer_kotov(requests, return_info=True)，才同时得到分组和分支记录。调用处接收几个值，要与所选返回形式一致。
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
