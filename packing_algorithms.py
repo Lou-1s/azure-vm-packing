@@ -12,71 +12,73 @@ def resource_totals(requests):
 
 
 def first_fit(requests):
-    # hosts 是主机列表；其中每个 host 又是放到该主机上的请求列表。
     hosts = []
+    loads = []  # loads[j]保存hosts[j]的[CPU总量, 内存总量]。
 
     for request in requests:
-        # 每处理一条新请求，重新记录它是否已经找到位置。
         placed = False
 
-        for host in hosts:
-            # 按开启顺序检查已有主机，用两个变量接收当前的资源总量。
-            cpu_total, memory_total = resource_totals(host)
+        for j, host in enumerate(hosts):
+            cpu_total, memory_total = loads[j]
 
-            # 两种资源都不能超容量；1e-9 是处理浮点舍入误差的微小容差。
             fits = (
                 cpu_total + request[3] <= 1 + 1e-9
                 and memory_total + request[4] <= 1 + 1e-9
             )
 
             if fits:
-                # append 直接把请求加进原来的 host 列表。
                 host.append(request)
+
+                # 同步更新该主机的负载缓存。
+                loads[j][0] += request[3]
+                loads[j][1] += request[4]
+
                 placed = True
-                # 找到第一个可放主机就退出内层循环，继续处理下一条请求。
                 break
 
         if not placed:
-            # 全部已有主机都放不下，才新增一台；[request] 表示它的首条请求。
             hosts.append([request])
+            loads.append([request[3], request[4]])
 
     return hosts
 
+
 def best_fit(requests):
     hosts = []
+    loads = []
 
     for request in requests:
-        # None 表示尚未找到可用主机；初始分数 3 大于可行主机的剩余份额和。
-        best_host = None
+        # None表示还没选中；0表示选中第一台主机。
+        best_index = None
         best_score = 3
 
-        for host in hosts:
-            cpu_total, memory_total = resource_totals(host)
-
+        for j, (cpu_total, memory_total) in enumerate(loads):
             fits = (
                 cpu_total + request[3] <= 1 + 1e-9
                 and memory_total + request[4] <= 1 + 1e-9
             )
 
             if fits:
-                # 先算“放入之后”的两种剩余份额；本项目选两者之和最小的主机。
                 remaining_cpu = 1 - cpu_total - request[3]
                 remaining_memory = 1 - memory_total - request[4]
                 score = remaining_cpu + remaining_memory
 
+                # 同分时仍保留较早开启的主机。
                 if score < best_score:
-                    # 只在严格更小时更新；分数相同就保留先检查到的主机。
-                    # best_host 指向原 hosts 中的那个列表，不是另建一个主机副本。
-                    best_host = host
+                    best_index = j
                     best_score = score
 
-        if best_host is None:
-            # is None 判断是否仍没有找到可行主机。
+        if best_index is None:
             hosts.append([request])
+            loads.append([request[3], request[4]])
         else:
-            best_host.append(request)
+            # 比较完所有候选后，只更新选中的主机。
+            hosts[best_index].append(request)
+            loads[best_index][0] += request[3]
+            loads[best_index][1] += request[4]
 
     return hosts
+
 
 def decreasing_key(request):
     # sorted 默认升序；给 max(CPU, 内存) 加负号，就实现主资源份额降序。

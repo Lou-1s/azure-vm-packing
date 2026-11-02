@@ -415,6 +415,7 @@ for j, i in enumerate([3, 2]):
 
 anchored = set([3, 2])   # 集合，用于快速判断元素是否存在
 print(3 in anchored)     # True
+anchored.add(4)          # 集合用add加入元素；重复加入不会产生第二份
 
 print(all(x > 0 for x in [0.4, 0.7]))  # True：每一项都必须满足
 ```
@@ -441,6 +442,33 @@ resource_bound = math.ceil(cpu_total / (1 + 1e-9))
 ```
 
 fsum对浮点数求和，减少累计舍入误差；ceil向上取整，例如ceil(2.1)=3。这里除以检查器采用的单机容量1+1e-9，再取整得到CPU资源下界；实际下界还要与内存、团下界取最大值。[math文档](https://docs.python.org/3.12/library/math.html)
+
+### 18. 缓存主机负载与按ID查找
+
+缓存是保存已经算出的结果，后续直接读取，数据变化时同步更新。
+
+```python
+hosts = [[request_a], [request_b]]
+loads = [[request_a[3], request_a[4]],
+         [request_b[3], request_b[4]]]
+
+hosts[0].append(request_c)
+loads[0][0] += request_c[3]  # CPU总量
+loads[0][1] += request_c[4]  # 内存总量
+```
+
+hosts[j]与loads[j]描述同一台主机：前者保存请求，后者保存两项资源总量。loads[j][0]、[1]是缓存中的CPU、内存，与五字段请求的[3]、[4]分别对应。检查候选主机时直接读缓存；选中后更新该主机的列表和两项总量。
+
+```python
+originals = {request[0]: request for request in requests}
+original = originals[vm_id]  # 用ID直接取完整记录
+assigned_ids = set()
+assigned_ids.add(vm_id)
+```
+
+vm_id in originals判断字典中是否有这个键；vm_id in assigned_ids判断集合中是否有这个元素。它们通常无需像列表查找那样逐项扫描。检查器仍逐条核对完整记录、放置次数和资源容量，不使用算法内部的负载缓存。
+
+缓存FF/BF省去反复求和，仍需扫描候选主机，最坏时间仍可达到O(n²)。字典/集合检查器在正常哈希查找下随请求数近似线性增长。
 
 ## 四、SQLite 与 SQL
 
