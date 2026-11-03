@@ -550,6 +550,47 @@ details = {**info, "small_actions": ["merge_one"]}
 
 KK默认调用hosts = kellerer_kotov(requests)，只得到分组；写hosts, info = kellerer_kotov(requests, return_info=True)，才同时得到分组和分支记录。调用处接收几个值，要与所选返回形式一致。
 
+### 24. 脚本入口、独立进程与运行预算
+
+```python
+if __name__ == "__main__":
+    main()
+```
+
+直接运行这个文件时，Python将__name__设为"__main__"，因此调用main()；其他文件import它时，这部分不会自动执行。效率脚本需要此写法，避免工作进程导入模块时又启动整批测试。
+
+subprocess.Popen(程序参数列表)启动另一个进程，并返回代表该进程的对象；父程序可以继续运行并监督它。
+
+| 写法 | 用途 |
+|---|---|
+| process.poll() | 运行中返回None；已结束则返回退出码，0通常表示正常结束 |
+| process.kill() | 结束这个工作进程，不是删除文件 |
+| process.wait() | 等待工作进程结束，并取回退出码 |
+| tempfile.TemporaryDirectory() | 创建临时目录；离开with块后自动清理 |
+| time.sleep(0.05) | 当前程序暂停0.05秒，避免监督循环一直占用CPU |
+
+本项目效率脚本用CPython的sys._base_executable启动虚拟环境背后的实际Python程序，再通过PYTHONPATH传入依赖搜索路径。这样在Windows上监督的是实际计算进程，而不是虚拟环境的转发程序。脚本读取Windows私有内存，每0.05秒采样一次；这是采样式保护，不是操作系统硬内存上限。
+
+run_once(path, method, time_limit=60, memory_mib=2048)运行某个实例上的一种方法一次。path是实例JSON路径，method是"FF"、"KK2003"等名称；后两个参数分别是算法秒数预算和内存MiB预算。返回字典中的status说明完成或终止原因。
+
+| 效率结果字段 | 含义 |
+|---|---|
+| status=completed | 本次或要求的全部重复已完成，并通过独立检查 |
+| status=time_budget / memory_budget | 达到时间或采样内存预算后终止 |
+| seconds | 单次成功算法耗时；汇总表中为全部规定重复完成后的中位数，失败时留空 |
+| algorithm_elapsed_seconds | 工作进程若已算完，保留实际计算耗时供诊断；超预算不能当成成功耗时 |
+| wall_seconds_total | 汇总表中所有实际尝试的外部耗时之和，含启动、读取、检查和清理 |
+| completed_repeats / required_repeats | 已成功次数 / 要求次数；例如1/3不报告三次中位数 |
+| peak_private_mib | 各次调用中采样观察到的最大私有内存，单位MiB |
+
+某一遍失败后停止该方法的后续重复。先前成功的完整方案仍可提供台数，但计时不完整时seconds留空。算法耗时与进程外部耗时口径不同，不能直接混作同一指标。
+
+命令行中的--output-dir是脚本自己定义的参数名，由argparse读取；例如：
+
+```powershell
+python .\benchmark_heuristics.py --output-dir ".\results\efficiency_check"
+```
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库

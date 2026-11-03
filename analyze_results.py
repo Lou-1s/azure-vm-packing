@@ -3,7 +3,12 @@ import csv
 from instance_io import RESULT_DIR
 
 # 固定展示顺序；某组没有运行的方法显示为 -。
-METHODS = ["FF", "BF", "FFD-max", "BFD", "DP", "FFD-sum", "MILP"]
+METHODS = ["FF", "BF", "FFD-max", "FFD-sum", "BFD-max", "DP", "KK2003", "MILP"]
+
+
+def method_name(name):
+    # 第一版结果写BFD，新版写BFD-max；规则相同，只统一展示名称。
+    return "BFD-max" if name == "BFD" else name
 
 
 def read_results(filename):
@@ -34,7 +39,7 @@ def show_comparison(rows):
 
         for row in rows:
             if row["instance_id"] == instance_id:
-                counts[row["method"]] = row["host_count"]
+                counts[method_name(row["method"])] = row["host_count"]
 
         values = []
         for method in METHODS:
@@ -50,7 +55,7 @@ def show_optimal_hits(rows):
         hits = 0
 
         for row in rows:
-            if row["method"] != method:
+            if method_name(row["method"]) != method:
                 # 跳过其他方法，继续检查下一行。
                 continue
 
@@ -68,7 +73,7 @@ def show_optimal_hits(rows):
             print(f"{method}: {hits}/{known}")
 
 
-for filename in ("small_real.csv", "large_real.csv"):
+for filename in ("small_real.csv", "large_real.csv", "pilot_kk.csv"):
     print("\n" + filename)
 
     rows = read_results(filename)

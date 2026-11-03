@@ -11,13 +11,14 @@ from packing_algorithms import (
     first_fit, best_fit, first_fit_decreasing,
     first_fit_decreasing_sum, best_fit_decreasing, dot_product,
 )
+from kellerer_kotov import kellerer_kotov
 from milp_solver import solve_synthetic_milp, solve_aggregated_milp
 from solution_checker import check_solution
 
 
 TIME_LIMIT = 300
 REPEATS = 3
-RESULT_PREFIX = "pilot_v2"
+RESULT_PREFIX = "pilot_kk"  # 新结果使用新名称，保留原来的pilot_v2。
 
 # 保存函数本身，在循环中调用。
 METHODS = [
@@ -27,6 +28,7 @@ METHODS = [
     ("FFD-sum", first_fit_decreasing_sum),
     ("BFD-max", best_fit_decreasing),
     ("DP", dot_product),
+    ("KK2003", kellerer_kotov),  # 默认返回主机列表，与其他算法接口一致。
 ]
 
 FIELDS = [
@@ -168,7 +170,7 @@ def main():
     all_placements = {}
 
     metadata = {
-        "stage": "pipeline_pilot",
+        "stage": "pipeline_pilot_kk",
         "python": sys.version,
         "gurobi": gp.gurobi.version(),
         "time_limit": TIME_LIMIT,
@@ -176,11 +178,15 @@ def main():
         "heuristic_timing":
             "median of calls; sorting included, checker excluded",
         "upper_bound_timing":
-            "sum of first call times of all six heuristics",
+            "sum of first call times of all seven heuristics",
         "milp_timing":
             "upper_bound_seconds + mip_total_seconds",
         "instance_sha256": {},
         "mip_details": {},
+        "methods": [name for name, algorithm in METHODS],
+        "kk_variant": "seven steps with feasible within-bunch merge",
+        # 本入口当前只运行七个小规模联调实例；扩展规模由独立效率脚本限时运行。
+        "execution_scope": "small pilot; direct calls; benchmark has process supervision",
     }
 
     for path in paths:
