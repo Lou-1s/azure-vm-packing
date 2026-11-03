@@ -98,15 +98,18 @@ def worker(directory):
             result = {"status": "completed" if passed else "invalid_solution",
                       "seconds": elapsed if passed else None, "valid": passed,
                       "host_count": len(hosts), "input_unchanged": unchanged, "message": message}
+            if passed and job.get("keep_placements", False):
+                # 批量入口需要完整分组；只传请求ID，避免重复保存五个字段。
+                result["placement_ids"] = [[request[0] for request in host] for host in hosts]
     except Exception as error:
         result = {"status": "memory_error" if isinstance(error, MemoryError) else "error",
                   "seconds": None, "valid": None, "error": traceback.format_exc()}
     result["algorithm_elapsed_seconds"] = elapsed
-    # 只传统计结果，不传庞大的分组；完整方案已经在工作进程内检查。
+    # 默认只传统计；批量调用可附带ID分组，完整方案已在工作进程内检查。
     publish(directory, "result.json", result)
 
 
-def run_once(path, method, time_limit=TIME_LIMIT, memory_mib=MEMORY_MIB):
+def run_once(path, method, time_limit=TIME_LIMIT, memory_mib=MEMORY_MIB, keep_placements=False):
     """一次受监督调用；method为METHODS中的名称，返回统计字典。"""
     if time_limit < 0 or memory_mib <= 0:
         raise ValueError("Invalid execution budget")
@@ -118,7 +121,7 @@ def run_once(path, method, time_limit=TIME_LIMIT, memory_mib=MEMORY_MIB):
     with tempfile.TemporaryDirectory(prefix="packing_benchmark_") as temporary:
         directory = Path(temporary)
         publish(directory, "job.json", {"path": str(Path(path).resolve()),
-                "method": method, "time_limit": time_limit})
+                "method": method, "time_limit": time_limit, "keep_placements": keep_placements})
         process = None
         memory = None
         with (directory / "worker.log").open("w", encoding="utf-8") as log:

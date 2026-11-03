@@ -251,7 +251,6 @@ def kk_large_phase(requests):
     }
 
 
-# 将本文件全部内容追加到项目的kellerer_kotov.py末尾。
 # 这里复用该模块中已有的resource_totals、kk_fits等函数。
 from collections import deque  # 双端队列，支持高效地从头部取出/放回请求。
 from packing_algorithms import first_fit

@@ -591,6 +591,37 @@ run_once(path, method, time_limit=60, memory_mib=2048)运行某个实例上的�
 python .\benchmark_heuristics.py --output-dir ".\results\efficiency_check"
 ```
 
+### 25. 前缀切片、ID分组与检查点
+
+```python
+small_batch = requests[:200]  # 取前200条，不改变requests。
+
+lookup = {request[0]: request for request in requests}
+placement_ids = [[10, 11], [12]]
+hosts = [[lookup[request_id] for request_id in host] for host in placement_ids]
+```
+
+[:n]取从开头到第n条之前的元素；例如[:2]取索引0、1。同一窗口先查询最大规模，再取前缀，可以保证不同规模的数据顺序一致。
+
+lookup保存“请求ID→原始五字段记录”。分组文件只需存每台主机上的ID，读回时逐个查找原始记录，就能恢复完整分组，再交给check_solution检查。原始CPU、内存需求由实例文件提供。
+
+run_once(..., keep_placements=True)在成功时额外返回placement_ids；默认False仍只返回效率统计。批量程序只在首遍取完整分组，后续重复用于计时。
+
+检查点是已经完成的一份实例的结果文件。run_batch每完成一个实例就保存一次；再次运行时，若实例内容、代码指纹和参数一致，就读取已有结果并显示Resumed。当前正在计算的实例若尚未保存，下次从该实例重新开始。
+
+```python
+from hashlib import sha256
+fingerprint = sha256(path.read_bytes()).hexdigest()  # 文件内容指纹。
+
+temporary = path.with_suffix(".tmp")
+write_json(temporary, data)  # 先把临时文件写完整。
+temporary.replace(path)     # 再替换正式检查点。
+```
+
+with_suffix修改路径的后缀；replace执行文件替换。这样保存中途停止时，原来的完整检查点仍然可用。代码或配置改变后，使用新的--output-dir保存新一批结果。
+
+smoke表示流程预检，本项目先运行三份实例。批量结果目录中summary.csv保存汇总，metadata.json保存配置，instances/下每份JSON保存该实例的指标、逐次调用和ID分组。
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
@@ -966,3 +997,7 @@ A是算法使用的主机数，OPT是已证明最优值，L是有效下界。
 只有证优后才填写optimum及前三个指标，否则保存None，在CSV中为空字段。ratio_to_bound在OPT未知时仍能计算，不能将下界冒充最优值。
 
 启发式seconds为三次函数调用耗时的中位数。upper_bound_seconds累计各方法第一遍调用的实际耗时，对应产生初始上界；mip_total_seconds为MIP封装函数全程，solve_seconds仅为Gurobi优化时间。MILP行seconds为upper_bound_seconds+mip_total_seconds；其他重复调用只用于测量启发式时间，不再次计入初解生成。
+
+批量入口run_batch中的upper_bound_seconds采用首遍外部耗时，包含进程启动、读取、检查及失败尝试；历史pilot采用首遍纯算法耗时，两种记录按各自metadata解释。算法首遍失败且无完整方案时，台数与质量比值留空；后续重复失败时，首遍完整方案仍可用于质量和MIP初值，中位时间留空。
+
+gp.setParam("Seed", 0)为默认Gurobi环境设置随机种子，之后创建的模型继承此设置。固定种子有助于复现，还需记录Python、Gurobi版本及线程数。

@@ -10,6 +10,8 @@
 # from solution_checker import check_solution
 # from milp_solver import solve_milp
 import sqlite3
+import argparse
+from pathlib import Path
 from instance_io import ROOT, write_json, load_instance
 
 # 固定候选硬件规格，不表示这些请求在原系统中实际部署到了硬件 12。
@@ -89,8 +91,10 @@ def summarize_requests(requests):
 #     (3, 4, 40),
 #     (3, 4, 80),
 # ]
-DATASET = "real_large"
-INSTANCE_DIR = ROOT / "data" / "instances" / DATASET
+DATASET = "real_v2"
+parser = argparse.ArgumentParser()
+parser.add_argument("--output-dir", type=Path, default=ROOT / "data/instances" / DATASET)
+INSTANCE_DIR = parser.parse_args().output_dir
 
 if DATASET == "real_small":
     cases = [
@@ -104,10 +108,19 @@ elif DATASET == "real_large":
         (2, 3, 200), (2, 3, 1000),
         (3, 4, 200), (3, 4, 1000),
     ]
+elif DATASET == "real_v2":
+    # 六个固定窗口，各取五种规模，共30份；同一窗口按n由小到大保存。
+    cases = [
+        (start, start + 1, n)
+        for start in (1, 2, 3, 6, 9, 12)
+        for n in (200, 1000, 10000, 20000, 100000)
+    ]
 else:
     raise ValueError("Unknown dataset")
 
 print("Start | End | N | CPU | Memory | CPU>Memory | Memory>CPU | Equal")
+cached_window = None
+window_requests = None
 
 for case in cases:
     # 例如第一组形成 (12, 1, 2, 20)，与 SQL 中四个 ? 一一对应。
@@ -118,7 +131,17 @@ for case in cases:
         case[2],
     )
 
-    requests = load_requests(connection, sql, parameters)
+    if DATASET == "real_v2":
+        window = (case[0], case[1])
+        if window != cached_window:
+            # 每个窗口只查一次最大规模，其他规模从同一结果取前缀。
+            window_requests = load_requests(
+                connection, sql, (machine_id, case[0], case[1], 100000)
+            )
+            cached_window = window
+        requests = window_requests[:case[2]]  # [:n]取前n条，不改变窗口完整列表。
+    else:
+        requests = load_requests(connection, sql, parameters)
 
     # 防止实际只取到较少记录，却仍把它当成指定规模的实验。
     if len(requests) != case[2]:
@@ -252,3 +275,4 @@ for case in cases:
 
 # 结束所有查询后释放数据库连接。
 connection.close()
+print("Saved instances:", len(cases), "| Dataset:", DATASET)
