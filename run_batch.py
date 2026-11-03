@@ -16,6 +16,7 @@ import kellerer_kotov
 import instance_io
 import run_experiments
 import solution_checker
+import mip_progress
 from instance_io import ROOT, RESULT_DIR, load_instance, write_json
 from run_experiments import METHODS, FIELDS
 from solution_checker import check_solution
@@ -24,6 +25,8 @@ from solution_checker import check_solution
 BATCH_FIELDS = FIELDS + [
     "status", "required_repeats", "completed_repeats",
     "wall_seconds_total", "peak_private_mib",
+    "checkpoint_target_seconds", "checkpoint_effective_seconds", "checkpoint_observed_seconds",
+    "checkpoint_upper_bound", "checkpoint_lower_bound", "checkpoint_gap_to_bound", "checkpoint_reason",
 ]
 
 
@@ -135,7 +138,8 @@ def evaluate_path(path, config):
         # 所有新建模型继承默认环境的固定种子；模型内线程数仍按两条路径设置。
         gp.setParam("Seed", config["solver_seed"])
         solve = milp_solver.solve_synthetic_milp if instance["source"] == "synthetic" else milp_solver.solve_aggregated_milp
-        mip = solve(requests, best_hosts, time_limit=config["mip_seconds"])
+        mip = solve(requests, best_hosts, time_limit=config["mip_seconds"],
+                    snapshot_seconds=config["snapshot_seconds"])
         valid, message = check_solution(requests, mip["hosts"])
         if not valid:
             raise ValueError("MILP: " + message)
@@ -153,6 +157,16 @@ def evaluate_path(path, config):
         })
         mip_details = {key: value for key, value in mip.items() if key != "hosts"}
         mip_details["initial_source"] = initial_source
+        checkpoint = mip["progress"]["checkpoint"]
+        rows[-1].update({
+            "checkpoint_target_seconds": checkpoint["requested_seconds"],
+            "checkpoint_effective_seconds": checkpoint["effective_seconds"],
+            "checkpoint_observed_seconds": checkpoint["observed_seconds"],
+            "checkpoint_upper_bound": checkpoint["upper_bound"],
+            "checkpoint_lower_bound": checkpoint["lower_bound"],
+            "checkpoint_gap_to_bound": checkpoint["gap_to_bound"],
+            "checkpoint_reason": checkpoint["reason"],
+        })
 
     # 无MIP的扩展实例也可以在有效方案达到独立下界时证明最优。
     optimum = len(best_hosts) if best_hosts is not None and len(best_hosts) == bound else None
@@ -184,18 +198,19 @@ def main(args):
     missing = [str(path) for path in paths if not path.exists()]
     if missing:
         raise FileNotFoundError("Build instances first: " + missing[0])
-    config = {"version": "batch_v1", "heuristic_seconds": args.heuristic_seconds,
+    config = {"version": "batch_v2_progress", "heuristic_seconds": args.heuristic_seconds,
               "memory_mib": 2048, "mip_seconds": args.mip_seconds, "solver_seed": 0,
               "repeats": "3 except n=100000: 1", "methods": [name for name, _ in METHODS],
               "upper_bound_timing": "sum of first-call wall times, including failed attempts",
               "solver_threads": {"synthetic": 2, "real": 1},
               "python": sys.version, "gurobi": list(gp.gurobi.version()),
               "platform": platform.platform(), "processor": platform.processor(),
-              "snapshot_60s": "pending implementation; this stage uses the smoke suite"}
+              "snapshot_seconds": args.snapshot_seconds,
+              "snapshot_policy": "best verified state observed no later than cutoff; early endings marked"}
     # 将本批实际使用的源码指纹记入配置，避免修改代码后误续用旧检查点。
     sources = [Path(__file__)] + [Path(module.__file__) for module in (
         benchmark, milp_solver, packing_algorithms, kellerer_kotov,
-        instance_io, run_experiments, solution_checker)]
+        instance_io, run_experiments, solution_checker, mip_progress)]
     config["code_sha256"] = {path.name: sha256(path.read_bytes()).hexdigest() for path in sources}
     output_dir = args.output_dir or RESULT_DIR / ("batch_" + args.suite)
     all_rows = []
@@ -234,4 +249,5 @@ if __name__ == "__main__":
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--heuristic-seconds", type=float, default=60)
     parser.add_argument("--mip-seconds", type=float, default=300)
+    parser.add_argument("--snapshot-seconds", type=float, default=60)
     main(parser.parse_args())

@@ -3,6 +3,7 @@ import gurobipy as gp          # 给模块起简称。
 from gurobipy import GRB       # 变量类型、优化方向和状态等常量。
 from solution_checker import check_solution
 import math  # Python自带的数学工具，无需安装。
+from mip_progress import MipProgress
 
 
 def solve_milp(requests, upper_bound_hosts, time_limit=30):
@@ -141,7 +142,7 @@ def find_incompatible_clique(requests):
     return best_clique
 
 
-def solve_fixed_k(requests, host_limit, time_limit=300):
+def solve_fixed_k(requests, host_limit, time_limit=300, progress=None, time_offset=0.0):
     # 输入已核验的五字段请求，判断能否装入至多host_limit台。
     started = perf_counter()
     clique = find_incompatible_clique(requests)
@@ -217,6 +218,8 @@ def solve_fixed_k(requests, host_limit, time_limit=300):
     with gp.Model("fixed_k") as model:
         model.Params.OutputFlag = 0
         model.Params.Threads = 2
+        model.Params.Seed = 0
+        model.Params.SoftMemLimit = 2.0
         model.Params.TimeLimit = time_limit
         model.Params.SolutionLimit = 1  # 找到一个可行解即可结束。
         model.Params.MIPFocus = 1 # 优先寻找可行解。
@@ -264,24 +267,33 @@ def solve_fixed_k(requests, host_limit, time_limit=300):
         model.update()
         result["build_seconds"] = perf_counter() - build_started
 
-        model.optimize()
+        def restore_hosts(values):
+            hosts = [[] for _ in range(host_limit)]
+            for j, i in enumerate(clique):
+                hosts[j].append(requests[i])
+            for i, j in pairs:
+                if values[i, j] > 0.5:
+                    hosts[j].append(requests[i])
+            return [host for host in hosts if host]
+
+        callback = None
+        if progress is not None:
+            callback = progress.callback(
+                lambda active: restore_hosts(active.cbGetSolution(x)),
+                time_offset=time_offset,
+                # 固定K目标是常数0，不能把目标界当作主机数下界。
+                objective_is_bin_count=False,
+            )
+        model.optimize(callback)
+        if progress is not None:
+            progress.raise_if_failed()
 
         result["solver_status"] = model.Status
         result["solve_seconds"] = model.Runtime
 
         if model.SolCount > 0:
-            hosts = [[] for _ in range(host_limit)]
-
-            # 先放回已经固定的团请求。
-            for j, i in enumerate(clique):
-                hosts[j].append(requests[i])
-
-            # 再放入求解器分配的剩余请求。
-            for i, j in pairs:
-                if x[i, j].X > 0.5:
-                    hosts[j].append(requests[i])
-
-            result["hosts"] = [host for host in hosts if host]  #保留非空主机
+            # getAttr批量取回最终X；回调中则使用cbGetSolution。
+            result["hosts"] = restore_hosts(model.getAttr("X", x))
             result["feasible"] = True
             result["reason"] = "solution_found"
 
@@ -292,6 +304,12 @@ def solve_fixed_k(requests, host_limit, time_limit=300):
         else:
             # 没有方案，也没有不可行证明，保留None。
             result["reason"] = "not_proven"
+
+        if progress is not None and len(progress.hosts) <= host_limit:
+            if result["feasible"] is False:
+                raise ValueError("Fixed-K proof conflicts with a verified solution")
+            if result["hosts"] is None or len(progress.hosts) < len(result["hosts"]):
+                result.update(hosts=progress.hosts, feasible=True, reason="observed_solution")
 
     # 恢复分组后使用独立检查器复核。
     if result["hosts"] is not None:
@@ -304,7 +322,7 @@ def solve_fixed_k(requests, host_limit, time_limit=300):
     return result
 
 
-def solve_synthetic_milp(requests, initial_hosts, time_limit=300):
+def solve_synthetic_milp(requests, initial_hosts, time_limit=300, snapshot_seconds=60):
     # 已有方案提供上界；整个函数始终保留一个有效方案。
     started = perf_counter()
 
@@ -330,6 +348,7 @@ def solve_synthetic_milp(requests, initial_hosts, time_limit=300):
     if lower > upper:
         raise ValueError("Lower bound exceeds valid upper bound")
 
+    progress = MipProgress(requests, initial_hosts, lower, snapshot_seconds)
     solve_seconds = 0.0
     trials = []
     proof_source = None
@@ -351,6 +370,8 @@ def solve_synthetic_milp(requests, initial_hosts, time_limit=300):
             requests,
             k,
             time_limit=remaining_time,
+            progress=progress,
+            time_offset=solve_seconds,  # 本次模型之前已消耗的累计优化秒数。
         )
 
         solve_seconds += trial["solve_seconds"]
@@ -369,6 +390,8 @@ def solve_synthetic_milp(requests, initial_hosts, time_limit=300):
             # 未确定时保留原有方案和上下界。
             stop_reason = "not_proven"
 
+        # 不可行证明仅在模型结束后才能把主机数下界提高到K+1。
+        progress.observe(solve_seconds, best_hosts, lower)
         # 只保存本次试探摘要，完整最好分组放在best_hosts中。
         trials.append({
             "k": k,
@@ -402,7 +425,7 @@ def solve_synthetic_milp(requests, initial_hosts, time_limit=300):
 
     gap_to_bound = 0 if lower == 0 else (upper - lower) / lower
 
-    return {
+    result = {
         "hosts": best_hosts,
         "initial_host_count": initial_count,
         "objective": upper,
@@ -412,12 +435,19 @@ def solve_synthetic_milp(requests, initial_hosts, time_limit=300):
         "stop_reason": stop_reason,
         "gap_to_bound": gap_to_bound,
         "solve_seconds": solve_seconds,
-        "total_seconds": perf_counter() - started,
         "trials": trials,
     }
+    result["progress"] = progress.finish(solve_seconds, best_hosts, lower)
+    result["solver_parameters"] = {
+        "seed": 0, "threads": 2, "solution_limit": 1, "soft_mem_limit_gb": 2.0,
+        "feasibility_tol": 1e-9, "int_feas_tol": 1e-9,
+        "optimization_budget_seconds": time_limit, "snapshot_seconds": snapshot_seconds,
+    }
+    result["total_seconds"] = perf_counter() - started
+    return result
 
 
-def solve_aggregated_milp(requests, initial_hosts, time_limit=300):
+def solve_aggregated_milp(requests, initial_hosts, time_limit=300, snapshot_seconds=60):
     started = perf_counter()
 
     valid, message = check_solution(requests, initial_hosts)
@@ -472,10 +502,12 @@ def solve_aggregated_milp(requests, initial_hosts, time_limit=300):
         "prep_seconds": perf_counter() - started,
     }
     build_started = perf_counter()
+    progress = MipProgress(requests, initial_hosts, resource_bound, snapshot_seconds)
 
     with gp.Model("type_count_packing") as model:
         model.Params.OutputFlag = 0
         model.Params.Threads = 1
+        model.Params.Seed = 0
         model.Params.Method = 1       # 根节点松弛使用对偶单纯形。
         model.Params.TimeLimit = time_limit
         model.Params.MIPGap = 0
@@ -538,7 +570,27 @@ def solve_aggregated_milp(requests, initial_hosts, time_limit=300):
 
         model.update()
         result["build_seconds"] = perf_counter() - build_started
-        model.optimize()
+        def restore_hosts(values):
+            positions = [0] * type_count
+            hosts = []
+            for j in range(host_limit):
+                host = []
+                for t, demand in enumerate(types):
+                    amount = int(round(values[t, j]))
+                    begin = positions[t]
+                    end = begin + amount
+                    host.extend(groups[demand][begin:end])
+                    positions[t] = end
+                if host:
+                    hosts.append(host)
+            return hosts
+
+        callback = progress.callback(
+            lambda active: restore_hosts(active.cbGetSolution(q)),
+            objective_is_bin_count=True,
+        )
+        model.optimize(callback)
+        progress.raise_if_failed()
 
         result["solver_status"] = model.Status
         result["solve_seconds"] = model.Runtime
@@ -555,25 +607,16 @@ def solve_aggregated_milp(requests, initial_hosts, time_limit=300):
             if math.isfinite(model.MIPGap):
                 result["solver_gap"] = model.MIPGap
 
-            positions = [0] * type_count  # 每类已经取走多少条。
-            hosts = []
-            for j in range(host_limit):
-                host = []
-                for t, demand in enumerate(types):
-                    amount = int(round(q[t, j].X))
-                    begin = positions[t]
-                    end = begin + amount
-                    host.extend(groups[demand][begin:end])
-                    positions[t] = end
+            result["hosts"] = restore_hosts(model.getAttr("X", q))
+            result["objective"] = len(result["hosts"])
 
-                if host:
-                    hosts.append(host)
-
-            result["hosts"] = hosts
-            result["objective"] = len(hosts)
-
+        # 记录器按实际非空主机数比较，保留它已经验证的更好方案。
+        if len(progress.hosts) < result["objective"]:
+            result["hosts"] = progress.hosts
+            result["objective"] = len(progress.hosts)
+        result["bound"] = max(result["bound"], progress.lower)
         if model.Status == GRB.OPTIMAL:
-            result["bound"] = result["objective"]
+            result["bound"] = max(result["bound"], result["objective"])
 
     # 六、独立检查恢复后的完整方案。
     valid, message = check_solution(requests, result["hosts"])
@@ -597,5 +640,11 @@ def solve_aggregated_milp(requests, initial_hosts, time_limit=300):
     result["gap_to_bound"] = (
         result["objective"] - result["bound"]
     ) / result["bound"]
+    result["progress"] = progress.finish(result["solve_seconds"], result["hosts"], result["bound"])
+    result["solver_parameters"] = {
+        "seed": 0, "threads": 1, "method": 1, "soft_mem_limit_gb": 2.0,
+        "feasibility_tol": 1e-9, "int_feas_tol": 1e-9,
+        "optimization_budget_seconds": time_limit, "snapshot_seconds": snapshot_seconds,
+    }
     result["total_seconds"] = perf_counter() - started
     return result

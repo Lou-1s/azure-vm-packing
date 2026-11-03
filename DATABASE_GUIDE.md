@@ -1001,3 +1001,58 @@ A是算法使用的主机数，OPT是已证明最优值，L是有效下界。
 批量入口run_batch中的upper_bound_seconds采用首遍外部耗时，包含进程启动、读取、检查及失败尝试；历史pilot采用首遍纯算法耗时，两种记录按各自metadata解释。算法首遍失败且无完整方案时，台数与质量比值留空；后续重复失败时，首遍完整方案仍可用于质量和MIP初值，中位时间留空。
 
 gp.setParam("Seed", 0)为默认Gurobi环境设置随机种子，之后创建的模型继承此设置。固定种子有助于复现，还需记录Python、Gurobi版本及线程数。
+
+### 11. 回调：求解过程中读取进度
+
+```python
+def observe(model, where):
+    if where == GRB.Callback.MIP:
+        seconds = model.cbGet(GRB.Callback.RUNTIME)
+        lower_bound = model.cbGet(GRB.Callback.MIP_OBJBND)
+
+model.optimize(observe)
+```
+
+observe是我们定义的函数名。将函数本身交给optimize后，Gurobi在优化过程中多次调用它，传入model和where；where说明当前是什么事件。不要写optimize(observe())，后者会先自行调用observe。
+
+| 写法 | 读取什么 |
+|---|---|
+| GRB.Callback.MIP | 整数规划求解进度事件，可查询当前全局下界 |
+| GRB.Callback.MIPSOL | 整数候选方案事件；候选未必优于已有方案 |
+| model.cbGet(GRB.Callback.RUNTIME) | 本次模型的优化秒数 |
+| model.cbGet(GRB.Callback.MIP_OBJBND) | MIP事件中的当前目标下界 |
+| model.cbGetSolution(q) | MIPSOL事件中变量q的候选数值；随后按数量恢复分组 |
+| model.getAttr("X", q) | 优化结束后批量读取q的最终值 |
+
+cbGetSolution应在MIPSOL中使用。本项目不使用节点LP松弛作为放置方案。[Gurobi回调查询](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/callbacks.html) · [cbGetSolution](https://docs.gurobi.com/projects/optimizer/en/current/reference/python/model.html#Model.cbGetSolution)
+
+聚合模型允许y[j]=1但主机上暂时没有请求，所以整数候选的sum(y)可能大于恢复后的非空主机数。记录器先恢复每个整数候选，再按实际台数比较；最终返回值也保留其中已经验证的最好方案。
+
+本项目的MipProgress对象保存当前最好有效方案、下界和时钟。progress.callback(...)返回一个观测函数；model.optimize(callback)将它交给Gurobi。函数保留外部参数的写法叫闭包，例如保留本次模型之前已用的time_offset。
+
+合成实例累计时间为time_offset + 当前模型Runtime。固定K模型的目标为常数0，因此其目标下界也不能用作主机数下界；K不可行的证明交回外层后，才把主机数下界提高到K+1。
+
+### 12. 截止快照与结束结果
+
+```python
+solve_synthetic_milp(requests, initial_hosts,
+                     time_limit=300, snapshot_seconds=60)
+```
+
+time_limit是总优化预算，snapshot_seconds是其中一个观测截止时点。两个参数属于同一次求解任务。真实数据用一个模型的Runtime，合成数据累计多个K模型的Runtime。
+
+| 记录字段 | 含义 |
+|---|---|
+| progress.checkpoint | 截止时点之前已观测的最好有效方案与下界 |
+| progress.final | 求解结束时的方案与下界 |
+| requested_seconds | 请求的观测时点，正式实验为60 |
+| effective_seconds | 截止时点；若提前结束，则为实际结束优化时间 |
+| observed_seconds | 形成这份记录的最近一次观测时间，可能早于effective_seconds |
+| upper_bound / lower_bound | 有效方案台数U / 已证下界L |
+| placement_ids | 该时点每台主机上的请求ID，可从实例恢复并检查 |
+
+收到60秒之后的事件时，先保存之前的状态，再更新当前状态；不能把后来找到的更好方案写回60秒记录。回调不是固定频率采样，因此observed_seconds可能小于60。
+
+reason=early_optimal表示未到目标时点就已证优；ended_before_target表示提前结束但尚未证优；observed_cutoff表示已跨过目标时点并冻结此前观测状态。CSV中的checkpoint_*列只填写在MILP行；完整两份方案位于每实例JSON的mip_details.progress中。
+
+教学演示的0.01、0.0001秒只是缩短测试等待时间；正式运行仍使用60秒。程序及配置更新后，为批量预检指定新的--output-dir，例如results/batch_progress_smoke。
