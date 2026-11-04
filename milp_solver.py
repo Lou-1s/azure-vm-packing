@@ -142,7 +142,7 @@ def find_incompatible_clique(requests):
     return best_clique
 
 
-def solve_fixed_k(requests, host_limit, time_limit=300, progress=None, time_offset=0.0):
+def solve_fixed_k(requests, host_limit, time_limit=1200, progress=None, time_offset=0.0):
     # 输入已核验的五字段请求，判断能否装入至多host_limit台。
     started = perf_counter()
     clique = find_incompatible_clique(requests)
@@ -322,7 +322,7 @@ def solve_fixed_k(requests, host_limit, time_limit=300, progress=None, time_offs
     return result
 
 
-def solve_synthetic_milp(requests, initial_hosts, time_limit=300, snapshot_seconds=60):
+def solve_synthetic_milp(requests, initial_hosts, time_limit=1200, snapshot_seconds=60):
     # 已有方案提供上界；整个函数始终保留一个有效方案。
     started = perf_counter()
 
@@ -447,7 +447,7 @@ def solve_synthetic_milp(requests, initial_hosts, time_limit=300, snapshot_secon
     return result
 
 
-def solve_aggregated_milp(requests, initial_hosts, time_limit=300, snapshot_seconds=60):
+def solve_aggregated_milp(requests, initial_hosts, time_limit=1200, snapshot_seconds=60):
     started = perf_counter()
 
     valid, message = check_solution(requests, initial_hosts)

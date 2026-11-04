@@ -571,7 +571,7 @@ subprocess.Popen(程序参数列表)启动另一个进程，并返回代表该�
 
 本项目效率脚本用CPython的sys._base_executable启动虚拟环境背后的实际Python程序，再通过PYTHONPATH传入依赖搜索路径。这样在Windows上监督的是实际计算进程，而不是虚拟环境的转发程序。脚本读取Windows私有内存，每0.05秒采样一次；这是采样式保护，不是操作系统硬内存上限。
 
-run_once(path, method, time_limit=60, memory_mib=2048)运行某个实例上的一种方法一次。path是实例JSON路径，method是"FF"、"KK2003"等名称；后两个参数分别是算法秒数预算和内存MiB预算。返回字典中的status说明完成或终止原因。
+run_once(path, method, time_limit=600, memory_mib=2048)运行某个实例上的一种方法一次。path是实例JSON路径，method是"FF"、"KK2003"等名称；后两个参数分别是算法秒数预算和内存MiB预算。当前正式启发式预算为600秒（10分钟），启动和检查阶段仍各30秒。返回字典中的status说明完成或终止原因。
 
 | 效率结果字段 | 含义 |
 |---|---|
@@ -621,6 +621,40 @@ temporary.replace(path)     # 再替换正式检查点。
 with_suffix修改路径的后缀；replace执行文件替换。这样保存中途停止时，原来的完整检查点仍然可用。代码或配置改变后，使用新的--output-dir保存新一批结果。
 
 smoke表示流程预检，本项目先运行三份实例。批量结果目录中summary.csv保存汇总，metadata.json保存配置，instances/下每份JSON保存该实例的指标、逐次调用和ID分组。
+
+### 26. CSV读回、空值与分组统计
+
+```python
+import csv
+from statistics import mean, median
+
+with path.open("r", encoding="utf-8-sig", newline="") as file:
+    rows = list(csv.DictReader(file))
+
+value = rows[0]["host_count"]  # CSV读回后是字符串，例如"24"。
+count = int(value) if value != "" else None
+```
+
+`DictReader`用第一行作键名，每个数据行读成一个字典。`int("24")`变成整数24，`float("0.25")`变成小数0.25；空字符串`""`不能直接转成数值，保留为`None`表示缺少结果。`"False"`也是非空字符串，判断有效性应写`row["valid"] == "True"`，不能写`bool(row["valid"])`。
+
+```python
+known = [row for row in rows if row["optimum"] is not None]
+hits = sum(row["host_count"] == row["optimum"] for row in known)
+print(mean([1.0, 1.1, 1.2]))    # 算术平均数1.1。
+print(median([1, 2, 100]))      # 中位数2。
+```
+
+上例的`rows`应先完成数值和空值转换。条件为真时按1累计，为假时按0累计，因此`sum(...)`可统计命中次数。`mean`反映总体平均水平，`median`取排序后的中间位置；偶数个数时取中间两个数的平均。空列表没有平均数或中位数，需要单独显示为`-`。
+
+```python
+by_instance = {}
+by_instance.setdefault("case_1", {})["FF"] = 24
+by_instance.setdefault("case_1", {})["FFD-max"] = 23
+```
+
+`setdefault(键, 默认值)`在键不存在时插入默认值，再返回该键对应的值；已有键则直接返回原值。这里得到`{"case_1": {"FF": 24, "FFD-max": 23}}`，方便在同一实例上配对比较方法。
+
+`f"{value:.6f}"`把数值显示为六位小数；`f"{value:.{digits}f}"`用变量`digits`指定小数位。只改变显示，不改变原始数据。`"\n".join(lines)`用换行连接多行文本；`path.write_text(text, encoding="utf-8")`将文本覆盖写入文件，本项目用于生成Markdown分析报告。
 
 ## 四、SQLite 与 SQL
 
@@ -896,12 +930,15 @@ model.dispose()                # 释放模型占用的资源
 | `GRB.INFEASIBLE` | 3 | 当前模型没有可行解 |
 | `GRB.TIME_LIMIT` | 9 | 达到时间上限；是否已有解需看 `SolCount` |
 | `GRB.SOLUTION_LIMIT` | 10 | 找到规定数量的解后结束；固定K找到方案即确认可行 |
+| `GRB.MEM_LIMIT` | 17 | 达到SoftMemLimit软内存限制后停止；可能早于时间上限 |
 
 `model.Status == GRB.OPTIMAL` 返回是否最优的布尔值。达到时限不等于证明最优；`SolCount=0` 表示尚无可用方案，不能记成用了 0 台主机。人工强制 `host_limit=1` 后不可行，仅说明该请求集装不进一台。
 
+[Gurobi状态码说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html)
+
 ### 6. 封装后的结果与计时
 
-项目封装接口为 `solve_milp(requests, upper_bound_hosts, time_limit=30)`：传入非空请求、已有可行分组和时限，返回结果字典。上界方案须通过检查，只用其主机数量限制候选数量，不固定原分组。
+原始学习版接口为 `solve_milp(requests, upper_bound_hosts, time_limit=30)`：传入非空请求、已有可行分组和时限，返回结果字典。上界方案须通过检查，只用其主机数量限制候选数量，不固定原分组。正式实验使用后文两条求解路径，当前优化预算为1200秒（20分钟）。
 
 - `result["hosts"]`：求解器的主机分组；无可行解时为 `None`，不要对它调用 `len`。
 - `result["objective"]`、`result["gap"]`：有可行解才填入数值，否则为 `None`；原贪心方案单独保留。
@@ -928,18 +965,18 @@ addVars第一个参数可以是索引对列表，此处只创建x[0,0]、x[0,1]�
 
 固定K函数的feasible返回True表示找到有效方案，False表示已证明装不下，None表示尚未确定。solver_status保存Gurobi实际状态；预处理已经排除时没有调用求解器，保留None。目标常数0不表示用了0台，实际台数通过len(hosts)读取。
 
-本轮solve_fixed_k(requests, host_limit, time_limit=300)处理一次给定K；后续外层搜索把300秒总优化预算分配到各次调用。返回prep_seconds、build_seconds、solve_seconds与total_seconds，最后一项包含结果恢复和独立检查。
+solve_fixed_k(requests, host_limit, time_limit=1200)处理一次给定K；外层搜索把1200秒总优化预算分配到各次调用，不是每个K各跑20分钟。返回prep_seconds、build_seconds、solve_seconds与total_seconds，最后一项包含结果恢复和独立检查。
 
 
 ### 8. 外层搜索与上下界
 
-solve_synthetic_milp(requests, initial_hosts, time_limit=300)以初始有效分组确定上界U，以资源总量和团确定下界L。每次测试K=U-1：可行则更新U，不可行则L=K+1，尚未确定则保留现有结果。L=U时optimal=True。
+solve_synthetic_milp(requests, initial_hosts, time_limit=1200)以初始有效分组确定上界U，以资源总量和团确定下界LB。每次测试K=U-1：可行则更新U，不可行则LB=K+1，尚未确定则保留现有结果。LB=U时optimal=True。代码内部原有下界变量和字段不改变含义。
 
 remaining_time = time_limit - solve_seconds，其中solve_seconds累计各次Gurobi Runtime；因此每次调用取得剩余预算。total_seconds另外包含检查、团计算、建模和分组恢复。
 
 返回objective是当前最好主机数、bound是有效下界、hosts是当前最好分组。即使时间预算为0，初始有效方案仍保留。proof_source说明证优方式：bound_match表示上下界相等，fixed_k_infeasible表示排除了少一台的可能；尚未证优时为None。
 
-trials为字典列表，逐次保存K、可行性、状态和试探前后的上下界。gap_to_bound=(U-L)/L是相对下界的差距，与Gurobi原生MIPGap分开。固定K的solver_status=2说明该K可行，整个装箱问题的最优性由外层optimal及证据共同判断。
+trials为字典列表，逐次保存K、可行性、状态和试探前后的上下界。gap_to_bound=(U-LB)/LB是相对下界的差距，与Gurobi原生MIPGap分开。固定K的solver_status=2说明该K可行，整个装箱问题的最优性由外层optimal及证据共同判断。
 
 ### 9. 类型聚合、整数变量与初始解
 
@@ -984,19 +1021,25 @@ positions[t] = end
 
 ### 10. 实验结果中的质量与计时
 
-A是算法使用的主机数，OPT是已证明最优值，L是有效下界。
+A是算法使用的主机数，OPT是已证明最优值。新版质量表在OPT未知时，以MIP结束时的最好有效方案台数L作参照；这个L是上界。真正的已证下界记为LB，满足LB<=OPT<=L。统一参照R在已证优时取OPT，否则取L。
 
-| 字段 | 计算方法 |
+| 字段 | 含义或计算方法 |
 |---|---|
-| ratio_to_opt | A/OPT，越接近1越好 |
-| gap_to_opt | (A-OPT)/OPT |
-| hit_optimum | A是否等于OPT；已知最优实例上的True比例为命中率 |
-| ratio_to_bound | A/L，是相对下界的比值 |
-| gap_to_bound | (A-L)/L |
+| reference_host_count | 本实例的统一参照R，即OPT或未证优的MIP最终台数L |
+| reference_is_optimal | 参照是否已经证明最优 |
+| ratio_to_reference | A/R；汇总显示为“平均A/OPT(L)” |
+| gap_to_reference | (A-R)/R；用于平均和最大已知差距 |
+| reaches_mip | A<=MIP最终台数，表示达到MIP效果 |
+| optimum、ratio_to_opt、gap_to_opt、hit_optimum | 保留已证优实例的OPT、A/OPT、(A-OPT)/OPT及是否命中 |
+| lower_bound、ratio_to_bound、gap_to_bound | 保留真实下界LB、A/LB及(A-LB)/LB |
 
-只有证优后才填写optimum及前三个指标，否则保存None，在CSV中为空字段。ratio_to_bound在OPT未知时仍能计算，不能将下界冒充最优值。
+质量表保留“有效方案/条件”，将命中率改为“达到MIP效果”，分母是全部条件数，例如xx/30；没有有效方案不计为达到。已知与未知参照合并计算平均比值和最大差距，删除“有效但OPT未知”“未知子集平均A/L”两列。
 
-启发式seconds为三次函数调用耗时的中位数。upper_bound_seconds累计各方法第一遍调用的实际耗时，对应产生初始上界；mip_total_seconds为MIP封装函数全程，solve_seconds仅为Gurobi优化时间。MILP行seconds为upper_bound_seconds+mip_total_seconds；其他重复调用只用于测量启发式时间，不再次计入初解生成。
+平均或最大差距纳入未证优MIP参照时加*。按规模的平均差距写为xxx%(3+2*)，表示3个已证优、2个未证优参照的有效实例；没有有效方案仍显示缺失。带星号的结果只表示与MIP方案的差距，可能低估距真正最优值的差距；MILP自身比值为1*也不表示证优。
+
+optimum及仅对OPT定义的旧指标在未证优时继续留空，真实下界字段不会被MIP方案台数覆盖。没有运行MIP的synthetic-scale不伪造MIP参照或达到MIP效果，可继续使用LB指标。
+
+启发式seconds为全部规定重复完成后的中位数，100000条每实例只运行一次。upper_bound_seconds累计各方法第一遍调用的实际耗时，对应产生初始上界；mip_total_seconds为MIP封装函数全程，solve_seconds仅为Gurobi优化时间。MILP行seconds为upper_bound_seconds+mip_total_seconds；其他重复调用只用于测量启发式时间，不再次计入初解生成。
 
 批量入口run_batch中的upper_bound_seconds采用首遍外部耗时，包含进程启动、读取、检查及失败尝试；历史pilot采用首遍纯算法耗时，两种记录按各自metadata解释。算法首遍失败且无完整方案时，台数与质量比值留空；后续重复失败时，首遍完整方案仍可用于质量和MIP初值，中位时间留空。
 
@@ -1036,10 +1079,10 @@ cbGetSolution应在MIPSOL中使用。本项目不使用节点LP松弛作为放�
 
 ```python
 solve_synthetic_milp(requests, initial_hosts,
-                     time_limit=300, snapshot_seconds=60)
+                     time_limit=1200, snapshot_seconds=60)
 ```
 
-time_limit是总优化预算，snapshot_seconds是其中一个观测截止时点。两个参数属于同一次求解任务。真实数据用一个模型的Runtime，合成数据累计多个K模型的Runtime。
+time_limit是总优化预算，当前为1200秒；snapshot_seconds仍为60秒，是其中一个观测截止时点。两个参数属于同一次求解任务。真实数据用一个模型的Runtime，合成数据累计多个K模型的Runtime。
 
 | 记录字段 | 含义 |
 |---|---|
@@ -1048,11 +1091,13 @@ time_limit是总优化预算，snapshot_seconds是其中一个观测截止时点
 | requested_seconds | 请求的观测时点，正式实验为60 |
 | effective_seconds | 截止时点；若提前结束，则为实际结束优化时间 |
 | observed_seconds | 形成这份记录的最近一次观测时间，可能早于effective_seconds |
-| upper_bound / lower_bound | 有效方案台数U / 已证下界L |
+| upper_bound / lower_bound | 有效方案台数U / 已证下界LB |
 | placement_ids | 该时点每台主机上的请求ID，可从实例恢复并检查 |
 
 收到60秒之后的事件时，先保存之前的状态，再更新当前状态；不能把后来找到的更好方案写回60秒记录。回调不是固定频率采样，因此observed_seconds可能小于60。
 
 reason=early_optimal表示未到目标时点就已证优；ended_before_target表示提前结束但尚未证优；observed_cutoff表示已跨过目标时点并冻结此前观测状态。CSV中的checkpoint_*列只填写在MILP行；完整两份方案位于每实例JSON的mip_details.progress中。
 
-教学演示的0.01、0.0001秒只是缩短测试等待时间；正式运行仍使用60秒。程序及配置更新后，为批量预检指定新的--output-dir，例如results/batch_progress_smoke。
+教学演示的0.01、0.0001秒只是缩短测试等待时间；正式观测点仍为60秒，正式MIP预算已改为1200秒。新预算使用新结果目录，例如results/formal_real_600_1200；已完成的results/formal_real仍是60秒启发式、300秒MIP的历史批次，不修改其原始配置或将其标成20分钟结果。
+
+新版analyze_real默认仍读取旧formal_real，并从metadata显示该批实际预算；分析新批次时传入--results-dir。只有重新求解才会生成新预算结果，重新生成分析报告不会延长已结束的求解时间。

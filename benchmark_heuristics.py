@@ -18,7 +18,7 @@ from instance_io import ROOT, RESULT_DIR, load_instance, write_json
 from run_experiments import METHODS  # 复用七种算法的同一份清单。
 from solution_checker import check_solution
 
-TIME_LIMIT = 60
+TIME_LIMIT = 600  # 每种方法、每个实例、每次调用的算法预算：10分钟。
 MEMORY_MIB = 2048
 STAGE_LIMIT = 30
 POLL_SECONDS = 0.05

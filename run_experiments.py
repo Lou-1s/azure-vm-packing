@@ -14,11 +14,12 @@ from packing_algorithms import (
 from kellerer_kotov import kellerer_kotov
 from milp_solver import solve_synthetic_milp, solve_aggregated_milp
 from solution_checker import check_solution
+from result_metrics import REFERENCE_FIELDS, attach_reference_metrics
 
 
-TIME_LIMIT = 300
+TIME_LIMIT = 1200  # MIP累计优化预算：20分钟。
 REPEATS = 3
-RESULT_PREFIX = "pilot_kk"  # 新结果使用新名称，保留原来的pilot_v2。
+RESULT_PREFIX = "pilot_600_1200"  # 新预算单独保存，保留历史pilot结果。
 
 # 保存函数本身，在循环中调用。
 METHODS = [
@@ -38,7 +39,7 @@ FIELDS = [
     "ratio_to_opt", "gap_to_opt", "hit_optimum",
     "ratio_to_bound", "gap_to_bound", "proof_source", "stop_reason",
     "solver_status", "solver_gap",
-]
+] + REFERENCE_FIELDS
 
 
 def measure_heuristic(algorithm, requests):
@@ -147,6 +148,8 @@ def evaluate_instance(instance):
                 row["host_count"] - optimum
             ) / optimum
             row["hit_optimum"] = row["host_count"] == optimum
+
+    attach_reference_metrics(rows)
 
     # 分组单独保存；其余模型字段保留，包括固定K的trials。
     details = {

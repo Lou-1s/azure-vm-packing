@@ -17,9 +17,11 @@ import instance_io
 import run_experiments
 import solution_checker
 import mip_progress
+import result_metrics
 from instance_io import ROOT, RESULT_DIR, load_instance, write_json
 from run_experiments import METHODS, FIELDS
 from solution_checker import check_solution
+from result_metrics import attach_reference_metrics
 
 
 BATCH_FIELDS = FIELDS + [
@@ -182,6 +184,7 @@ def evaluate_path(path, config):
             if optimum is not None:
                 row.update(ratio_to_opt=count / optimum, gap_to_opt=(count - optimum) / optimum,
                            hit_optimum=count == optimum)
+    attach_reference_metrics(rows)
     return {"instance_id": instance["instance_id"], "rows": rows, "placement_format": "vmId_only",
             "placements": placements, "calls": all_calls, "mip_details": mip_details}
 
@@ -198,7 +201,7 @@ def main(args):
     missing = [str(path) for path in paths if not path.exists()]
     if missing:
         raise FileNotFoundError("Build instances first: " + missing[0])
-    config = {"version": "batch_v2_progress", "heuristic_seconds": args.heuristic_seconds,
+    config = {"version": "batch_v3_mip_reference", "heuristic_seconds": args.heuristic_seconds,
               "memory_mib": 2048, "mip_seconds": args.mip_seconds, "solver_seed": 0,
               "repeats": "3 except n=100000: 1", "methods": [name for name, _ in METHODS],
               "upper_bound_timing": "sum of first-call wall times, including failed attempts",
@@ -206,13 +209,15 @@ def main(args):
               "python": sys.version, "gurobi": list(gp.gurobi.version()),
               "platform": platform.platform(), "processor": platform.processor(),
               "snapshot_seconds": args.snapshot_seconds,
-              "snapshot_policy": "best verified state observed no later than cutoff; early endings marked"}
+              "snapshot_policy": "best verified state observed no later than cutoff; early endings marked",
+              "quality_reference": "proven optimum; otherwise final valid MIP host count (upper bound)"}
     # 将本批实际使用的源码指纹记入配置，避免修改代码后误续用旧检查点。
     sources = [Path(__file__)] + [Path(module.__file__) for module in (
         benchmark, milp_solver, packing_algorithms, kellerer_kotov,
-        instance_io, run_experiments, solution_checker, mip_progress)]
+        instance_io, run_experiments, solution_checker, mip_progress, result_metrics)]
     config["code_sha256"] = {path.name: sha256(path.read_bytes()).hexdigest() for path in sources}
-    output_dir = args.output_dir or RESULT_DIR / ("batch_" + args.suite)
+    output_dir = args.output_dir or RESULT_DIR / (
+        f"batch_{args.suite}_h{args.heuristic_seconds:g}_m{args.mip_seconds:g}")
     all_rows = []
     for path in paths:
         instance_hash = sha256(path.read_bytes()).hexdigest()
@@ -247,7 +252,7 @@ if __name__ == "__main__":
     parser.add_argument("--suite", choices=("smoke", "real", "synthetic-quality", "synthetic-scale"), default="smoke")
     parser.add_argument("--real-dir", type=Path, default=ROOT / "data/instances/real_v2")
     parser.add_argument("--output-dir", type=Path)
-    parser.add_argument("--heuristic-seconds", type=float, default=60)
-    parser.add_argument("--mip-seconds", type=float, default=300)
+    parser.add_argument("--heuristic-seconds", type=float, default=600)
+    parser.add_argument("--mip-seconds", type=float, default=1200)
     parser.add_argument("--snapshot-seconds", type=float, default=60)
     main(parser.parse_args())

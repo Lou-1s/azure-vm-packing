@@ -1,0 +1,87 @@
+{
+  "suite": "real",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "gurobi": [
+    13,
+    0,
+    3
+  ],
+  "config": {
+    "version": "batch_v2_progress",
+    "heuristic_seconds": 60.0,
+    "memory_mib": 2048,
+    "mip_seconds": 300.0,
+    "solver_seed": 0,
+    "repeats": "3 except n=100000: 1",
+    "methods": [
+      "FF",
+      "BF",
+      "FFD-max",
+      "FFD-sum",
+      "BFD-max",
+      "DP",
+      "KK2003"
+    ],
+    "upper_bound_timing": "sum of first-call wall times, including failed attempts",
+    "solver_threads": {
+      "synthetic": 2,
+      "real": 1
+    },
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "gurobi": [
+      13,
+      0,
+      3
+    ],
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "snapshot_seconds": 60.0,
+    "snapshot_policy": "best verified state observed no later than cutoff; early endings marked",
+    "code_sha256": {
+      "run_batch.py": "67653445f8efd512f1a0dc26ee677e9232f1bfffdb5c9cfd65acec31aea43d9c",
+      "benchmark_heuristics.py": "694aca8ea0a90df941cc4bdc70111d728276e41cfe2c9b1635d7bfce7a567789",
+      "milp_solver.py": "f9f9ec854344f65865b935f600a626afe8eb4dd6bbc3abdf4642c8b0fe919712",
+      "packing_algorithms.py": "7c2984a679b338885c3127dc32b797ccaf6fba2789b9c82f2e0c78c2713d5387",
+      "kellerer_kotov.py": "7a87daf16152f7c679d166803210ed1a5df1f81d9d62df5850f9d886671b97cd",
+      "instance_io.py": "eed481c90be0f2ceb5d1ea1a7efe8ef4330b30428386bfd409c14d1b937df071",
+      "run_experiments.py": "f82f5275755d4d7fcfceeefc095385916e6c5757570f5ad5cae19a53db6d3a51",
+      "solution_checker.py": "7ca3611e2ea991a37bb3ab66ce19b7a7e36efd838c87f21ab9a195cfef1eccc8",
+      "mip_progress.py": "62c5201f77839284ad30922e021c8dcaa4c636785eede1ce3cdc837fc019c3a6"
+    }
+  },
+  "instance_ids": [
+    "real_m12_w1_2_n200",
+    "real_m12_w1_2_n1000",
+    "real_m12_w1_2_n10000",
+    "real_m12_w1_2_n20000",
+    "real_m12_w1_2_n100000",
+    "real_m12_w2_3_n200",
+    "real_m12_w2_3_n1000",
+    "real_m12_w2_3_n10000",
+    "real_m12_w2_3_n20000",
+    "real_m12_w2_3_n100000",
+    "real_m12_w3_4_n200",
+    "real_m12_w3_4_n1000",
+    "real_m12_w3_4_n10000",
+    "real_m12_w3_4_n20000",
+    "real_m12_w3_4_n100000",
+    "real_m12_w6_7_n200",
+    "real_m12_w6_7_n1000",
+    "real_m12_w6_7_n10000",
+    "real_m12_w6_7_n20000",
+    "real_m12_w6_7_n100000",
+    "real_m12_w9_10_n200",
+    "real_m12_w9_10_n1000",
+    "real_m12_w9_10_n10000",
+    "real_m12_w9_10_n20000",
+    "real_m12_w9_10_n100000",
+    "real_m12_w12_13_n200",
+    "real_m12_w12_13_n1000",
+    "real_m12_w12_13_n10000",
+    "real_m12_w12_13_n20000",
+    "real_m12_w12_13_n100000"
+  ],
+  "instances": 30,
+  "rows": 240
+}
