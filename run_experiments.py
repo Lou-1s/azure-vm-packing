@@ -19,7 +19,7 @@ from result_metrics import REFERENCE_FIELDS, attach_reference_metrics
 
 TIME_LIMIT = 1200  # MIP累计优化预算：20分钟。
 REPEATS = 3
-RESULT_PREFIX = "pilot_600_1200"  # 新预算单独保存，保留历史pilot结果。
+RESULT_PREFIX = "pilot"  # 小规模联调输出集中到checks，不混入正式结果。
 
 # 保存函数本身，在循环中调用。
 METHODS = [
@@ -161,8 +161,8 @@ def evaluate_instance(instance):
 
 def main():
     paths = [
-        ROOT / "data/instances/real_small/real_m12_w2_3_n40.json",
-        ROOT / "data/instances/real_large/real_m12_w1_2_n1000.json",
+        ROOT / "data/instances/real_v2/real_m12_w2_3_n200.json",
+        ROOT / "data/instances/real_v2/real_m12_w1_2_n1000.json",
     ] + [
         ROOT / "data/instances/synthetic_alpha"
         / f"synthetic_v2_a{percent}_s0_n100.json"
@@ -173,7 +173,7 @@ def main():
     all_placements = {}
 
     metadata = {
-        "stage": "pipeline_pilot_kk",
+        "stage": "small_pipeline_pilot",
         "python": sys.version,
         "gurobi": gp.gurobi.version(),
         "time_limit": TIME_LIMIT,
@@ -212,8 +212,9 @@ def main():
             "| Optimal:", details["optimal"],
         )
 
-    RESULT_DIR.mkdir(parents=True, exist_ok=True)
-    csv_path = RESULT_DIR / f"{RESULT_PREFIX}.csv"
+    output_dir = RESULT_DIR / "checks/pilot"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = output_dir / f"{RESULT_PREFIX}.csv"
 
     with csv_path.open("w", newline="", encoding="utf-8-sig") as file:
         writer = csv.DictWriter(file, fieldnames=FIELDS)
@@ -221,11 +222,11 @@ def main():
         writer.writerows(all_rows)
 
     write_json(
-        RESULT_DIR / f"{RESULT_PREFIX}_placements.json",
+        output_dir / f"{RESULT_PREFIX}_placements.json",
         all_placements,
     )
     write_json(
-        RESULT_DIR / f"{RESULT_PREFIX}_metadata.json",
+        output_dir / f"{RESULT_PREFIX}_metadata.json",
         metadata,
     )
 

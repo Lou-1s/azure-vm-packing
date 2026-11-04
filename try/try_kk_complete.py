@@ -1,6 +1,5 @@
-import json
+import _bootstrap  # 将项目根目录加入模块搜索路径。
 from gurobipy import GRB
-from instance_io import ROOT, load_instance
 from kellerer_kotov import kellerer_kotov
 from packing_algorithms import first_fit, first_fit_decreasing
 from solution_checker import check_solution
@@ -66,25 +65,3 @@ for name, vectors in cases:
         print("MILP status:", result["status"], "| Bound:", result["bound"])
 
 print("\nEmpty:", kellerer_kotov([]))
-
-# 读取之前已保存的7个联调实例及其已证最优值，不重跑这批MIP。
-metadata_path = ROOT / "results" / "pilot_v2_metadata.json"
-with metadata_path.open("r", encoding="utf-8") as file:
-    metadata = json.load(file)
-
-# 将文件名主体映射到路径；rglob会包含各子目录。
-paths = {path.stem: path for path in (ROOT / "data" / "instances").rglob("*.json")}
-print("\nSaved pilot instances: KK | OPT | KK/OPT")
-for name, details in metadata["mip_details"].items():
-    instance = load_instance(paths[name])
-    hosts = kellerer_kotov(instance["requests"])
-    valid, message = check_solution(instance["requests"], hosts)
-    if not valid:
-        raise ValueError(name + ": " + message)
-    # optimal=True才允许把objective作为OPT，不能将未证优的上界冒充OPT。
-    if not details["optimal"]:
-        raise ValueError("Pilot optimum has not been proved: " + name)
-    optimum = int(details["objective"])
-    if len(hosts) > 2 * optimum:
-        raise ValueError("KK exceeds 2*OPT: " + name)
-    print(name, "|", len(hosts), "|", optimum, "|", round(len(hosts) / optimum, 6))

@@ -42,7 +42,7 @@ def read_results(results_dir):
     if len(keys) != len(rows):
         raise ValueError("存在重复的实例与方法组合")
     if metadata["suite"] != "real":
-        raise ValueError("本阶段程序用于真实组，请传入 formal_real 目录")
+        raise ValueError("本阶段程序用于真实组，请传入真实组的结果目录")
     return rows, metadata
 
 
@@ -266,6 +266,6 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="分析已经完成的真实数据组，不重新运行算法或MIP")
-    parser.add_argument("--results-dir", type=Path, default=ROOT / "results/formal_real")
+    parser.add_argument("--results-dir", type=Path, default=ROOT / "results/formal_real_600_1200")
     parser.add_argument("--output", type=Path)
     main(parser.parse_args())

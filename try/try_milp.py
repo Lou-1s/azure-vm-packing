@@ -1,3 +1,4 @@
+import _bootstrap  # 将项目根目录加入模块搜索路径。
 # as gp 给 gurobipy 模块起简短名称，后面用 gp.Model、gp.quicksum 等调用。
 import gurobipy as gp
 # GRB 提供固定常量，如二元变量 BINARY、最小化 MINIMIZE、最优状态 OPTIMAL。

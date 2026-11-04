@@ -1,3 +1,4 @@
+import _bootstrap  # 将项目根目录加入模块搜索路径。
 from packing_algorithms import (
     dot_product,
     first_fit_decreasing,

@@ -1,3 +1,4 @@
+import _bootstrap  # 将项目根目录加入模块搜索路径。
 from instance_io import ROOT, load_instance
 from packing_algorithms import first_fit
 from milp_solver import solve_aggregated_milp
@@ -36,14 +37,14 @@ toy = [
     (5, 1, 5, 0.4, 0.7),
 ]
 
-# 只读取已有实例，不重新提取或覆盖结果。
+# 读取当前正式实例；前40条与原来的小规模教学批次相同。
 small = load_instance(
-    ROOT / "data" / "instances" / "real_small"
-    / "real_m12_w2_3_n40.json"
-)["requests"]
+    ROOT / "data" / "instances" / "real_v2"
+    / "real_m12_w2_3_n200.json"
+)["requests"][:40]
 
 large = load_instance(
-    ROOT / "data" / "instances" / "real_large"
+    ROOT / "data" / "instances" / "real_v2"
     / "real_m12_w1_2_n1000.json"
 )["requests"]
 

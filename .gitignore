@@ -7,6 +7,8 @@ __pycache__/
 data/raw/
 *.zip
 
-# 编辑器个人设置与学习过程记录不随项目提交。
+# 编辑器个人设置不随项目提交。
 .vscode/
-LEARNING_LOG.md
+
+# 教学检查的临时输出；正式实验结果仍可纳入Git。
+results/checks/

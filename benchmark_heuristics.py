@@ -199,7 +199,7 @@ def run_once(path, method, time_limit=TIME_LIMIT, memory_mib=MEMORY_MIB, keep_pl
 
 
 def main(output_dir):
-    paths = [ROOT / "data/instances/real_large/real_m12_w1_2_n1000.json"] + [
+    paths = [ROOT / "data/instances/real_v2/real_m12_w1_2_n1000.json"] + [
         ROOT / "data/instances/synthetic_alpha" / f"synthetic_v2_a30_s0_n{n}.json"
         for n in (1000, 5000, 10000)]
     rows = []
@@ -251,7 +251,7 @@ def main(output_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--worker", type=Path)
-    parser.add_argument("--output-dir", type=Path, default=RESULT_DIR)
+    parser.add_argument("--output-dir", type=Path, default=RESULT_DIR / "checks/benchmark")
     args = parser.parse_args()
     if args.worker is not None:
         worker(args.worker)

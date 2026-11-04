@@ -1,3 +1,4 @@
+import _bootstrap  # 将项目根目录加入模块搜索路径。
 from packing_algorithms import first_fit
 from milp_solver import solve_synthetic_milp
 from solution_checker import check_solution

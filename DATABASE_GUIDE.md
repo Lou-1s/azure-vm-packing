@@ -591,6 +591,15 @@ run_once(path, method, time_limit=600, memory_mib=2048)运行某个实例上的�
 python .\benchmark_heuristics.py --output-dir ".\results\efficiency_check"
 ```
 
+教学与检查脚本集中在`try/`文件夹。仍在项目根目录打开终端，用相对路径运行：
+
+```powershell
+Set-Location "D:\PythonProjects\azure-vm-packing"
+& ".\.venv\Scripts\python.exe" ".\try\try_first_fit.py"
+```
+
+各脚本先导入`try/_bootstrap.py`，将项目根目录加入模块搜索路径，因此可以继续导入主目录中的算法。教学检查输出写入`results/checks/`，不与正式结果混在一起。
+
 ### 25. 前缀切片、ID分组与检查点
 
 ```python
@@ -828,12 +837,12 @@ Set-Location "D:\PythonProjects\azure-vm-packing"
 
 # 指定已有许可证文件，再运行模型
 $env:GRB_LICENSE_FILE = "D:\gurobi1302\gurobi.lic"
-& ".\.venv\Scripts\python.exe" ".\try_milp.py"
+& ".\.venv\Scripts\python.exe" ".\try\try_milp.py"
 ```
 
 ### 2. 创建模型、变量与参数
 
-请求列表 `requests` 沿用 [try_milp.py](D:/PythonProjects/azure-vm-packing/try_milp.py) 中的人工例；每条为 `(vmId, vmTypeId, starttime, core, memory)`。
+请求列表 `requests` 沿用 [try_milp.py](D:/PythonProjects/azure-vm-packing/try/try_milp.py) 中的人工例；每条为 `(vmId, vmTypeId, starttime, core, memory)`。
 
 ```python
 initial_hosts = first_fit(requests)       # 先取得 FF 可行方案
@@ -1098,6 +1107,8 @@ time_limit是总优化预算，当前为1200秒；snapshot_seconds仍为60秒，
 
 reason=early_optimal表示未到目标时点就已证优；ended_before_target表示提前结束但尚未证优；observed_cutoff表示已跨过目标时点并冻结此前观测状态。CSV中的checkpoint_*列只填写在MILP行；完整两份方案位于每实例JSON的mip_details.progress中。
 
-教学演示的0.01、0.0001秒只是缩短测试等待时间；正式观测点仍为60秒，正式MIP预算已改为1200秒。新预算使用新结果目录，例如results/formal_real_600_1200；已完成的results/formal_real仍是60秒启发式、300秒MIP的历史批次，不修改其原始配置或将其标成20分钟结果。
+保留60秒记录点，用来比较继续优化是否减少主机数、提高下界或新增最优证明；它来自同一次求解，无需另跑一轮。此前真实批次在60秒后有7个实例继续改善、共少用26台，并新增1个最优证明。
 
-新版analyze_real默认仍读取旧formal_real，并从metadata显示该批实际预算；分析新批次时传入--results-dir。只有重新求解才会生成新预算结果，重新生成分析报告不会延长已结束的求解时间。
+教学演示的0.01、0.0001秒只是缩短测试等待时间；正式观测点仍为60秒，MIP预算为1200秒。新预算结果保存到例如results/formal_real_600_1200；被替代的旧实验与预检输出已清理。
+
+analyze_real默认读取results/formal_real_600_1200，并从metadata显示该批实际预算；需要分析其他结果目录时传入--results-dir。旧输出已清理。重新生成报告只读取已有结果，不会重新求解；新预算结果由正式实验运行生成。

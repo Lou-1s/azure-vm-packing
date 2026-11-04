@@ -1,3 +1,4 @@
+import _bootstrap  # 将项目根目录加入模块搜索路径。
 import argparse
 from pathlib import Path
 
@@ -28,11 +29,11 @@ def inspect_progress(name, requests, result):
     print("Target seconds:", checkpoint["requested_seconds"])
     print("Effective / observed:", round(checkpoint["effective_seconds"], 6),
           round(checkpoint["observed_seconds"], 6))
-    print("Checkpoint U / L:", checkpoint["upper_bound"], checkpoint["lower_bound"])
+    print("Checkpoint U / LB:", checkpoint["upper_bound"], checkpoint["lower_bound"])
     print("Checkpoint reason:", checkpoint["reason"])
-    print("Final U / L:", final["upper_bound"], final["lower_bound"])
+    print("Final U / LB:", final["upper_bound"], final["lower_bound"])
     print("Callback events:", progress["callback_events"])
-    print("Fixed-K calls:", len(result.get("trials", [])))
+    print("Fixed-K trials:", len(result.get("trials", [])))
     print("Both placements valid: True")
     return {"case": name, "objective": result["objective"], "bound": result["bound"],
             "optimal": result["optimal"], "solve_seconds": result["solve_seconds"],
@@ -41,7 +42,7 @@ def inspect_progress(name, requests, result):
 
 def main(output_path):
     records = []
-    real = load_instance(ROOT / "data/instances/real_small/real_m12_w2_3_n40.json")["requests"]
+    real = load_instance(ROOT / "data/instances/real_v2/real_m12_w2_3_n200.json")["requests"][:40]
     records.append(inspect_progress(
         "Real 40: ends before 60 seconds", real,
         solve_aggregated_milp(real, first_fit(real), time_limit=5),
@@ -72,5 +73,5 @@ def main(output_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output-path", type=Path, default=RESULT_DIR / "mip_progress_check.json")
+    parser.add_argument("--output-path", type=Path, default=RESULT_DIR / "checks/try/mip_progress_check.json")
     main(parser.parse_args().output_path)

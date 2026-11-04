@@ -1,4 +1,5 @@
-# 从同目录模块中导入已有函数，避免在每个实验文件里重复定义。
+import _bootstrap  # 将项目根目录加入模块搜索路径。
+# 从项目模块中导入已有函数，避免在每个实验文件里重复定义。
 from packing_algorithms import first_fit, resource_totals
 from solution_checker import check_solution
 

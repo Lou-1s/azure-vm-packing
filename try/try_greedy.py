@@ -1,3 +1,4 @@
+import _bootstrap  # 将项目根目录加入模块搜索路径。
 # 从同一个模块导入四种算法；括号允许导入语句分成多行。
 from packing_algorithms import (
     first_fit,
