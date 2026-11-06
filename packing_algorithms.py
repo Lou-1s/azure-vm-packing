@@ -1,3 +1,5 @@
+import math
+
 # 每条 request 为 (vmId, vmTypeId, starttime, CPU 份额, 内存份额)。
 # 下面的资源求和函数输入请求列表，返回 (CPU 总和, 内存总和)。
 def resource_totals(requests):
@@ -170,3 +172,5 @@ def sum_decreasing_key(request):
 def first_fit_decreasing_sum(requests):
     ordered_requests = sorted(requests, key=sum_decreasing_key)
     return first_fit(ordered_requests)
+
+

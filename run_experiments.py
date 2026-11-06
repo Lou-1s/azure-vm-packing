@@ -208,7 +208,7 @@ def main():
             instance_id,
             "| Rows:", len(rows),
             "| Best:", details["objective"],
-            "| LB:", details["bound"],
+            "| L:", details["bound"],
             "| Optimal:", details["optimal"],
         )
 

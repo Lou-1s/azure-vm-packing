@@ -1,0 +1,2876 @@
+{
+  "instance_id": "synthetic_v2_a20_s7_n100",
+  "rows": [
+    {
+      "method": "FF",
+      "host_count": 62,
+      "valid": true,
+      "status": "completed",
+      "seconds": 0.00017579999985173345,
+      "required_repeats": 3,
+      "completed_repeats": 3,
+      "wall_seconds_total": 0.5006813000036345,
+      "peak_private_mib": 14.359375,
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.087719298245614,
+      "gap_to_opt": 0.08771929824561403,
+      "hit_optimum": false,
+      "ratio_to_bound": 1.087719298245614,
+      "gap_to_bound": 0.08771929824561403,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.087719298245614,
+      "gap_to_reference": 0.08771929824561403,
+      "reaches_mip": false
+    },
+    {
+      "method": "BF",
+      "host_count": 61,
+      "valid": true,
+      "status": "completed",
+      "seconds": 0.00020139999833190814,
+      "required_repeats": 3,
+      "completed_repeats": 3,
+      "wall_seconds_total": 0.49252379999961704,
+      "peak_private_mib": 14.39453125,
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.0701754385964912,
+      "gap_to_opt": 0.07017543859649122,
+      "hit_optimum": false,
+      "ratio_to_bound": 1.0701754385964912,
+      "gap_to_bound": 0.07017543859649122,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.0701754385964912,
+      "gap_to_reference": 0.07017543859649122,
+      "reaches_mip": false
+    },
+    {
+      "method": "FFD-max",
+      "host_count": 57,
+      "valid": true,
+      "status": "completed",
+      "seconds": 0.00022460000036517158,
+      "required_repeats": 3,
+      "completed_repeats": 3,
+      "wall_seconds_total": 0.49271240000234684,
+      "peak_private_mib": 14.5234375,
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.0,
+      "gap_to_opt": 0.0,
+      "hit_optimum": true,
+      "ratio_to_bound": 1.0,
+      "gap_to_bound": 0.0,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.0,
+      "gap_to_reference": 0.0,
+      "reaches_mip": true
+    },
+    {
+      "method": "FFD-sum",
+      "host_count": 58,
+      "valid": true,
+      "status": "completed",
+      "seconds": 0.0002190000013797544,
+      "required_repeats": 3,
+      "completed_repeats": 3,
+      "wall_seconds_total": 0.492279400004918,
+      "peak_private_mib": 14.609375,
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.0175438596491229,
+      "gap_to_opt": 0.017543859649122806,
+      "hit_optimum": false,
+      "ratio_to_bound": 1.0175438596491229,
+      "gap_to_bound": 0.017543859649122806,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.0175438596491229,
+      "gap_to_reference": 0.017543859649122806,
+      "reaches_mip": false
+    },
+    {
+      "method": "BFD-max",
+      "host_count": 58,
+      "valid": true,
+      "status": "completed",
+      "seconds": 0.000271100001555169,
+      "required_repeats": 3,
+      "completed_repeats": 3,
+      "wall_seconds_total": 0.4953563999988546,
+      "peak_private_mib": 14.62109375,
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.0175438596491229,
+      "gap_to_opt": 0.017543859649122806,
+      "hit_optimum": false,
+      "ratio_to_bound": 1.0175438596491229,
+      "gap_to_bound": 0.017543859649122806,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.0175438596491229,
+      "gap_to_reference": 0.017543859649122806,
+      "reaches_mip": false
+    },
+    {
+      "method": "DP",
+      "host_count": 58,
+      "valid": true,
+      "status": "completed",
+      "seconds": 0.0007070999999996275,
+      "required_repeats": 3,
+      "completed_repeats": 3,
+      "wall_seconds_total": 0.4959822999990138,
+      "peak_private_mib": 14.67578125,
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.0175438596491229,
+      "gap_to_opt": 0.017543859649122806,
+      "hit_optimum": false,
+      "ratio_to_bound": 1.0175438596491229,
+      "gap_to_bound": 0.017543859649122806,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.0175438596491229,
+      "gap_to_reference": 0.017543859649122806,
+      "reaches_mip": false
+    },
+    {
+      "method": "KK2003",
+      "host_count": 71,
+      "valid": true,
+      "status": "completed",
+      "seconds": 0.0003116999978374224,
+      "required_repeats": 3,
+      "completed_repeats": 3,
+      "wall_seconds_total": 0.4945261000029859,
+      "peak_private_mib": 13.50390625,
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.2456140350877194,
+      "gap_to_opt": 0.24561403508771928,
+      "hit_optimum": false,
+      "ratio_to_bound": 1.2456140350877194,
+      "gap_to_bound": 0.24561403508771928,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.2456140350877194,
+      "gap_to_reference": 0.24561403508771928,
+      "reaches_mip": false
+    },
+    {
+      "method": "MILP",
+      "host_count": 57,
+      "valid": true,
+      "status": "optimal",
+      "seconds": 1.1700048000056995,
+      "upper_bound_seconds": 1.153795900005207,
+      "mip_total_seconds": 0.016208900000492577,
+      "solve_seconds": 0.015000104904174805,
+      "proof_source": "fixed_k_infeasible",
+      "stop_reason": "optimal",
+      "solver_status": null,
+      "solver_gap": null,
+      "checkpoint_target_seconds": 60.0,
+      "checkpoint_effective_seconds": 0.015000104904174805,
+      "checkpoint_observed_seconds": 0.015000104904174805,
+      "checkpoint_upper_bound": 57,
+      "checkpoint_lower_bound": 57,
+      "checkpoint_gap_to_bound": 0.0,
+      "checkpoint_reason": "early_optimal",
+      "instance_id": "synthetic_v2_a20_s7_n100",
+      "source": "synthetic",
+      "n": 100,
+      "alpha": 0.2,
+      "seed": 7,
+      "lower_bound": 57,
+      "optimum": 57,
+      "ratio_to_opt": 1.0,
+      "gap_to_opt": 0.0,
+      "hit_optimum": true,
+      "ratio_to_bound": 1.0,
+      "gap_to_bound": 0.0,
+      "reference_host_count": 57,
+      "reference_is_optimal": true,
+      "ratio_to_reference": 1.0,
+      "gap_to_reference": 0.0,
+      "reaches_mip": true
+    }
+  ],
+  "placement_format": "vmId_only",
+  "placements": {
+    "FF": [
+      [
+        0,
+        38,
+        59
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        4,
+        6,
+        43
+      ],
+      [
+        5,
+        8,
+        9
+      ],
+      [
+        7
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        12,
+        18
+      ],
+      [
+        13,
+        20
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        16,
+        26,
+        34
+      ],
+      [
+        17,
+        27
+      ],
+      [
+        19,
+        41
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        25,
+        45
+      ],
+      [
+        28,
+        56
+      ],
+      [
+        29,
+        40
+      ],
+      [
+        30
+      ],
+      [
+        31,
+        39
+      ],
+      [
+        32,
+        46,
+        76
+      ],
+      [
+        33
+      ],
+      [
+        35,
+        71
+      ],
+      [
+        36,
+        48
+      ],
+      [
+        37,
+        73
+      ],
+      [
+        42
+      ],
+      [
+        44
+      ],
+      [
+        47
+      ],
+      [
+        49,
+        54
+      ],
+      [
+        50
+      ],
+      [
+        51,
+        79
+      ],
+      [
+        52
+      ],
+      [
+        53,
+        82
+      ],
+      [
+        55,
+        58
+      ],
+      [
+        57,
+        96
+      ],
+      [
+        60,
+        65
+      ],
+      [
+        61
+      ],
+      [
+        62
+      ],
+      [
+        63
+      ],
+      [
+        64,
+        98
+      ],
+      [
+        66
+      ],
+      [
+        67,
+        85
+      ],
+      [
+        68
+      ],
+      [
+        69
+      ],
+      [
+        70
+      ],
+      [
+        72
+      ],
+      [
+        74,
+        80
+      ],
+      [
+        75
+      ],
+      [
+        77
+      ],
+      [
+        78,
+        99
+      ],
+      [
+        81
+      ],
+      [
+        83,
+        91
+      ],
+      [
+        84,
+        88
+      ],
+      [
+        86
+      ],
+      [
+        87
+      ],
+      [
+        89
+      ],
+      [
+        90
+      ],
+      [
+        92
+      ],
+      [
+        93
+      ],
+      [
+        94,
+        95
+      ],
+      [
+        97
+      ]
+    ],
+    "BF": [
+      [
+        0,
+        59
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        4,
+        6,
+        43
+      ],
+      [
+        5,
+        8,
+        9
+      ],
+      [
+        7
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        12,
+        18
+      ],
+      [
+        13,
+        29,
+        38
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        16,
+        20
+      ],
+      [
+        17,
+        27
+      ],
+      [
+        19,
+        26
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        25
+      ],
+      [
+        28,
+        41
+      ],
+      [
+        30,
+        34
+      ],
+      [
+        31,
+        39
+      ],
+      [
+        32,
+        48,
+        56
+      ],
+      [
+        33
+      ],
+      [
+        35,
+        71
+      ],
+      [
+        36,
+        45
+      ],
+      [
+        37,
+        46
+      ],
+      [
+        40,
+        65
+      ],
+      [
+        42
+      ],
+      [
+        44
+      ],
+      [
+        47
+      ],
+      [
+        49,
+        54
+      ],
+      [
+        50
+      ],
+      [
+        51,
+        79
+      ],
+      [
+        52
+      ],
+      [
+        53,
+        91
+      ],
+      [
+        55,
+        58
+      ],
+      [
+        57,
+        96
+      ],
+      [
+        60,
+        70
+      ],
+      [
+        61
+      ],
+      [
+        62,
+        76
+      ],
+      [
+        63
+      ],
+      [
+        64,
+        73
+      ],
+      [
+        66
+      ],
+      [
+        67
+      ],
+      [
+        68
+      ],
+      [
+        69
+      ],
+      [
+        72,
+        82
+      ],
+      [
+        74,
+        80
+      ],
+      [
+        75
+      ],
+      [
+        77
+      ],
+      [
+        78,
+        99
+      ],
+      [
+        81
+      ],
+      [
+        83,
+        85
+      ],
+      [
+        84,
+        88
+      ],
+      [
+        86
+      ],
+      [
+        87
+      ],
+      [
+        89,
+        98
+      ],
+      [
+        90
+      ],
+      [
+        92
+      ],
+      [
+        93
+      ],
+      [
+        94,
+        95
+      ],
+      [
+        97
+      ]
+    ],
+    "FFD-max": [
+      [
+        61
+      ],
+      [
+        86
+      ],
+      [
+        70,
+        60
+      ],
+      [
+        94,
+        95
+      ],
+      [
+        63
+      ],
+      [
+        78,
+        13
+      ],
+      [
+        87,
+        38
+      ],
+      [
+        24
+      ],
+      [
+        47
+      ],
+      [
+        68,
+        9
+      ],
+      [
+        77,
+        43
+      ],
+      [
+        52,
+        59
+      ],
+      [
+        44
+      ],
+      [
+        22
+      ],
+      [
+        42
+      ],
+      [
+        7
+      ],
+      [
+        0
+      ],
+      [
+        65,
+        40
+      ],
+      [
+        69
+      ],
+      [
+        21
+      ],
+      [
+        33
+      ],
+      [
+        66,
+        4
+      ],
+      [
+        75,
+        3
+      ],
+      [
+        23
+      ],
+      [
+        71,
+        53
+      ],
+      [
+        50
+      ],
+      [
+        29,
+        90
+      ],
+      [
+        81,
+        8
+      ],
+      [
+        30,
+        41
+      ],
+      [
+        49,
+        14
+      ],
+      [
+        72,
+        76
+      ],
+      [
+        62,
+        82
+      ],
+      [
+        51,
+        79
+      ],
+      [
+        35,
+        91
+      ],
+      [
+        92,
+        26
+      ],
+      [
+        19,
+        56
+      ],
+      [
+        64,
+        18
+      ],
+      [
+        28,
+        73
+      ],
+      [
+        93,
+        96
+      ],
+      [
+        36,
+        48
+      ],
+      [
+        25,
+        85
+      ],
+      [
+        12,
+        6
+      ],
+      [
+        37,
+        46
+      ],
+      [
+        1,
+        39
+      ],
+      [
+        67,
+        27
+      ],
+      [
+        57,
+        98
+      ],
+      [
+        31,
+        80
+      ],
+      [
+        74,
+        58
+      ],
+      [
+        83,
+        15
+      ],
+      [
+        97,
+        54
+      ],
+      [
+        17,
+        11
+      ],
+      [
+        16,
+        99
+      ],
+      [
+        5,
+        32
+      ],
+      [
+        89,
+        2
+      ],
+      [
+        88,
+        10
+      ],
+      [
+        55,
+        84
+      ],
+      [
+        20,
+        45,
+        34
+      ]
+    ],
+    "FFD-sum": [
+      [
+        24,
+        38
+      ],
+      [
+        47
+      ],
+      [
+        0,
+        59
+      ],
+      [
+        23
+      ],
+      [
+        69
+      ],
+      [
+        33
+      ],
+      [
+        52
+      ],
+      [
+        68,
+        9
+      ],
+      [
+        22
+      ],
+      [
+        7
+      ],
+      [
+        87
+      ],
+      [
+        78,
+        13
+      ],
+      [
+        61
+      ],
+      [
+        21
+      ],
+      [
+        63
+      ],
+      [
+        65,
+        40
+      ],
+      [
+        62,
+        76
+      ],
+      [
+        77,
+        43
+      ],
+      [
+        70,
+        60
+      ],
+      [
+        30,
+        3
+      ],
+      [
+        28,
+        82
+      ],
+      [
+        49,
+        90
+      ],
+      [
+        36,
+        8
+      ],
+      [
+        72,
+        45
+      ],
+      [
+        29,
+        14
+      ],
+      [
+        75,
+        4
+      ],
+      [
+        19,
+        26
+      ],
+      [
+        31,
+        39
+      ],
+      [
+        66
+      ],
+      [
+        81,
+        41
+      ],
+      [
+        74,
+        27
+      ],
+      [
+        42
+      ],
+      [
+        1,
+        46
+      ],
+      [
+        50
+      ],
+      [
+        64,
+        18
+      ],
+      [
+        94,
+        95
+      ],
+      [
+        71,
+        35
+      ],
+      [
+        44
+      ],
+      [
+        57,
+        96
+      ],
+      [
+        86
+      ],
+      [
+        85,
+        12
+      ],
+      [
+        51,
+        79
+      ],
+      [
+        89,
+        88
+      ],
+      [
+        93,
+        91
+      ],
+      [
+        92,
+        56
+      ],
+      [
+        97,
+        15
+      ],
+      [
+        37,
+        48
+      ],
+      [
+        10,
+        84
+      ],
+      [
+        16,
+        54
+      ],
+      [
+        17,
+        20
+      ],
+      [
+        5,
+        32
+      ],
+      [
+        53,
+        34
+      ],
+      [
+        83,
+        58
+      ],
+      [
+        25,
+        73
+      ],
+      [
+        67,
+        98
+      ],
+      [
+        55,
+        2
+      ],
+      [
+        11,
+        80
+      ],
+      [
+        99,
+        6
+      ]
+    ],
+    "BFD-max": [
+      [
+        61
+      ],
+      [
+        86
+      ],
+      [
+        70,
+        60
+      ],
+      [
+        94,
+        95
+      ],
+      [
+        63
+      ],
+      [
+        78,
+        13
+      ],
+      [
+        87
+      ],
+      [
+        24
+      ],
+      [
+        47
+      ],
+      [
+        68,
+        9
+      ],
+      [
+        77,
+        43
+      ],
+      [
+        52
+      ],
+      [
+        44
+      ],
+      [
+        22
+      ],
+      [
+        42
+      ],
+      [
+        7
+      ],
+      [
+        0,
+        59
+      ],
+      [
+        65,
+        40
+      ],
+      [
+        69
+      ],
+      [
+        21
+      ],
+      [
+        33
+      ],
+      [
+        66
+      ],
+      [
+        75,
+        4
+      ],
+      [
+        23
+      ],
+      [
+        71,
+        53
+      ],
+      [
+        50
+      ],
+      [
+        29,
+        14
+      ],
+      [
+        81,
+        41
+      ],
+      [
+        30,
+        3,
+        38
+      ],
+      [
+        49,
+        90
+      ],
+      [
+        72,
+        45
+      ],
+      [
+        62,
+        76
+      ],
+      [
+        51,
+        79
+      ],
+      [
+        35,
+        34
+      ],
+      [
+        92,
+        56
+      ],
+      [
+        19,
+        26
+      ],
+      [
+        64,
+        18
+      ],
+      [
+        28,
+        82
+      ],
+      [
+        93,
+        91
+      ],
+      [
+        36,
+        8
+      ],
+      [
+        25,
+        96
+      ],
+      [
+        12,
+        85
+      ],
+      [
+        37,
+        46
+      ],
+      [
+        1,
+        39
+      ],
+      [
+        67,
+        48
+      ],
+      [
+        57,
+        27
+      ],
+      [
+        31,
+        80
+      ],
+      [
+        74,
+        58
+      ],
+      [
+        83,
+        15
+      ],
+      [
+        97,
+        54
+      ],
+      [
+        17,
+        11
+      ],
+      [
+        16,
+        99
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        89,
+        32
+      ],
+      [
+        88,
+        10
+      ],
+      [
+        55,
+        84
+      ],
+      [
+        20,
+        73,
+        6
+      ],
+      [
+        98
+      ]
+    ],
+    "DP": [
+      [
+        24,
+        38
+      ],
+      [
+        47
+      ],
+      [
+        0,
+        59
+      ],
+      [
+        23
+      ],
+      [
+        69
+      ],
+      [
+        33
+      ],
+      [
+        52
+      ],
+      [
+        68,
+        9
+      ],
+      [
+        22
+      ],
+      [
+        7
+      ],
+      [
+        87
+      ],
+      [
+        78,
+        13
+      ],
+      [
+        61
+      ],
+      [
+        21
+      ],
+      [
+        63
+      ],
+      [
+        65,
+        40
+      ],
+      [
+        62,
+        76
+      ],
+      [
+        77,
+        43
+      ],
+      [
+        70,
+        60
+      ],
+      [
+        30,
+        3
+      ],
+      [
+        28,
+        82
+      ],
+      [
+        49,
+        90
+      ],
+      [
+        36,
+        8
+      ],
+      [
+        72,
+        45
+      ],
+      [
+        29,
+        14
+      ],
+      [
+        75,
+        4
+      ],
+      [
+        19,
+        26
+      ],
+      [
+        31,
+        39
+      ],
+      [
+        66
+      ],
+      [
+        81,
+        41
+      ],
+      [
+        74,
+        27
+      ],
+      [
+        42
+      ],
+      [
+        1,
+        96
+      ],
+      [
+        50
+      ],
+      [
+        64,
+        18
+      ],
+      [
+        94,
+        95
+      ],
+      [
+        71,
+        53
+      ],
+      [
+        44
+      ],
+      [
+        57,
+        46
+      ],
+      [
+        86
+      ],
+      [
+        85,
+        12
+      ],
+      [
+        51,
+        79
+      ],
+      [
+        89,
+        88
+      ],
+      [
+        93,
+        91
+      ],
+      [
+        92,
+        56
+      ],
+      [
+        97,
+        15
+      ],
+      [
+        37,
+        48
+      ],
+      [
+        10,
+        84
+      ],
+      [
+        16,
+        54
+      ],
+      [
+        17,
+        20
+      ],
+      [
+        35,
+        34
+      ],
+      [
+        5,
+        32
+      ],
+      [
+        83,
+        58
+      ],
+      [
+        25,
+        73
+      ],
+      [
+        67,
+        98
+      ],
+      [
+        55,
+        11
+      ],
+      [
+        2,
+        80
+      ],
+      [
+        99,
+        6
+      ]
+    ],
+    "KK2003": [
+      [
+        0
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        28
+      ],
+      [
+        31
+      ],
+      [
+        33
+      ],
+      [
+        36
+      ],
+      [
+        47
+      ],
+      [
+        52
+      ],
+      [
+        62
+      ],
+      [
+        68
+      ],
+      [
+        69
+      ],
+      [
+        74
+      ],
+      [
+        61
+      ],
+      [
+        70
+      ],
+      [
+        86
+      ],
+      [
+        94
+      ],
+      [
+        63
+      ],
+      [
+        78
+      ],
+      [
+        87
+      ],
+      [
+        65
+      ],
+      [
+        77
+      ],
+      [
+        71
+      ],
+      [
+        44
+      ],
+      [
+        29,
+        59,
+        38
+      ],
+      [
+        22
+      ],
+      [
+        49
+      ],
+      [
+        42
+      ],
+      [
+        79,
+        4
+      ],
+      [
+        7
+      ],
+      [
+        85
+      ],
+      [
+        21
+      ],
+      [
+        91
+      ],
+      [
+        66,
+        43
+      ],
+      [
+        75
+      ],
+      [
+        18,
+        8
+      ],
+      [
+        50,
+        3
+      ],
+      [
+        81
+      ],
+      [
+        45,
+        76,
+        41,
+        34
+      ],
+      [
+        30
+      ],
+      [
+        82
+      ],
+      [
+        95
+      ],
+      [
+        53
+      ],
+      [
+        72
+      ],
+      [
+        51
+      ],
+      [
+        35
+      ],
+      [
+        92
+      ],
+      [
+        26,
+        56
+      ],
+      [
+        19
+      ],
+      [
+        64,
+        98
+      ],
+      [
+        93,
+        6
+      ],
+      [
+        96,
+        48,
+        73
+      ],
+      [
+        25,
+        9
+      ],
+      [
+        12
+      ],
+      [
+        37,
+        46
+      ],
+      [
+        1,
+        39
+      ],
+      [
+        67,
+        27
+      ],
+      [
+        57
+      ],
+      [
+        13,
+        58
+      ],
+      [
+        20,
+        80
+      ],
+      [
+        83,
+        15
+      ],
+      [
+        40
+      ],
+      [
+        97,
+        54
+      ],
+      [
+        17,
+        11
+      ],
+      [
+        90,
+        84
+      ],
+      [
+        16,
+        99
+      ],
+      [
+        14,
+        10
+      ],
+      [
+        5,
+        88
+      ],
+      [
+        2,
+        32
+      ],
+      [
+        55,
+        60
+      ],
+      [
+        89
+      ]
+    ],
+    "MILP": [
+      [
+        61
+      ],
+      [
+        86
+      ],
+      [
+        70,
+        60
+      ],
+      [
+        94,
+        95
+      ],
+      [
+        63
+      ],
+      [
+        78,
+        13
+      ],
+      [
+        87,
+        38
+      ],
+      [
+        24
+      ],
+      [
+        47
+      ],
+      [
+        68,
+        9
+      ],
+      [
+        77,
+        43
+      ],
+      [
+        52,
+        59
+      ],
+      [
+        44
+      ],
+      [
+        22
+      ],
+      [
+        42
+      ],
+      [
+        7
+      ],
+      [
+        0
+      ],
+      [
+        65,
+        40
+      ],
+      [
+        69
+      ],
+      [
+        21
+      ],
+      [
+        33
+      ],
+      [
+        66,
+        4
+      ],
+      [
+        75,
+        3
+      ],
+      [
+        23
+      ],
+      [
+        71,
+        53
+      ],
+      [
+        50
+      ],
+      [
+        29,
+        90
+      ],
+      [
+        81,
+        8
+      ],
+      [
+        30,
+        41
+      ],
+      [
+        49,
+        14
+      ],
+      [
+        72,
+        76
+      ],
+      [
+        62,
+        82
+      ],
+      [
+        51,
+        79
+      ],
+      [
+        35,
+        91
+      ],
+      [
+        92,
+        26
+      ],
+      [
+        19,
+        56
+      ],
+      [
+        64,
+        18
+      ],
+      [
+        28,
+        73
+      ],
+      [
+        93,
+        96
+      ],
+      [
+        36,
+        48
+      ],
+      [
+        25,
+        85
+      ],
+      [
+        12,
+        6
+      ],
+      [
+        37,
+        46
+      ],
+      [
+        1,
+        39
+      ],
+      [
+        67,
+        27
+      ],
+      [
+        57,
+        98
+      ],
+      [
+        31,
+        80
+      ],
+      [
+        74,
+        58
+      ],
+      [
+        83,
+        15
+      ],
+      [
+        97,
+        54
+      ],
+      [
+        17,
+        11
+      ],
+      [
+        16,
+        99
+      ],
+      [
+        5,
+        32
+      ],
+      [
+        89,
+        2
+      ],
+      [
+        88,
+        10
+      ],
+      [
+        55,
+        84
+      ],
+      [
+        20,
+        45,
+        34
+      ]
+    ]
+  },
+  "calls": {
+    "FF": [
+      {
+        "status": "completed",
+        "seconds": 0.00017579999985173345,
+        "valid": true,
+        "host_count": 62,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00017579999985173345,
+        "exit_code": 0,
+        "method": "FF",
+        "wall_seconds": 0.16504550000172458,
+        "peak_private_mib": 13.0390625,
+        "repeat": 1
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0001742999993439298,
+        "valid": true,
+        "host_count": 62,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0001742999993439298,
+        "exit_code": 0,
+        "method": "FF",
+        "wall_seconds": 0.17011980000097537,
+        "peak_private_mib": 14.359375,
+        "repeat": 2
+      },
+      {
+        "status": "completed",
+        "seconds": 0.00017660000230534934,
+        "valid": true,
+        "host_count": 62,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00017660000230534934,
+        "exit_code": 0,
+        "method": "FF",
+        "wall_seconds": 0.16551600000093458,
+        "peak_private_mib": 14.16015625,
+        "repeat": 3
+      }
+    ],
+    "BF": [
+      {
+        "status": "completed",
+        "seconds": 0.00020139999833190814,
+        "valid": true,
+        "host_count": 61,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00020139999833190814,
+        "exit_code": 0,
+        "method": "BF",
+        "wall_seconds": 0.1648042999986501,
+        "peak_private_mib": 14.32421875,
+        "repeat": 1
+      },
+      {
+        "status": "completed",
+        "seconds": 0.00019999999858555384,
+        "valid": true,
+        "host_count": 61,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00019999999858555384,
+        "exit_code": 0,
+        "method": "BF",
+        "wall_seconds": 0.1639260000010836,
+        "peak_private_mib": 14.39453125,
+        "repeat": 2
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0002085999985865783,
+        "valid": true,
+        "host_count": 61,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0002085999985865783,
+        "exit_code": 0,
+        "method": "BF",
+        "wall_seconds": 0.16379349999988335,
+        "peak_private_mib": 13.09765625,
+        "repeat": 3
+      }
+    ],
+    "FFD-max": [
+      {
+        "status": "completed",
+        "seconds": 0.00025260000256821513,
+        "valid": true,
+        "host_count": 57,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00025260000256821513,
+        "exit_code": 0,
+        "method": "FFD-max",
+        "wall_seconds": 0.1645477000020037,
+        "peak_private_mib": 13.234375,
+        "repeat": 1
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0002195999986724928,
+        "valid": true,
+        "host_count": 57,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0002195999986724928,
+        "exit_code": 0,
+        "method": "FFD-max",
+        "wall_seconds": 0.16389019999769516,
+        "peak_private_mib": 14.4765625,
+        "repeat": 2
+      },
+      {
+        "status": "completed",
+        "seconds": 0.00022460000036517158,
+        "valid": true,
+        "host_count": 57,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00022460000036517158,
+        "exit_code": 0,
+        "method": "FFD-max",
+        "wall_seconds": 0.16427450000264798,
+        "peak_private_mib": 14.5234375,
+        "repeat": 3
+      }
+    ],
+    "FFD-sum": [
+      {
+        "status": "completed",
+        "seconds": 0.00023079999664332718,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00023079999664332718,
+        "exit_code": 0,
+        "method": "FFD-sum",
+        "wall_seconds": 0.16355620000103954,
+        "peak_private_mib": 13.140625,
+        "repeat": 1
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0002190000013797544,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0002190000013797544,
+        "exit_code": 0,
+        "method": "FFD-sum",
+        "wall_seconds": 0.1641001000025426,
+        "peak_private_mib": 13.1875,
+        "repeat": 2
+      },
+      {
+        "status": "completed",
+        "seconds": 0.00021660000129486434,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00021660000129486434,
+        "exit_code": 0,
+        "method": "FFD-sum",
+        "wall_seconds": 0.16462310000133584,
+        "peak_private_mib": 14.609375,
+        "repeat": 3
+      }
+    ],
+    "BFD-max": [
+      {
+        "status": "completed",
+        "seconds": 0.000271100001555169,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.000271100001555169,
+        "exit_code": 0,
+        "method": "BFD-max",
+        "wall_seconds": 0.16481349999958184,
+        "peak_private_mib": 13.4140625,
+        "repeat": 1
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0002689000029931776,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0002689000029931776,
+        "exit_code": 0,
+        "method": "BFD-max",
+        "wall_seconds": 0.16403709999940475,
+        "peak_private_mib": 14.51953125,
+        "repeat": 2
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0002745000019785948,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0002745000019785948,
+        "exit_code": 0,
+        "method": "BFD-max",
+        "wall_seconds": 0.16650579999986803,
+        "peak_private_mib": 14.62109375,
+        "repeat": 3
+      }
+    ],
+    "DP": [
+      {
+        "status": "completed",
+        "seconds": 0.0007070999999996275,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0007070999999996275,
+        "exit_code": 0,
+        "method": "DP",
+        "wall_seconds": 0.1664667000004556,
+        "peak_private_mib": 14.67578125,
+        "repeat": 1
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0006912999997439329,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0006912999997439329,
+        "exit_code": 0,
+        "method": "DP",
+        "wall_seconds": 0.1648921000014525,
+        "peak_private_mib": 13.4609375,
+        "repeat": 2
+      },
+      {
+        "status": "completed",
+        "seconds": 0.000787000000855187,
+        "valid": true,
+        "host_count": 58,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.000787000000855187,
+        "exit_code": 0,
+        "method": "DP",
+        "wall_seconds": 0.16462349999710568,
+        "peak_private_mib": 12.91796875,
+        "repeat": 3
+      }
+    ],
+    "KK2003": [
+      {
+        "status": "completed",
+        "seconds": 0.00031010000020614825,
+        "valid": true,
+        "host_count": 71,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00031010000020614825,
+        "exit_code": 0,
+        "method": "KK2003",
+        "wall_seconds": 0.16456200000175158,
+        "peak_private_mib": 13.453125,
+        "repeat": 1
+      },
+      {
+        "status": "completed",
+        "seconds": 0.0003116999978374224,
+        "valid": true,
+        "host_count": 71,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.0003116999978374224,
+        "exit_code": 0,
+        "method": "KK2003",
+        "wall_seconds": 0.16466100000252482,
+        "peak_private_mib": 13.05859375,
+        "repeat": 2
+      },
+      {
+        "status": "completed",
+        "seconds": 0.00043849999929079786,
+        "valid": true,
+        "host_count": 71,
+        "input_unchanged": true,
+        "message": "OK",
+        "algorithm_elapsed_seconds": 0.00043849999929079786,
+        "exit_code": 0,
+        "method": "KK2003",
+        "wall_seconds": 0.1653030999987095,
+        "peak_private_mib": 13.50390625,
+        "repeat": 3
+      }
+    ]
+  },
+  "mip_details": {
+    "initial_host_count": 57,
+    "objective": 57,
+    "bound": 57,
+    "optimal": true,
+    "proof_source": "fixed_k_infeasible",
+    "stop_reason": "optimal",
+    "gap_to_bound": 0.0,
+    "solve_seconds": 0.015000104904174805,
+    "trials": [
+      {
+        "k": 56,
+        "feasible": false,
+        "solver_status": 3,
+        "reason": "solver_infeasible",
+        "candidate_count": 837,
+        "solve_seconds": 0.015000104904174805,
+        "total_seconds": 0.015032899998914218,
+        "lower_before": 55,
+        "upper_before": 57,
+        "lower_after": 57,
+        "upper_after": 57
+      }
+    ],
+    "progress": {
+      "time_basis": "cumulative Gurobi Runtime; preprocessing/building excluded",
+      "observation_policy": "best verified state observed at or before the requested cutoff",
+      "callback_events": 3,
+      "checkpoint": {
+        "requested_seconds": 60.0,
+        "effective_seconds": 0.015000104904174805,
+        "observed_seconds": 0.015000104904174805,
+        "solution_observed_seconds": 0.0,
+        "bound_observed_seconds": 0.015000104904174805,
+        "upper_bound": 57,
+        "lower_bound": 57,
+        "optimal": true,
+        "gap_to_bound": 0.0,
+        "reason": "early_optimal",
+        "placement_ids": [
+          [
+            61
+          ],
+          [
+            86
+          ],
+          [
+            70,
+            60
+          ],
+          [
+            94,
+            95
+          ],
+          [
+            63
+          ],
+          [
+            78,
+            13
+          ],
+          [
+            87,
+            38
+          ],
+          [
+            24
+          ],
+          [
+            47
+          ],
+          [
+            68,
+            9
+          ],
+          [
+            77,
+            43
+          ],
+          [
+            52,
+            59
+          ],
+          [
+            44
+          ],
+          [
+            22
+          ],
+          [
+            42
+          ],
+          [
+            7
+          ],
+          [
+            0
+          ],
+          [
+            65,
+            40
+          ],
+          [
+            69
+          ],
+          [
+            21
+          ],
+          [
+            33
+          ],
+          [
+            66,
+            4
+          ],
+          [
+            75,
+            3
+          ],
+          [
+            23
+          ],
+          [
+            71,
+            53
+          ],
+          [
+            50
+          ],
+          [
+            29,
+            90
+          ],
+          [
+            81,
+            8
+          ],
+          [
+            30,
+            41
+          ],
+          [
+            49,
+            14
+          ],
+          [
+            72,
+            76
+          ],
+          [
+            62,
+            82
+          ],
+          [
+            51,
+            79
+          ],
+          [
+            35,
+            91
+          ],
+          [
+            92,
+            26
+          ],
+          [
+            19,
+            56
+          ],
+          [
+            64,
+            18
+          ],
+          [
+            28,
+            73
+          ],
+          [
+            93,
+            96
+          ],
+          [
+            36,
+            48
+          ],
+          [
+            25,
+            85
+          ],
+          [
+            12,
+            6
+          ],
+          [
+            37,
+            46
+          ],
+          [
+            1,
+            39
+          ],
+          [
+            67,
+            27
+          ],
+          [
+            57,
+            98
+          ],
+          [
+            31,
+            80
+          ],
+          [
+            74,
+            58
+          ],
+          [
+            83,
+            15
+          ],
+          [
+            97,
+            54
+          ],
+          [
+            17,
+            11
+          ],
+          [
+            16,
+            99
+          ],
+          [
+            5,
+            32
+          ],
+          [
+            89,
+            2
+          ],
+          [
+            88,
+            10
+          ],
+          [
+            55,
+            84
+          ],
+          [
+            20,
+            45,
+            34
+          ]
+        ]
+      },
+      "final": {
+        "requested_seconds": 60.0,
+        "effective_seconds": 0.015000104904174805,
+        "observed_seconds": 0.015000104904174805,
+        "solution_observed_seconds": 0.0,
+        "bound_observed_seconds": 0.015000104904174805,
+        "upper_bound": 57,
+        "lower_bound": 57,
+        "optimal": true,
+        "gap_to_bound": 0.0,
+        "reason": "solver_end",
+        "placement_ids": [
+          [
+            61
+          ],
+          [
+            86
+          ],
+          [
+            70,
+            60
+          ],
+          [
+            94,
+            95
+          ],
+          [
+            63
+          ],
+          [
+            78,
+            13
+          ],
+          [
+            87,
+            38
+          ],
+          [
+            24
+          ],
+          [
+            47
+          ],
+          [
+            68,
+            9
+          ],
+          [
+            77,
+            43
+          ],
+          [
+            52,
+            59
+          ],
+          [
+            44
+          ],
+          [
+            22
+          ],
+          [
+            42
+          ],
+          [
+            7
+          ],
+          [
+            0
+          ],
+          [
+            65,
+            40
+          ],
+          [
+            69
+          ],
+          [
+            21
+          ],
+          [
+            33
+          ],
+          [
+            66,
+            4
+          ],
+          [
+            75,
+            3
+          ],
+          [
+            23
+          ],
+          [
+            71,
+            53
+          ],
+          [
+            50
+          ],
+          [
+            29,
+            90
+          ],
+          [
+            81,
+            8
+          ],
+          [
+            30,
+            41
+          ],
+          [
+            49,
+            14
+          ],
+          [
+            72,
+            76
+          ],
+          [
+            62,
+            82
+          ],
+          [
+            51,
+            79
+          ],
+          [
+            35,
+            91
+          ],
+          [
+            92,
+            26
+          ],
+          [
+            19,
+            56
+          ],
+          [
+            64,
+            18
+          ],
+          [
+            28,
+            73
+          ],
+          [
+            93,
+            96
+          ],
+          [
+            36,
+            48
+          ],
+          [
+            25,
+            85
+          ],
+          [
+            12,
+            6
+          ],
+          [
+            37,
+            46
+          ],
+          [
+            1,
+            39
+          ],
+          [
+            67,
+            27
+          ],
+          [
+            57,
+            98
+          ],
+          [
+            31,
+            80
+          ],
+          [
+            74,
+            58
+          ],
+          [
+            83,
+            15
+          ],
+          [
+            97,
+            54
+          ],
+          [
+            17,
+            11
+          ],
+          [
+            16,
+            99
+          ],
+          [
+            5,
+            32
+          ],
+          [
+            89,
+            2
+          ],
+          [
+            88,
+            10
+          ],
+          [
+            55,
+            84
+          ],
+          [
+            20,
+            45,
+            34
+          ]
+        ]
+      }
+    },
+    "solver_parameters": {
+      "seed": 0,
+      "threads": 2,
+      "solution_limit": 1,
+      "soft_mem_limit_gb": 2.0,
+      "feasibility_tol": 1e-09,
+      "int_feas_tol": 1e-09,
+      "optimization_budget_seconds": 1200.0,
+      "snapshot_seconds": 60.0
+    },
+    "total_seconds": 0.016208900000492577,
+    "initial_source": "best_successful_first_call"
+  },
+  "instance_sha256": "c9975354598a1d3773f9ef49d06be3e7da87e8297723451b0035d874ecccf0f5",
+  "config": {
+    "version": "batch_v3_mip_reference",
+    "heuristic_seconds": 600.0,
+    "memory_mib": 2048,
+    "mip_seconds": 1200.0,
+    "solver_seed": 0,
+    "repeats": "3 except n=100000: 1",
+    "methods": [
+      "FF",
+      "BF",
+      "FFD-max",
+      "FFD-sum",
+      "BFD-max",
+      "DP",
+      "KK2003"
+    ],
+    "upper_bound_timing": "sum of first-call wall times, including failed attempts",
+    "solver_threads": {
+      "synthetic": 2,
+      "real": 1
+    },
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "gurobi": [
+      13,
+      0,
+      3
+    ],
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+    "snapshot_seconds": 60.0,
+    "snapshot_policy": "best verified state observed no later than cutoff; early endings marked",
+    "quality_reference": "proven optimum; otherwise final valid MIP host count (upper bound)",
+    "code_sha256": {
+      "run_batch.py": "b9e2e6a8f777d0c84178505272c5d4edc6bbd470ed867b1bad93d3a7c69a70b2",
+      "benchmark_heuristics.py": "3c61b2a0522e97d9429c6e8fcd4f5bb8a430ab67ee5d21287ec790c59e4148ce",
+      "milp_solver.py": "8a2d7112a0ed571f0cf7dfb6e9f860f07014e2e74a44a5a07fac11ec59cf1600",
+      "packing_algorithms.py": "7c2984a679b338885c3127dc32b797ccaf6fba2789b9c82f2e0c78c2713d5387",
+      "kellerer_kotov.py": "7a87daf16152f7c679d166803210ed1a5df1f81d9d62df5850f9d886671b97cd",
+      "instance_io.py": "f1afe84cb9bce7d534c26b680f67be518d90454e6d4e6f41c7ff85b12e397a2b",
+      "run_experiments.py": "334e1bbb8595baeddda0bb5964c70a707bc37aafc8b01a8d29613c9ebf93230c",
+      "solution_checker.py": "7ca3611e2ea991a37bb3ab66ce19b7a7e36efd838c87f21ab9a195cfef1eccc8",
+      "mip_progress.py": "62c5201f77839284ad30922e021c8dcaa4c636785eede1ce3cdc837fc019c3a6",
+      "result_metrics.py": "175835306121f6cf753d9f51e3f8802bb97fec76bec8e74fbed3ffebf7ba1303"
+    }
+  }
+}

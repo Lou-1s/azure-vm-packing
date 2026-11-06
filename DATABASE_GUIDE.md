@@ -665,6 +665,70 @@ by_instance.setdefault("case_1", {})["FFD-max"] = 23
 
 `f"{value:.6f}"`把数值显示为六位小数；`f"{value:.{digits}f}"`用变量`digits`指定小数位。只改变显示，不改变原始数据。`"\n".join(lines)`用换行连接多行文本；`path.write_text(text, encoding="utf-8")`将文本覆盖写入文件，本项目用于生成Markdown分析报告。
 
+### 27. 按多个实验条件分组
+
+```python
+keys = sorted({(row["n"], row["alpha"]) for row in rows})
+for n, alpha in keys:
+    selected = [row for row in rows if row["n"] == n and row["alpha"] == alpha]
+```
+
+`(n, alpha)`将两个条件组合成一个元组；集合`{...}`去重，`sorted`先按n、再按alpha排序。`selected`保存同一规模和方向比例下、不同seed及方法的结果；再筛方法即可比较多个随机实例。
+
+质量指标先对每个实例计算比值，再求平均。计时先使用每个实例已保存的重复中位数，再取不同seed之间的中位数；三次计时调用不会变成三个质量样本。首遍有效但后续计时失败时，质量仍可用，完整计时留空。
+
+`analyze_synthetic.py`默认读取两组合成实验的summary.csv与metadata.json，分别生成各目录的analysis.md，不调用算法或求解器。质量组使用OPT/未证优MIP方案参照；规模组没有MIP，继续报告相对真实下界L的指标。
+
+### 28. 用Matplotlib生成实验图
+
+先在PowerShell中安装到项目虚拟环境：
+
+```powershell
+Set-Location "D:\PythonProjects\azure-vm-packing"
+& ".\.venv\Scripts\python.exe" -m pip install matplotlib==3.10.7
+
+# 或按项目清单安装全部依赖。
+& ".\.venv\Scripts\python.exe" -m pip install -r requirements.txt
+
+# 检查使用的解释器和已安装版本。
+& ".\.venv\Scripts\python.exe" -c "import sys, matplotlib; print(sys.executable); print(matplotlib.__version__)"
+```
+
+`-m pip`让指定的Python运行自己的包管理工具，所以库安装到当前项目的`.venv`。新终端显式使用这个解释器时无需先激活；激活后也可以用`python -m pip install matplotlib==3.10.7`。这些安装命令在终端执行，不是写入`.py`文件的Python语句。看到`Requirement already satisfied`表示所需版本已经安装。
+
+安装后，在Python代码中使用：
+
+```python
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.plot([200, 1000, 10000], [0.001, 0.01, 1.0], marker="o", linestyle="--", label="FF")
+ax.set_xlabel("Requests")
+ax.set_ylabel("Seconds")
+ax.set_xscale("log")
+ax.legend()
+fig.savefig("example.png", dpi=180)
+plt.close(fig)
+```
+
+`fig`是整张图，`ax`是其中一个绘图区；`plot(x, y)`按位置配对横纵坐标，`marker`指定点形状，`linestyle="--"`指定虚线，`label`提供图例名称。`set_xlabel/set_ylabel`设置轴标签，`legend`显示图例。对数轴适合展示跨数量级的数据，不同位置间的距离表示倍数关系。
+
+`savefig`根据后缀保存PNG或PDF；`dpi`控制PNG分辨率，PDF保留矢量线条。`close`释放图对象。批量脚本在导入pyplot前调用`matplotlib.use("Agg")`，用于直接保存文件。`float("nan")`可让缺失点形成断线，不把超时填成0或预算秒数。
+
+```python
+def select(rows, method, **conditions):
+    return [row for row in rows if row["method"] == method
+            and all(row[key] == value for key, value in conditions.items())]
+
+selected = select(rows, "FF", n=1000, alpha=0.3)
+```
+
+`**conditions`接收额外关键字参数，上例得到`{"n": 1000, "alpha": 0.3}`，便于复用筛选函数。`zip(names, colors, markers, linestyles)`把多个列表同位置的元素配成一组；本项目用于统一七算法的颜色、点形状与虚线样式。
+
+plot_results只读取结果与分析模块，输出六组PNG/PDF、逐点数据plot_data.json和中文图注FIGURE_GUIDE.md。参照差距R与真实下界L分开作图，耗时图与完整计时覆盖图配套阅读。
+
+图06比较同一次MIP求解在60秒记录与结束时的证优比例，用于观察继续求解的证明收益；它不是运行速度图。当前真实组19/30提高到21/30，合成质量组174/200提高到179/200。任务可以提前证优或因资源限制结束，不代表都跑满20分钟。
+
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
@@ -979,13 +1043,13 @@ solve_fixed_k(requests, host_limit, time_limit=1200)处理一次给定K；外层
 
 ### 8. 外层搜索与上下界
 
-solve_synthetic_milp(requests, initial_hosts, time_limit=1200)以初始有效分组确定上界U，以资源总量和团确定下界LB。每次测试K=U-1：可行则更新U，不可行则LB=K+1，尚未确定则保留现有结果。LB=U时optimal=True。代码内部原有下界变量和字段不改变含义。
+solve_synthetic_milp(requests, initial_hosts, time_limit=1200)以初始有效分组确定上界U，以资源总量和团确定下界L。每次测试K=U-1：可行则更新U，不可行则L=K+1，尚未确定则保留现有结果。L=U时optimal=True。代码内部原有下界变量和字段不改变含义。
 
 remaining_time = time_limit - solve_seconds，其中solve_seconds累计各次Gurobi Runtime；因此每次调用取得剩余预算。total_seconds另外包含检查、团计算、建模和分组恢复。
 
 返回objective是当前最好主机数、bound是有效下界、hosts是当前最好分组。即使时间预算为0，初始有效方案仍保留。proof_source说明证优方式：bound_match表示上下界相等，fixed_k_infeasible表示排除了少一台的可能；尚未证优时为None。
 
-trials为字典列表，逐次保存K、可行性、状态和试探前后的上下界。gap_to_bound=(U-LB)/LB是相对下界的差距，与Gurobi原生MIPGap分开。固定K的solver_status=2说明该K可行，整个装箱问题的最优性由外层optimal及证据共同判断。
+trials为字典列表，逐次保存K、可行性、状态和试探前后的上下界。gap_to_bound=(U-L)/L是相对下界的差距，与Gurobi原生MIPGap分开。固定K的solver_status=2说明该K可行，整个装箱问题的最优性由外层optimal及证据共同判断。
 
 ### 9. 类型聚合、整数变量与初始解
 
@@ -1030,23 +1094,23 @@ positions[t] = end
 
 ### 10. 实验结果中的质量与计时
 
-A是算法使用的主机数，OPT是已证明最优值。新版质量表在OPT未知时，以MIP结束时的最好有效方案台数L作参照；这个L是上界。真正的已证下界记为LB，满足LB<=OPT<=L。统一参照R在已证优时取OPT，否则取L。
+A是算法使用的主机数，OPT是已证明最优值，U是MIP结束时的最好有效方案台数，L是已证下界，满足L<=OPT<=U。统一参照R在已证优时取OPT，否则取U。
 
 | 字段 | 含义或计算方法 |
 |---|---|
-| reference_host_count | 本实例的统一参照R，即OPT或未证优的MIP最终台数L |
+| reference_host_count | 本实例的统一参照R，即OPT或未证优的MIP最终台数U |
 | reference_is_optimal | 参照是否已经证明最优 |
-| ratio_to_reference | A/R；汇总显示为“平均A/OPT(L)” |
+| ratio_to_reference | A/R；汇总显示为“平均A/OPT(U)” |
 | gap_to_reference | (A-R)/R；用于平均和最大已知差距 |
 | reaches_mip | A<=MIP最终台数，表示达到MIP效果 |
 | optimum、ratio_to_opt、gap_to_opt、hit_optimum | 保留已证优实例的OPT、A/OPT、(A-OPT)/OPT及是否命中 |
-| lower_bound、ratio_to_bound、gap_to_bound | 保留真实下界LB、A/LB及(A-LB)/LB |
+| lower_bound、ratio_to_bound、gap_to_bound | 保留真实下界L、A/L及(A-L)/L |
 
-质量表保留“有效方案/条件”，将命中率改为“达到MIP效果”，分母是全部条件数，例如xx/30；没有有效方案不计为达到。已知与未知参照合并计算平均比值和最大差距，删除“有效但OPT未知”“未知子集平均A/L”两列。
+质量表统计“有效方案/条件”“达到MIP效果”“平均A/OPT(U)”和“最大已知差距”。达到MIP效果的分母是全部条件数，例如xx/30；没有有效方案不计为达到。已知与未知参照合并计算平均比值和最大差距。
 
 平均或最大差距纳入未证优MIP参照时加*。按规模的平均差距写为xxx%(3+2*)，表示3个已证优、2个未证优参照的有效实例；没有有效方案仍显示缺失。带星号的结果只表示与MIP方案的差距，可能低估距真正最优值的差距；MILP自身比值为1*也不表示证优。
 
-optimum及仅对OPT定义的旧指标在未证优时继续留空，真实下界字段不会被MIP方案台数覆盖。没有运行MIP的synthetic-scale不伪造MIP参照或达到MIP效果，可继续使用LB指标。
+optimum及仅对OPT定义的旧指标在未证优时继续留空，真实下界字段不会被MIP方案台数覆盖。没有运行MIP的synthetic-scale不伪造MIP参照或达到MIP效果，可继续使用L指标。
 
 启发式seconds为全部规定重复完成后的中位数，100000条每实例只运行一次。upper_bound_seconds累计各方法第一遍调用的实际耗时，对应产生初始上界；mip_total_seconds为MIP封装函数全程，solve_seconds仅为Gurobi优化时间。MILP行seconds为upper_bound_seconds+mip_total_seconds；其他重复调用只用于测量启发式时间，不再次计入初解生成。
 
@@ -1100,14 +1164,14 @@ time_limit是总优化预算，当前为1200秒；snapshot_seconds仍为60秒，
 | requested_seconds | 请求的观测时点，正式实验为60 |
 | effective_seconds | 截止时点；若提前结束，则为实际结束优化时间 |
 | observed_seconds | 形成这份记录的最近一次观测时间，可能早于effective_seconds |
-| upper_bound / lower_bound | 有效方案台数U / 已证下界LB |
+| upper_bound / lower_bound | 有效方案台数U / 已证下界L |
 | placement_ids | 该时点每台主机上的请求ID，可从实例恢复并检查 |
 
 收到60秒之后的事件时，先保存之前的状态，再更新当前状态；不能把后来找到的更好方案写回60秒记录。回调不是固定频率采样，因此observed_seconds可能小于60。
 
 reason=early_optimal表示未到目标时点就已证优；ended_before_target表示提前结束但尚未证优；observed_cutoff表示已跨过目标时点并冻结此前观测状态。CSV中的checkpoint_*列只填写在MILP行；完整两份方案位于每实例JSON的mip_details.progress中。
 
-保留60秒记录点，用来比较继续优化是否减少主机数、提高下界或新增最优证明；它来自同一次求解，无需另跑一轮。此前真实批次在60秒后有7个实例继续改善、共少用26台，并新增1个最优证明。
+保留60秒记录点，用来比较继续优化是否减少主机数、提高下界或新增最优证明；它来自同一次求解，无需另跑一轮。当前真实批次在60秒后有7个实例继续改善、共少用48台，并新增2个最优证明。
 
 教学演示的0.01、0.0001秒只是缩短测试等待时间；正式观测点仍为60秒，MIP预算为1200秒。新预算结果保存到例如results/formal_real_600_1200；被替代的旧实验与预检输出已清理。
 

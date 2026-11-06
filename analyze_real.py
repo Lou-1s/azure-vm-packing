@@ -78,7 +78,7 @@ def quality_table(rows):
                      f"{hits}/{len(selected)}",
                      average([row["ratio_to_reference"] for row in comparable]) + marker,
                      percentage(worst_gap) + marker])
-    return table(["方法", "有效方案/条件", "达到MIP效果", "平均A/OPT(L)",
+    return table(["方法", "有效方案/条件", "达到MIP效果", "平均A/OPT(U)",
                   "最大已知差距"], body)
 
 
@@ -174,9 +174,9 @@ def mip_tables(rows, sizes):
                         status_names.get(row["solver_status"], str(row["solver_status"]))])
 
     return (table(["n", "实例数", "截止已证优", "最终已证优", "相比初值减少台数", "截止后减少台数", "截止后提高下界",
-                   "优化秒数中位数", "最终最大(U-LB)/LB"], summary),
+                   "优化秒数中位数", "最终最大(U-L)/L"], summary),
             table(["n", "初解外部秒数中位数", "MIP封装秒数中位数", "两者之和的中位数"], timing),
-            table(["实例", "初始U", "截止U", "截止LB", "最终U", "最终LB", "OPT", "最终(U-LB)/LB", "优化秒数", "求解状态"], details))
+            table(["实例", "初始U", "截止U", "截止L", "最终U", "最终L", "OPT", "最终(U-L)/L", "优化秒数", "求解状态"], details))
 
 
 def build_report(rows, metadata):
@@ -209,15 +209,15 @@ def build_report(rows, metadata):
         "[Gurobi状态说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html)",
         "## 2. 放置质量",
         quality_table(rows),
-        "A为有效方案台数。已证优时参照值为OPT；未证优时按约定记L，表示MIP最终有效方案台数，"
-        "它是可行解上界。真实已证下界在第5节记为LB，内部lower_bound字段含义保持不变。"
-        "平均A/OPT(L)逐实例计算比值再取算术平均；最大已知差距使用相同参照计算(A-OPT)/OPT或(A-L)/L。",
+        "A为有效方案台数。已证优时参照值为OPT；未证优时使用U，表示MIP最终有效方案台数，"
+        "它是可行解上界。已证下界记为L，满足L<=OPT<=U；内部lower_bound字段含义保持不变。"
+        "平均A/OPT(U)逐实例计算比值再取算术平均；最大已知差距使用相同参照计算(A-OPT)/OPT或(A-U)/U。",
         "达到MIP效果统计A不大于本实例MIP最终台数的数量，分母为全部条件；无有效方案计为未达到。"
         "星号*表示该统计包含未证优的MIP参照，带星差距仅表示相对MIP方案的差距，可能低估距真正OPT的差距。"
         "MILP与自身比较天然达到相同效果，平均比值为1、差距为0，这不代表全部证优。"
         "不同有效子集的均值须结合有效覆盖阅读。",
         "### 按规模的平均差距",
-        "单元格先逐实例计算(A-OPT)/OPT或(A-L)/L，再取平均。"
+        "单元格先逐实例计算(A-OPT)/OPT或(A-U)/U，再取平均。"
         "例如xxx% (3+2*)表示3个已证优参照与2个未证优MIP参照。"
         "括号只统计有有效方案的实例，-表示没有有效方案，不能伪造差距为0。",
         quality_by_size(rows, sizes),
@@ -236,8 +236,8 @@ def build_report(rows, metadata):
         mip_summary,
         "减少台数表示找到了更好的有效方案；提高下界表示缩小了最优值的可能范围。"
         "两者都能缩小差距。初始U取本实例七方法有效首遍方案中的最少台数；"
-        "表中减少台数的汇总列统计受改善的实例数量。最终仍未证优时，以[ LB, U ]和(U-LB)/LB报告。"
-        "此处LB始终是真实下界，与第2节未证优MIP参照L含义不同。",
+        "表中减少台数的汇总列统计受改善的实例数量。最终仍未证优时，以[ L, U ]和(U-L)/L报告。"
+        "此处L是真实下界，U是当前最好有效方案的上界。",
         "### MIP完整流程计时",
         mip_timing,
         "初解外部时间包括七种方法首遍尝试的进程启动、读取、检查及失败尝试。"

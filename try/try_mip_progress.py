@@ -29,9 +29,9 @@ def inspect_progress(name, requests, result):
     print("Target seconds:", checkpoint["requested_seconds"])
     print("Effective / observed:", round(checkpoint["effective_seconds"], 6),
           round(checkpoint["observed_seconds"], 6))
-    print("Checkpoint U / LB:", checkpoint["upper_bound"], checkpoint["lower_bound"])
+    print("Checkpoint U / L:", checkpoint["upper_bound"], checkpoint["lower_bound"])
     print("Checkpoint reason:", checkpoint["reason"])
-    print("Final U / LB:", final["upper_bound"], final["lower_bound"])
+    print("Final U / L:", final["upper_bound"], final["lower_bound"])
     print("Callback events:", progress["callback_events"])
     print("Fixed-K trials:", len(result.get("trials", [])))
     print("Both placements valid: True")

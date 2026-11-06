@@ -1,0 +1,2528 @@
+{
+  "definitions": {
+    "reference": "proven OPT; otherwise final valid MIP upper bound U",
+    "L": "valid lower bound",
+    "U": "final valid MIP host count (upper bound)",
+    "time": "median over complete conditions only"
+  },
+  "line_styles": {
+    "FF": [
+      0,
+      [
+        6,
+        2
+      ]
+    ],
+    "BF": [
+      0,
+      [
+        2,
+        2
+      ]
+    ],
+    "FFD-max": [
+      0,
+      [
+        6,
+        2,
+        1.2,
+        2
+      ]
+    ],
+    "FFD-sum": [
+      0,
+      [
+        6,
+        2,
+        1.2,
+        2,
+        1.2,
+        2
+      ]
+    ],
+    "BFD-max": [
+      0,
+      [
+        8,
+        2,
+        2,
+        2
+      ]
+    ],
+    "DP": [
+      0,
+      [
+        1,
+        1.5
+      ]
+    ],
+    "KK2003": [
+      0,
+      [
+        8,
+        2,
+        1.2,
+        2,
+        1.2,
+        2,
+        1.2,
+        2
+      ]
+    ]
+  },
+  "environment": {
+    "python": "3.12.10",
+    "matplotlib": "3.10.7",
+    "numpy": "2.5.4"
+  },
+  "source_sha256": {
+    "results\\formal_real_600_1200\\summary.csv": "fe92ad5af855317e7c1b68efed58c3885942ab1961f664f615556b091225f94f",
+    "results\\formal_real_600_1200\\metadata.json": "d6423de2e1c0134cccfc7015d525f645bd828611ee2443c3aafc895a5dbf90aa",
+    "results\\formal_synthetic_quality_600_1200\\summary.csv": "e9bdde8dd5ef4479ad4591e7711f298e3454b908497335707a874d2e30e3a0ad",
+    "results\\formal_synthetic_quality_600_1200\\metadata.json": "00098bc3b6d737c851ebdb519ea23155b9cf571104b8ba90fd4fe2c8d0fe3b90",
+    "results\\formal_synthetic_scale_600_1200\\summary.csv": "ada717b7884dffc18e7fa1d9d07b2868102f182be634b65e2930cdd34681630a",
+    "results\\formal_synthetic_scale_600_1200\\metadata.json": "1d60ebe4c82515e6eb47f6485f7fd629909bf48e1bc0ecbaccbd95a7878400de"
+  },
+  "analysis_source_sha256": {
+    "analyze_real.py": "d9aa34ab98dc2f308fdf456ab5b36dde38759554568a49e6b078bd00257ad0da",
+    "analyze_synthetic.py": "76aef8917da737b82f5f35edc27a34385002e784a1025bb9043c0b6b8d1caea3",
+    "instance_io.py": "f1afe84cb9bce7d534c26b680f67be518d90454e6d4e6f41c7ff85b12e397a2b",
+    "result_metrics.py": "595accc44574013501acf478e5435e6de64c10b2562a4ffd2a62f28a587669c3"
+  },
+  "plot_script_sha256": "dee61b31696c5c8b4a160f28b5ba949e685e87098d49ff3c1875402ac5f0c81e",
+  "01_real_quality": {
+    "sizes": [
+      200,
+      1000,
+      10000,
+      20000,
+      100000
+    ],
+    "points": {
+      "FF": [
+        {
+          "gap_percent": 0.5050505050505051,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.5953276181881987,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.5367245779213767,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 1
+        },
+        {
+          "gap_percent": 0.42233336873977734,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 3
+        },
+        {
+          "gap_percent": 0.12512127567307818,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 5
+        }
+      ],
+      "BF": [
+        {
+          "gap_percent": 0.5050505050505051,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.5953276181881987,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.5562634602973049,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 1
+        },
+        {
+          "gap_percent": 0.45042643323195947,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 3
+        },
+        {
+          "gap_percent": 0.14209473234019693,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 5
+        }
+      ],
+      "FFD-max": [
+        {
+          "gap_percent": 0.7575757575757576,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.6116207951070336,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.7229080194334928,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 1
+        },
+        {
+          "gap_percent": 0.6331357546655142,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 3
+        },
+        {
+          "gap_percent": 0.37079131773288304,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 5
+        }
+      ],
+      "FFD-sum": [
+        {
+          "gap_percent": 0.7575757575757576,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.6116207951070336,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.7019436588464908,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 1
+        },
+        {
+          "gap_percent": 0.6227385826962899,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 3
+        },
+        {
+          "gap_percent": 0.3658811521432644,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 5
+        }
+      ],
+      "BFD-max": [
+        {
+          "gap_percent": 0.7575757575757576,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.6116207951070336,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.7229080194334928,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 1
+        },
+        {
+          "gap_percent": 0.6331357546655142,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 3
+        },
+        {
+          "gap_percent": 0.37079131773288304,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 5
+        }
+      ],
+      "DP": [
+        {
+          "gap_percent": 0.7575757575757576,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.0,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 0.03559540132262046,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 1
+        },
+        {
+          "gap_percent": 0.028272258851437988,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 3
+        },
+        {
+          "gap_percent": null,
+          "valid": 0,
+          "total": 6,
+          "unproven_references": 0
+        }
+      ],
+      "KK2003": [
+        {
+          "gap_percent": 1.2626262626262625,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 2.183626882635139,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 0
+        },
+        {
+          "gap_percent": 1.8179828063978332,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 1
+        },
+        {
+          "gap_percent": 1.5718224890089032,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 3
+        },
+        {
+          "gap_percent": 1.004265872824683,
+          "valid": 6,
+          "total": 6,
+          "unproven_references": 5
+        }
+      ]
+    }
+  },
+  "02_synthetic_quality": {
+    "alphas": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5
+    ],
+    "points_by_n": {
+      "100": {
+        "FF": [
+          {
+            "gap_percent": 3.525275254192656,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 4.527365163878322,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 5.349961847219012,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 6.216058097688766,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 7.798723441622986,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          }
+        ],
+        "BF": [
+          {
+            "gap_percent": 3.375108169815045,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 4.055223270683797,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 4.871540360663963,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 5.2605602115199215,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 5.75694614209259,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          }
+        ],
+        "FFD-max": [
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.1694915254237288,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.19607843137254902,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 0.2,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          }
+        ],
+        "FFD-sum": [
+          {
+            "gap_percent": 0.7450223005057528,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.928584193386825,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.9605754225527079,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.7109021195121105,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 0.36129032258064514,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          }
+        ],
+        "BFD-max": [
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6159350369876686,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6403909963231997,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 1.188112840102706,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 1.0569133453013813,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          }
+        ],
+        "DP": [
+          {
+            "gap_percent": 0.7450223005057528,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.7698540346566662,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.9605754225527079,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.7109021195121105,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 0.8929789190718733,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          }
+        ],
+        "KK2003": [
+          {
+            "gap_percent": 11.1711196298465,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 16.12101682034227,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 18.86846483132374,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 19.80442397197476,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 19.842131494820954,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          }
+        ]
+      },
+      "200": {
+        "FF": [
+          {
+            "gap_percent": 2.7612439705523,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 3.862430122703763,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 5.307464161078683,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 7.626410263039489,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 8.789836415728484,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          }
+        ],
+        "BF": [
+          {
+            "gap_percent": 3.0718525088659807,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 4.105827142320213,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 4.887012890823074,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 6.369392484133794,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 6.904839611437764,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          }
+        ],
+        "FFD-max": [
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.09090909090909091,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 0.2764153374089429,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          }
+        ],
+        "FFD-sum": [
+          {
+            "gap_percent": 0.35164993922868243,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6210500436248638,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 1.0835788484290325,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 0.7921242400935391,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.7425589853850975,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          }
+        ],
+        "BFD-max": [
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.5203600661993726,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 0.828242137889592,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 1.1148706359986347,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          }
+        ],
+        "DP": [
+          {
+            "gap_percent": 0.28022136780011103,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.4666075868568256,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.915499752383835,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 0.8855821840187726,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.4808220722307552,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          }
+        ],
+        "KK2003": [
+          {
+            "gap_percent": 12.566968946742808,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 17.756751601330745,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 22.597966444230224,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          },
+          {
+            "gap_percent": 25.723343522457213,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 26.546486370214566,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 1
+          }
+        ]
+      },
+      "500": {
+        "FF": [
+          {
+            "gap_percent": 2.009526970710857,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 2.77368701697999,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 3.897947424376933,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 5.89005307006438,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          },
+          {
+            "gap_percent": 8.983933801881912,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          }
+        ],
+        "BF": [
+          {
+            "gap_percent": 2.1815331604624033,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 3.046523254568657,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 3.9280339418497734,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 4.4520154581748175,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          },
+          {
+            "gap_percent": 6.6606340485020485,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          }
+        ],
+        "FFD-max": [
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          },
+          {
+            "gap_percent": 0.03571428571428571,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          }
+        ],
+        "FFD-sum": [
+          {
+            "gap_percent": 0.5358824327942683,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.727770387625952,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.9775205984718457,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.9467555329751973,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          },
+          {
+            "gap_percent": 0.5891923152384763,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          }
+        ],
+        "BFD-max": [
+          {
+            "gap_percent": 0.028490028490028494,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.09240265906932574,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.33065593076561467,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6669063883699581,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          },
+          {
+            "gap_percent": 1.2147962509893937,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          }
+        ],
+        "DP": [
+          {
+            "gap_percent": 0.45062907614386966,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.697178906878708,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.9461179289122927,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.9133512189926772,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          },
+          {
+            "gap_percent": 0.6226432613952448,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          }
+        ],
+        "KK2003": [
+          {
+            "gap_percent": 11.633657555145684,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 17.554340984052647,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 22.95841548809473,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 27.222619369187406,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          },
+          {
+            "gap_percent": 30.599395152052956,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          }
+        ]
+      },
+      "1000": {
+        "FF": [
+          {
+            "gap_percent": 1.8488113345241846,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 2.8159504684953185,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 3.9071827779778854,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 6.216419899311444,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          },
+          {
+            "gap_percent": 8.162774241287304,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          }
+        ],
+        "BF": [
+          {
+            "gap_percent": 2.344343393869864,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 3.1643016929981465,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 3.675462452774064,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 5.136718061886368,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          },
+          {
+            "gap_percent": 5.8738657135672385,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          }
+        ],
+        "FFD-max": [
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.018621973929236497,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          },
+          {
+            "gap_percent": 0.0,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          }
+        ],
+        "FFD-sum": [
+          {
+            "gap_percent": 0.3392401722536954,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.4892216686977691,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6874486133338327,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6540017623649973,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          },
+          {
+            "gap_percent": 0.3152132860413233,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          }
+        ],
+        "BFD-max": [
+          {
+            "gap_percent": 0.04257878373734225,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.09293210486608314,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.17988533742171733,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6368336467993586,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          },
+          {
+            "gap_percent": 0.8553926476944606,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          }
+        ],
+        "DP": [
+          {
+            "gap_percent": 0.35348579419633064,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.42782541288686826,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.5074872740523307,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 0.6730787641070667,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          },
+          {
+            "gap_percent": 0.5568649099666504,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          }
+        ],
+        "KK2003": [
+          {
+            "gap_percent": 12.321367225638461,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 19.082076874488013,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 24.361148614732713,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 0
+          },
+          {
+            "gap_percent": 28.686967012225484,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 4
+          },
+          {
+            "gap_percent": 32.81737761442034,
+            "valid": 10,
+            "total": 10,
+            "unproven_references": 5
+          }
+        ]
+      }
+    }
+  },
+  "03_runtime": {
+    "Real trace": {
+      "sizes": [
+        200,
+        1000,
+        10000,
+        20000,
+        100000
+      ],
+      "points": {
+        "FF": [
+          {
+            "seconds": 0.0001627000001462875,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.0035852000009981566,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.2603692000002411,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.001693350000096,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 29.728240849999565,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BF": [
+          {
+            "seconds": 0.00018215000000054715,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.003338499998790212,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.2370039999996152,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.9241434000005029,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 25.922255599999517,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-max": [
+          {
+            "seconds": 0.0002998000009029056,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.0051928000002590124,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.37371190000067145,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.5551689499989152,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 45.00744934999966,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-sum": [
+          {
+            "seconds": 0.0002959500006909366,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.005367400000977796,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.3742781000000832,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.5448713500009035,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 44.7234547500002,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BFD-max": [
+          {
+            "seconds": 0.000323999999636726,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.005185599999094848,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.34240014999977575,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.414787949998754,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 39.46932679999918,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "DP": [
+          {
+            "seconds": 0.002385349999713071,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.05991745000210358,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 6.042869449999671,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 24.63349290000042,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": null,
+            "completed": 0,
+            "total": 6,
+            "timeouts": 6,
+            "errors": 0
+          }
+        ],
+        "KK2003": [
+          {
+            "seconds": 0.0002458500002830988,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.003599949999625096,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.22347974999956932,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.8398399499992593,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 28.327855099999397,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ]
+      },
+      "algorithm_budget": 600.0
+    },
+    "Synthetic scale": {
+      "sizes": [
+        5000,
+        10000,
+        20000,
+        100000
+      ],
+      "points": {
+        "FF": [
+          {
+            "seconds": 0.44742930000029446,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.7737721000012243,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 7.174738999998226,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 189.58298319999813,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BF": [
+          {
+            "seconds": 0.5114209000003029,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.022603999999774,
+            "completed": 14,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 1
+          },
+          {
+            "seconds": 8.281200899999021,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 211.22340489999988,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-max": [
+          {
+            "seconds": 0.544792899998356,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.2971404999989318,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 9.673546900001384,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 419.53599100000065,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-sum": [
+          {
+            "seconds": 0.5538061000006564,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.273645499999475,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 9.4338158999999,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 317.8029615000014,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BFD-max": [
+          {
+            "seconds": 0.6804048000012699,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.7427663999988,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 10.454478700001346,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 335.2296043000024,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "DP": [
+          {
+            "seconds": 1.8284036000004562,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 7.158931699999812,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 28.43628710000121,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": null,
+            "completed": 0,
+            "total": 5,
+            "timeouts": 5,
+            "errors": 0
+          }
+        ],
+        "KK2003": [
+          {
+            "seconds": 0.1953681000013603,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.7128330999985337,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.7476889999998093,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 93.47246639999867,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ]
+      },
+      "algorithm_budget": 600.0
+    }
+  },
+  "04_timing_coverage": {
+    "Real trace": {
+      "sizes": [
+        200,
+        1000,
+        10000,
+        20000,
+        100000
+      ],
+      "points": {
+        "FF": [
+          {
+            "seconds": 0.0001627000001462875,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.0035852000009981566,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.2603692000002411,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.001693350000096,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 29.728240849999565,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BF": [
+          {
+            "seconds": 0.00018215000000054715,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.003338499998790212,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.2370039999996152,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.9241434000005029,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 25.922255599999517,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-max": [
+          {
+            "seconds": 0.0002998000009029056,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.0051928000002590124,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.37371190000067145,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.5551689499989152,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 45.00744934999966,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-sum": [
+          {
+            "seconds": 0.0002959500006909366,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.005367400000977796,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.3742781000000832,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.5448713500009035,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 44.7234547500002,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BFD-max": [
+          {
+            "seconds": 0.000323999999636726,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.005185599999094848,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.34240014999977575,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.414787949998754,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 39.46932679999918,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "DP": [
+          {
+            "seconds": 0.002385349999713071,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.05991745000210358,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 6.042869449999671,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 24.63349290000042,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": null,
+            "completed": 0,
+            "total": 6,
+            "timeouts": 6,
+            "errors": 0
+          }
+        ],
+        "KK2003": [
+          {
+            "seconds": 0.0002458500002830988,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.003599949999625096,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.22347974999956932,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.8398399499992593,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 28.327855099999397,
+            "completed": 6,
+            "total": 6,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ]
+      }
+    },
+    "Synthetic scale": {
+      "sizes": [
+        5000,
+        10000,
+        20000,
+        100000
+      ],
+      "points": {
+        "FF": [
+          {
+            "seconds": 0.44742930000029446,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 1.7737721000012243,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 7.174738999998226,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 189.58298319999813,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BF": [
+          {
+            "seconds": 0.5114209000003029,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.022603999999774,
+            "completed": 14,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 1
+          },
+          {
+            "seconds": 8.281200899999021,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 211.22340489999988,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-max": [
+          {
+            "seconds": 0.544792899998356,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.2971404999989318,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 9.673546900001384,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 419.53599100000065,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "FFD-sum": [
+          {
+            "seconds": 0.5538061000006564,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.273645499999475,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 9.4338158999999,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 317.8029615000014,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "BFD-max": [
+          {
+            "seconds": 0.6804048000012699,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.7427663999988,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 10.454478700001346,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 335.2296043000024,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ],
+        "DP": [
+          {
+            "seconds": 1.8284036000004562,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 7.158931699999812,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 28.43628710000121,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": null,
+            "completed": 0,
+            "total": 5,
+            "timeouts": 5,
+            "errors": 0
+          }
+        ],
+        "KK2003": [
+          {
+            "seconds": 0.1953681000013603,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 0.7128330999985337,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 2.7476889999998093,
+            "completed": 15,
+            "total": 15,
+            "timeouts": 0,
+            "errors": 0
+          },
+          {
+            "seconds": 93.47246639999867,
+            "completed": 5,
+            "total": 5,
+            "timeouts": 0,
+            "errors": 0
+          }
+        ]
+      }
+    }
+  },
+  "05_scale_quality": {
+    "sizes": [
+      5000,
+      10000,
+      20000,
+      100000
+    ],
+    "points": {
+      "FF": [
+        {
+          "gap_percent": 9.954478372383646,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 8.786694384653158,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 8.226951121896235,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 7.224461424820515,
+          "valid": 5,
+          "total": 5,
+          "unproven_references": null
+        }
+      ],
+      "BF": [
+        {
+          "gap_percent": 9.734192956685746,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 8.85749758941685,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 8.467779996397606,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 7.833703760323658,
+          "valid": 5,
+          "total": 5,
+          "unproven_references": null
+        }
+      ],
+      "FFD-max": [
+        {
+          "gap_percent": 6.82907840269506,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.06283138947129,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.017322093319847,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 5.841329981881543,
+          "valid": 5,
+          "total": 5,
+          "unproven_references": null
+        }
+      ],
+      "FFD-sum": [
+        {
+          "gap_percent": 7.25247304571469,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.405460925881269,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.260701166179929,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 5.970944641581532,
+          "valid": 5,
+          "total": 5,
+          "unproven_references": null
+        }
+      ],
+      "BFD-max": [
+        {
+          "gap_percent": 7.0564184813297075,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.311896298755111,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.225400910871026,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.015593886143361,
+          "valid": 5,
+          "total": 5,
+          "unproven_references": null
+        }
+      ],
+      "DP": [
+        {
+          "gap_percent": 7.273235270690429,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.402337084269259,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 6.277502423273084,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": null,
+          "valid": 0,
+          "total": 5,
+          "unproven_references": null
+        }
+      ],
+      "KK2003": [
+        {
+          "gap_percent": 33.12186352546165,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 33.1548807788754,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 33.21394110299596,
+          "valid": 15,
+          "total": 15,
+          "unproven_references": null
+        },
+        {
+          "gap_percent": 33.522442918494136,
+          "valid": 5,
+          "total": 5,
+          "unproven_references": null
+        }
+      ]
+    }
+  },
+  "06_mip_coverage": {
+    "Real trace: by size": {
+      "key": "n",
+      "values": [
+        200,
+        1000,
+        10000,
+        20000,
+        100000
+      ],
+      "points": [
+        {
+          "total": 6,
+          "at_checkpoint": 6,
+          "at_end": 6
+        },
+        {
+          "total": 6,
+          "at_checkpoint": 6,
+          "at_end": 6
+        },
+        {
+          "total": 6,
+          "at_checkpoint": 5,
+          "at_end": 5
+        },
+        {
+          "total": 6,
+          "at_checkpoint": 2,
+          "at_end": 3
+        },
+        {
+          "total": 6,
+          "at_checkpoint": 0,
+          "at_end": 1
+        }
+      ]
+    },
+    "Synthetic quality: by size": {
+      "key": "n",
+      "values": [
+        100,
+        200,
+        500,
+        1000
+      ],
+      "points": [
+        {
+          "total": 50,
+          "at_checkpoint": 49,
+          "at_end": 49
+        },
+        {
+          "total": 50,
+          "at_checkpoint": 48,
+          "at_end": 48
+        },
+        {
+          "total": 50,
+          "at_checkpoint": 40,
+          "at_end": 41
+        },
+        {
+          "total": 50,
+          "at_checkpoint": 37,
+          "at_end": 41
+        }
+      ]
+    },
+    "Synthetic quality: by alpha": {
+      "key": "alpha",
+      "values": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "points": [
+        {
+          "total": 40,
+          "at_checkpoint": 40,
+          "at_end": 40
+        },
+        {
+          "total": 40,
+          "at_checkpoint": 40,
+          "at_end": 40
+        },
+        {
+          "total": 40,
+          "at_checkpoint": 39,
+          "at_end": 39
+        },
+        {
+          "total": 40,
+          "at_checkpoint": 26,
+          "at_end": 30
+        },
+        {
+          "total": 40,
+          "at_checkpoint": 29,
+          "at_end": 30
+        }
+      ]
+    }
+  }
+}

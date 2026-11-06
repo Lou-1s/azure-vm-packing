@@ -17,7 +17,7 @@ def attach_reference_metrics(rows):
     for row in rows:
         mip = mip_rows.get(row["instance_id"])
         optimum = row.get("optimum")
-        # 已证优用OPT；未证优用MIP最终有效台数（报告记L，实际是上界）。
+        # 已证优用OPT；未证优用MIP最终有效台数U（可行解上界）。
         reference = optimum if optimum is not None else (mip["host_count"] if mip else None)
         count = row.get("host_count")
         valid = row.get("valid") is True and count is not None
