@@ -8,7 +8,7 @@
 & ".\.venv\Scripts\python.exe" ".\try\try_greedy.py"
 ```
 
-在VS Code中直接打开任一脚本运行也可以。`_bootstrap.py`根据文件所在位置找到项目根目录，因此模块导入和实例路径不依赖终端当前目录。
+也可以在VS Code中直接打开任一脚本运行。`_bootstrap.py`根据脚本所在位置找到项目根目录，用于导入模块和查找实例。
 
 | 脚本 | 内容 |
 |---|---|
@@ -25,4 +25,4 @@
 | `try_kk_large.py` | KK大请求阶段 |
 | `try_kk_complete.py` | KK九个完整分支例与小规模MIP核对 |
 
-需要真实数据的示例从 `data/instances/real_v2` 读取；需要合成数据的示例从 `data/instances/synthetic_alpha` 读取，不依赖已清理的历史结果。
+需要真实数据的示例从 `data/instances/real_v2` 读取。需要合成数据的示例从 `data/instances/synthetic_alpha` 读取。

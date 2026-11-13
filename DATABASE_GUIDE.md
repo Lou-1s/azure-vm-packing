@@ -10,14 +10,11 @@
 
 虚拟环境用于隔离项目依赖。创建一次，新终端按需激活。[官方文档](https://docs.python.org/zh-cn/3.12/tutorial/venv.html)
 
-在 PowerShell 中执行：
+在项目根目录打开 PowerShell，执行以下命令。
 
 ```powershell
-# 进入项目目录
-Set-Location "D:\PythonProjects\azure-vm-packing"
-
 # 创建 .venv，使用现有的 Python 3.12
-& "D:\python\python312\python.exe" -m venv .venv
+py -3.12 -m venv .venv
 
 # 激活当前终端的环境
 .\.venv\Scripts\Activate.ps1
@@ -31,7 +28,7 @@ python .\first_python.py
 deactivate
 ```
 
-激活后通常出现 `(.venv)`。解释器路径应指向项目的 `.venv\Scripts\python.exe`；`deactivate` 不会删除环境。
+激活后通常出现 `(.venv)`。解释器路径应指向项目的 `.venv\Scripts\python.exe`。
 
 不激活时，也可以直接指定环境中的 Python：
 
@@ -56,7 +53,7 @@ VS Code：`Ctrl+Shift+P` → `Python: Select Interpreter` → 选择项目 `.ven
 | `.css`、`.js` | CSS 常用于网页样式；JavaScript 常用于网页交互逻辑 | VS Code 编辑，由浏览器等相应环境处理 |
 | `.md` | Markdown 文本，用简单标记组织标题、列表和代码块 | VS Code 编辑或预览；常用于项目说明、复习资料 |
 | `.txt` | 普通文本，可保存说明、记录或依赖清单 | 记事本、VS Code 等文本编辑器 |
-| `.sqlite`、`.db` | 数据库文件常见后缀；`.db` 不一定是 SQLite | 本项目的 `.sqlite` 用 SQLite 工具或 Python 的 `sqlite3` 读取 |
+| `.sqlite`、`.db` | 数据库文件常见后缀 | 本项目的 `.sqlite` 用 SQLite 工具或 Python 的 `sqlite3` 读取 |
 | `.xlsx` | Excel 工作簿，可含多个工作表、公式和格式 | Excel、WPS 等表格软件 |
 | `.zip` | 压缩包，可包含多个文件和文件夹 | 用解压工具展开后再使用内部文件 |
 | `.ps1` | PowerShell 脚本；激活虚拟环境所用脚本属于此类 | PowerShell 执行，VS Code 可查看代码 |
@@ -89,7 +86,7 @@ HTML 用标记表达网页内容；`<h1>` 表示一级标题，`<p>` 表示段�
 
 **改扩展名不会转换内容格式。** 把 `.csv` 改名为 `.xlsx`，文件内容仍是 CSV 文本。CSV 也不能保存 Excel 工作簿的多工作表、单元格样式等信息。
 
-`.venv` 和 `.git` 是本项目中的**文件夹**：前者保存虚拟环境，后者保存 Git 版本信息。`.gitignore` 是一个文本配置**文件**，用于规定 Git 忽略哪些路径；它没有常规的扩展名。名称以点开头，并不等于某种文件格式。
+`.venv` 和 `.git` 是本项目中的**文件夹**：前者保存虚拟环境，后者保存 Git 版本信息。`.gitignore` 是一个文本配置**文件**，用于规定 Git 忽略哪些路径。
 
 ## 三、Python 基础
 
@@ -219,7 +216,7 @@ CPU | Memory
 
 `print` 可以接收多个待显示的值；`sep=" | "` 指定它们之间用什么分隔，默认是空格。
 
-`round(数值, 6)` 返回按六位小数舍入的数值，不会重新赋值给原变量。这里仅用于显示，算法继续使用原始需求数据。
+`round(数值, 6)` 返回按六位小数舍入的数值。这里用于显示，算法继续使用原始需求数据。
 
 [官方教程：基本用法](https://docs.python.org/zh-cn/3.12/tutorial/introduction.html) · [控制流与函数](https://docs.python.org/zh-cn/3.12/tutorial/controlflow.html)
 
@@ -240,7 +237,7 @@ print(11 not in vm_ids)       # False：是否不存在
 print(vm_ids.index(11))       # 1：该值第一次出现的位置
 ```
 
-`append(元素)` 修改原列表，不要写成 `hosts = hosts.append(...)`。`break` 退出当前所在的最内层循环；`return` 结束整个函数。`None` 表示暂时没有值，不等于空列表 `[]`。
+`append(元素)` 修改原列表，不要写成 `hosts = hosts.append(...)`。`break` 退出当前所在的最内层循环；`return` 结束整个函数。`None` 表示暂时没有值，`[]` 表示空列表。
 
 本项目的请求记录为 `(vmId, vmTypeId, starttime, core, memory)`：
 
@@ -251,7 +248,7 @@ def decreasing_key(request):
 ordered_requests = sorted(requests, key=decreasing_key)
 ```
 
-`sorted(待排序列表, key=评分函数)` 返回新列表，不改变原列表；它会逐条调用评分函数。上例按 CPU/内存较大值降序，同分按请求编号升序。负号将“大值优先”转换成默认的升序比较。
+`sorted(待排序列表, key=评分函数)` 逐条调用评分函数，返回排序后的新列表。上例按 CPU/内存较大值降序，同分按请求编号升序。负号将“大值优先”转换成默认的升序比较。
 
 ```python
 for i in range(3):            # 依次取 0、1、2；不包含 3
@@ -279,7 +276,7 @@ alpha = instance.get("alpha")  # 没有alpha这个键时返回None，不抛出Ke
 row.update({"lower_bound": 58, "optimum": None})  # 加入或覆盖这些键值
 ```
 
-get只读取；update直接修改原字典，不需要把它的返回值重新赋给row。
+get只读取；update直接修改原字典。
 
 函数定义中的 `time_limit=30` 指定默认值：调用时省略它就用 30，写 `time_limit=0` 则用 0。它与调用时的关键字参数写法相似，但默认值在定义函数时指定。
 
@@ -293,7 +290,7 @@ hosts = first_fit(requests)    # 实际运行要测量的代码
 seconds = perf_counter() - started  # 两次计时值的差，单位为秒
 ```
 
-`perf_counter()` 的单个数值不表示日期；两次调用之差才是经过的时间。计时起止位置决定包含哪些工作。[Python 文档](https://docs.python.org/zh-cn/3.12/library/time.html#time.perf_counter)
+两次调用 `perf_counter()` 的返回值之差为经过的时间。计时起止位置决定包含哪些工作。[Python 文档](https://docs.python.org/zh-cn/3.12/library/time.html#time.perf_counter)
 
 ```python
 from statistics import median  # Python 自带，无需安装
@@ -302,7 +299,7 @@ times = [0.04, 0.08, 0.05]
 seconds = median(times)        # 排序后取中间值，得到 0.05
 ```
 
-重复测量时，把每次耗时放进 `times`，再取中位数，减少某一次异常快慢的影响。此时 `seconds` 代表单次调用耗时的中位数，不是几次测量的时间总和。
+重复测量时，把每次耗时放进 `times`，再取中位数，减少某一次异常快慢的影响。此时 `seconds` 代表单次调用耗时的中位数。
 
 ### 10. while 循环与 pop
 
@@ -363,7 +360,7 @@ with path.open("w", newline="", encoding="utf-8-sig") as file:
     writer.writerows(rows)     # 把每个字典写成一行
 ```
 
-`DictWriter` 第一个参数是已打开的文件，`fieldnames` 指定列名及顺序；每行按对应键名取值。`None` 或缺少的键写为空字段，不表示数值0。`newline=""` 交给CSV模块处理换行，`utf-8-sig` 便于Excel识别编码。CSV读回的单元格通常是字符串。[CSV 文档](https://docs.python.org/zh-cn/3.12/library/csv.html)
+`DictWriter` 第一个参数是已打开的文件，`fieldnames` 指定列名及顺序；每行按对应键名取值。`None` 或缺少的键写为空字段。`newline=""` 交给CSV模块处理换行，`utf-8-sig` 便于Excel识别编码。CSV读回的单元格通常是字符串。[CSV 文档](https://docs.python.org/zh-cn/3.12/library/csv.html)
 
 ### 13. 把函数放入列表
 
@@ -385,7 +382,7 @@ a = rng.randint(8, 48)        # 取得8到48之间的一个整数，包含两端
 b = rng.randint(8, 48)        # 继续取得下一个数，并非每次都返回同一个值
 ```
 
-在相同Python版本、代码和调用顺序下，使用同一种子可以重现同一串数据。种子不是样本数量；改种子通常会改变样本。固定种子用于复现实验，不意味着某一个种子代表全部情况。[random文档](https://docs.python.org/zh-cn/3.12/library/random.html)
+在相同Python版本、代码和调用顺序下，使用同一种子可以重现同一串数据。改种子通常会改变样本。[random文档](https://docs.python.org/zh-cn/3.12/library/random.html)
 
 ```python
 value_rng = random.Random("alpha_v2|n=100|seed=0|values")
@@ -405,7 +402,7 @@ if __name__ == "__main__":
     main()
 ```
 
-直接运行这个.py文件时执行main()；被其他文件import时只提供定义，不自动执行main()。因此可以复用生成函数，而不重新生成整批文件。
+直接运行这个.py文件时执行main()。其他文件可导入并复用生成函数。
 
 ### 15. enumerate、set与all
 
@@ -466,7 +463,7 @@ assigned_ids = set()
 assigned_ids.add(vm_id)
 ```
 
-vm_id in originals判断字典中是否有这个键；vm_id in assigned_ids判断集合中是否有这个元素。它们通常无需像列表查找那样逐项扫描。检查器仍逐条核对完整记录、放置次数和资源容量，不使用算法内部的负载缓存。
+vm_id in originals判断字典中是否有这个键；vm_id in assigned_ids判断集合中是否有这个元素。检查器逐条核对完整记录、放置次数和资源容量。
 
 缓存FF/BF省去反复求和，仍需扫描候选主机，最坏时间仍可达到O(n²)。字典/集合检查器在正常哈希查找下随请求数近似线性增长。
 
@@ -478,9 +475,9 @@ best_score = float("-inf")   # 负无穷，任何有限评分都比它大
 used_hosts = [host for host in hosts if host]  # 只保留非空主机
 ```
 
-空列表在条件中为False，因此while remaining表示还有未处理项时继续。函数返回None不会自动抛异常；调用处可以判断结果并选择后续操作。检查器返回(False,原因)时也只是返回结果，由调用处的raise决定是否抛错。
+空列表在条件中为False，因此while remaining表示还有未处理项时继续。调用处可根据函数返回的None或检查器返回的(False,原因)选择后续操作，执行raise时抛出异常。
 
-MB试放的None表示这次贪心未放完，并不证明给定主机数不可行。MIP固定K函数的feasible=False则表示已由预处理或求解器证明不可行。MB二分中的left是搜索位置，不能当作新的最优下界。
+MB试放的None表示这次贪心未放完，给定主机数的可行性仍未知。MIP固定K函数的feasible=False表示已由预处理或求解器证明不可行。MB二分中的left是搜索区间的左端点。
 
 ### 20. 列表参数与浅复制
 
@@ -533,7 +530,7 @@ for request in reversed(returned):  # 先11，后10
 print(list(queue))                 # [10, 11, 20, 21]
 ```
 
-reversed返回反向遍历次序，不修改returned；如果直接按10、11依次appendleft，队首会变成11、10。
+reversed返回反向遍历次序。如果直接按10、11依次appendleft，队首会变成11、10。
 
 ### 23. 展开嵌套列表与字典
 
@@ -546,7 +543,7 @@ info = {"paired_groups": 1}
 details = {**info, "small_actions": ["merge_one"]}
 ```
 
-两个for依次遍历“主机列表里的每台主机、该主机里的每条请求”，将两层列表展开成一层。字典中的**info将info的键值加入新字典，再补上small_actions；不修改原info。
+两个for依次遍历“主机列表里的每台主机、该主机里的每条请求”，将两层列表展开成一层。字典中的**info将info的键值加入新字典，再补上small_actions。
 
 KK默认调用hosts = kellerer_kotov(requests)，只得到分组；写hosts, info = kellerer_kotov(requests, return_info=True)，才同时得到分组和分支记录。调用处接收几个值，要与所选返回形式一致。
 
@@ -564,12 +561,12 @@ subprocess.Popen(程序参数列表)启动另一个进程，并返回代表该�
 | 写法 | 用途 |
 |---|---|
 | process.poll() | 运行中返回None；已结束则返回退出码，0通常表示正常结束 |
-| process.kill() | 结束这个工作进程，不是删除文件 |
+| process.kill() | 结束这个工作进程 |
 | process.wait() | 等待工作进程结束，并取回退出码 |
 | tempfile.TemporaryDirectory() | 创建临时目录；离开with块后自动清理 |
 | time.sleep(0.05) | 当前程序暂停0.05秒，避免监督循环一直占用CPU |
 
-本项目效率脚本用CPython的sys._base_executable启动虚拟环境背后的实际Python程序，再通过PYTHONPATH传入依赖搜索路径。这样在Windows上监督的是实际计算进程，而不是虚拟环境的转发程序。脚本读取Windows私有内存，每0.05秒采样一次；这是采样式保护，不是操作系统硬内存上限。
+本项目效率脚本用CPython的sys._base_executable启动虚拟环境背后的实际Python程序，再通过PYTHONPATH传入依赖搜索路径。脚本每0.05秒采样一次实际计算进程的Windows私有内存。
 
 run_once(path, method, time_limit=600, memory_mib=2048)运行某个实例上的一种方法一次。path是实例JSON路径，method是"FF"、"KK2003"等名称；后两个参数分别是算法秒数预算和内存MiB预算。当前正式启发式预算为600秒（10分钟），启动和检查阶段仍各30秒。返回字典中的status说明完成或终止原因。
 
@@ -578,12 +575,12 @@ run_once(path, method, time_limit=600, memory_mib=2048)运行某个实例上的�
 | status=completed | 本次或要求的全部重复已完成，并通过独立检查 |
 | status=time_budget / memory_budget | 达到时间或采样内存预算后终止 |
 | seconds | 单次成功算法耗时；汇总表中为全部规定重复完成后的中位数，失败时留空 |
-| algorithm_elapsed_seconds | 工作进程若已算完，保留实际计算耗时供诊断；超预算不能当成成功耗时 |
+| algorithm_elapsed_seconds | 工作进程若已算完，保留实际计算耗时供诊断 |
 | wall_seconds_total | 汇总表中所有实际尝试的外部耗时之和，含启动、读取、检查和清理 |
 | completed_repeats / required_repeats | 已成功次数 / 要求次数；例如1/3不报告三次中位数 |
 | peak_private_mib | 各次调用中采样观察到的最大私有内存，单位MiB |
 
-某一遍失败后停止该方法的后续重复。先前成功的完整方案仍可提供台数，但计时不完整时seconds留空。算法耗时与进程外部耗时口径不同，不能直接混作同一指标。
+某一遍失败后停止该方法的后续重复。先前成功的完整方案仍可提供台数，但计时不完整时seconds留空。
 
 命令行中的--output-dir是脚本自己定义的参数名，由argparse读取；例如：
 
@@ -594,11 +591,10 @@ python .\benchmark_heuristics.py --output-dir ".\results\efficiency_check"
 教学与检查脚本集中在`try/`文件夹。仍在项目根目录打开终端，用相对路径运行：
 
 ```powershell
-Set-Location "D:\PythonProjects\azure-vm-packing"
 & ".\.venv\Scripts\python.exe" ".\try\try_first_fit.py"
 ```
 
-各脚本先导入`try/_bootstrap.py`，将项目根目录加入模块搜索路径，因此可以继续导入主目录中的算法。教学检查输出写入`results/checks/`，不与正式结果混在一起。
+各脚本先导入`try/_bootstrap.py`，将项目根目录加入模块搜索路径，因此可以继续导入主目录中的算法。教学检查输出写入`results/checks/`。
 
 ### 25. 前缀切片、ID分组与检查点
 
@@ -663,7 +659,7 @@ by_instance.setdefault("case_1", {})["FFD-max"] = 23
 
 `setdefault(键, 默认值)`在键不存在时插入默认值，再返回该键对应的值；已有键则直接返回原值。这里得到`{"case_1": {"FF": 24, "FFD-max": 23}}`，方便在同一实例上配对比较方法。
 
-`f"{value:.6f}"`把数值显示为六位小数；`f"{value:.{digits}f}"`用变量`digits`指定小数位。只改变显示，不改变原始数据。`"\n".join(lines)`用换行连接多行文本；`path.write_text(text, encoding="utf-8")`将文本覆盖写入文件，本项目用于生成Markdown分析报告。
+`f"{value:.6f}"`把数值显示为六位小数；`f"{value:.{digits}f}"`用变量`digits`指定小数位。`"\n".join(lines)`用换行连接多行文本；`path.write_text(text, encoding="utf-8")`将文本覆盖写入文件，本项目用于生成Markdown分析报告。
 
 ### 27. 按多个实验条件分组
 
@@ -675,16 +671,15 @@ for n, alpha in keys:
 
 `(n, alpha)`将两个条件组合成一个元组；集合`{...}`去重，`sorted`先按n、再按alpha排序。`selected`保存同一规模和方向比例下、不同seed及方法的结果；再筛方法即可比较多个随机实例。
 
-质量指标先对每个实例计算比值，再求平均。计时先使用每个实例已保存的重复中位数，再取不同seed之间的中位数；三次计时调用不会变成三个质量样本。首遍有效但后续计时失败时，质量仍可用，完整计时留空。
+质量指标先对每个实例计算比值，再求平均。计时先使用每个实例已保存的重复中位数，再取不同seed之间的中位数。首遍有效但后续计时失败时，质量仍可用，完整计时留空。
 
-`analyze_synthetic.py`默认读取两组合成实验的summary.csv与metadata.json，分别生成各目录的analysis.md，不调用算法或求解器。质量组使用OPT/未证优MIP方案参照；规模组没有MIP，继续报告相对真实下界L的指标。
+`analyze_synthetic.py`默认读取两组合成实验的summary.csv与metadata.json，分别生成各目录的analysis.md。质量组使用OPT/未证优MIP方案参照；规模组报告相对下界L的指标。
 
 ### 28. 用Matplotlib生成实验图
 
-先在PowerShell中安装到项目虚拟环境：
+在项目根目录用 PowerShell 将 Matplotlib 安装到虚拟环境。
 
 ```powershell
-Set-Location "D:\PythonProjects\azure-vm-packing"
 & ".\.venv\Scripts\python.exe" -m pip install matplotlib==3.10.7
 
 # 或按项目清单安装全部依赖。
@@ -694,7 +689,7 @@ Set-Location "D:\PythonProjects\azure-vm-packing"
 & ".\.venv\Scripts\python.exe" -c "import sys, matplotlib; print(sys.executable); print(matplotlib.__version__)"
 ```
 
-`-m pip`让指定的Python运行自己的包管理工具，所以库安装到当前项目的`.venv`。新终端显式使用这个解释器时无需先激活；激活后也可以用`python -m pip install matplotlib==3.10.7`。这些安装命令在终端执行，不是写入`.py`文件的Python语句。看到`Requirement already satisfied`表示所需版本已经安装。
+`-m pip`让指定的Python运行自己的包管理工具，所以库安装到当前项目的`.venv`。新终端可直接使用虚拟环境的解释器；激活后也可以用`python -m pip install matplotlib==3.10.7`。看到`Requirement already satisfied`表示所需版本已经安装。
 
 安装后，在Python代码中使用：
 
@@ -713,7 +708,7 @@ plt.close(fig)
 
 `fig`是整张图，`ax`是其中一个绘图区；`plot(x, y)`按位置配对横纵坐标，`marker`指定点形状，`linestyle="--"`指定虚线，`label`提供图例名称。`set_xlabel/set_ylabel`设置轴标签，`legend`显示图例。对数轴适合展示跨数量级的数据，不同位置间的距离表示倍数关系。
 
-`savefig`根据后缀保存PNG或PDF；`dpi`控制PNG分辨率，PDF保留矢量线条。`close`释放图对象。批量脚本在导入pyplot前调用`matplotlib.use("Agg")`，用于直接保存文件。`float("nan")`可让缺失点形成断线，不把超时填成0或预算秒数。
+`savefig`根据后缀保存PNG或PDF；`dpi`控制PNG分辨率，PDF保留矢量线条。`close`释放图对象。批量脚本在导入pyplot前调用`matplotlib.use("Agg")`，用于直接保存文件。`float("nan")`可让缺失点形成断线。
 
 ```python
 def select(rows, method, **conditions):
@@ -727,18 +722,18 @@ selected = select(rows, "FF", n=1000, alpha=0.3)
 
 plot_results只读取结果与分析模块，输出六组PNG/PDF、逐点数据plot_data.json和中文图注FIGURE_GUIDE.md。参照差距R与真实下界L分开作图，耗时图与完整计时覆盖图配套阅读。
 
-图06比较同一次MIP求解在60秒记录与结束时的证优比例，用于观察继续求解的证明收益；它不是运行速度图。当前真实组19/30提高到21/30，合成质量组174/200提高到179/200。任务可以提前证优或因资源限制结束，不代表都跑满20分钟。
+图06比较同一次MIP求解在60秒记录与结束时的证优比例，用于观察继续求解的证明收益。当前真实组19/30提高到21/30，合成质量组174/200提高到179/200。任务可以提前证优或因资源限制结束。
 
 ## 四、SQLite 与 SQL
 
 ### 1. 用 Python 读取数据库
 
-`sqlite3` 是 Python 自带的模块，无需另外安装。
+`sqlite3` 是 Python 自带的模块。以下示例从项目根目录运行，从 `data/raw/` 读取 SQLite 文件。
 
 ```python
 import sqlite3
 
-database = "file:D:/PythonProjects/azure-vm-packing/data/raw/packing_trace_zone_a_v1.sqlite?mode=ro"
+database = "file:data/raw/packing_trace_zone_a_v1.sqlite?mode=ro"
 connection = sqlite3.connect(database, uri=True)
 
 sql = """
@@ -825,7 +820,7 @@ parameters = (12, 5)
 cursor = connection.execute(sql, parameters)
 ```
 
-`parameters` 保存要传入的值；修改元组即可改变硬件与数量，不必改 SQL 结构。值的数量和顺序必须与 `?` 对应。
+`parameters` 保存要传入的值，修改元组即可改变硬件与数量。值的数量和顺序必须与 `?` 对应。
 
 只有一个 `?` 时，使用单元素元组：
 
@@ -893,20 +888,19 @@ from solution_checker import check_solution  # 导入独立检查器
 print(gp.gurobi.version())     # 查看 Gurobi 版本
 ```
 
-`gurobipy` 是 Python 调用 Gurobi 的接口，需安装在当前解释器的环境中。本项目依赖已记在 `requirements.txt`：
+`gurobipy` 是 Python 调用 Gurobi 的接口。项目依赖列在 `requirements.txt` 中。在项目根目录打开 PowerShell，执行以下命令。
 
 ```powershell
-Set-Location "D:\PythonProjects\azure-vm-packing"
 & ".\.venv\Scripts\python.exe" -m pip install -r requirements.txt
 
-# 指定已有许可证文件，再运行模型
-$env:GRB_LICENSE_FILE = "D:\gurobi1302\gurobi.lic"
+# 如需手动指定许可证，取消下一行注释并换成自己的文件路径。
+# $env:GRB_LICENSE_FILE = "C:\path\to\gurobi.lic"
 & ".\.venv\Scripts\python.exe" ".\try\try_milp.py"
 ```
 
 ### 2. 创建模型、变量与参数
 
-请求列表 `requests` 沿用 [try_milp.py](D:/PythonProjects/azure-vm-packing/try/try_milp.py) 中的人工例；每条为 `(vmId, vmTypeId, starttime, core, memory)`。
+请求列表 `requests` 沿用 [try_milp.py](try/try_milp.py) 中的人工例，每条为 `(vmId, vmTypeId, starttime, core, memory)`。
 
 ```python
 initial_hosts = first_fit(requests)       # 先取得 FF 可行方案
@@ -962,7 +956,7 @@ for j in range(host_limit):
 
 `quicksum(逐项表达式)` 构造求和表达式，例如三台主机时 `quicksum(y[j] for j in range(3))` 对应 `y[0] + y[1] + y[2]`。`addConstr(约束关系)` 把等式或不等式加入模型，并返回约束对象。
 
-CPU 和内存分别以 1 为单机容量；`y[j]=0` 时不接收请求，`y[j]=1` 时允许使用容量 1。候选主机数限制搜索范围，不固定 FF 的分组。
+CPU 和内存分别以 1 为单机容量；`y[j]=0` 时不接收请求，`y[j]=1` 时允许使用容量 1。求解器在候选主机范围内重新分组。
 
 ### 4. 求解、读取结果与重建方案
 
@@ -993,7 +987,7 @@ else:
 model.dispose()                # 释放模型占用的资源
 ```
 
-在当前主机数最小化模型中，相对 gap 为 `|ObjVal - ObjBound| / |ObjVal|`；目标为 0 等特殊情况按 Gurobi 的定义处理。`Solutions` 是解的数量，`Objective` 才是主机数。数值容差设置不能代替方案检查。
+在当前主机数最小化模型中，相对 gap 为 `|ObjVal - ObjBound| / |ObjVal|`；目标为 0 等特殊情况按 Gurobi 的定义处理。`Solutions` 是解的数量，`Objective` 是主机数。
 
 ### 5. 常见求解状态
 
@@ -1005,20 +999,20 @@ model.dispose()                # 释放模型占用的资源
 | `GRB.SOLUTION_LIMIT` | 10 | 找到规定数量的解后结束；固定K找到方案即确认可行 |
 | `GRB.MEM_LIMIT` | 17 | 达到SoftMemLimit软内存限制后停止；可能早于时间上限 |
 
-`model.Status == GRB.OPTIMAL` 返回是否最优的布尔值。达到时限不等于证明最优；`SolCount=0` 表示尚无可用方案，不能记成用了 0 台主机。人工强制 `host_limit=1` 后不可行，仅说明该请求集装不进一台。
+`model.Status == GRB.OPTIMAL` 返回是否最优的布尔值。`SolCount=0` 表示尚无可用方案。人工强制 `host_limit=1` 后不可行，表示该请求集至少需要两台主机。
 
 [Gurobi状态码说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html)
 
 ### 6. 封装后的结果与计时
 
-原始学习版接口为 `solve_milp(requests, upper_bound_hosts, time_limit=30)`：传入非空请求、已有可行分组和时限，返回结果字典。上界方案须通过检查，只用其主机数量限制候选数量，不固定原分组。正式实验使用后文两条求解路径，当前优化预算为1200秒（20分钟）。
+原始学习版接口为 `solve_milp(requests, upper_bound_hosts, time_limit=30)`：传入非空请求、已有可行分组和时限，返回结果字典。上界方案须通过检查，其主机数量用于限制候选数量。正式实验使用后文两条求解路径，当前优化预算为1200秒（20分钟）。
 
-- `result["hosts"]`：求解器的主机分组；无可行解时为 `None`，不要对它调用 `len`。
+- `result["hosts"]`：求解器的主机分组，无可行解时为 `None`。
 - `result["objective"]`、`result["gap"]`：有可行解才填入数值，否则为 `None`；原贪心方案单独保留。
 - `result["model_seconds"]`：从上界检查后开始，包含建模、求解、结果读取与分组重建，不含最终检查。
 - `result["solve_seconds"]`：`model.Runtime`，仅求解器优化过程的耗时。
 
-上述模型耗时也不含数据库读取或产生贪心上界的时间。做完整算法耗时比较时，要统一并说明这些范围。短时限下的 `bound=-inf` 表示尚未取得有限下界，不能据此说模型无界。
+上述模型耗时也不含数据库读取或产生贪心上界的时间。短时限下的 `bound=-inf` 表示尚未取得有限下界。
 
 [Gurobi Python Model](https://docs.gurobi.com/projects/optimizer/en/current/reference/python/model.html) · [模型结果属性](https://docs.gurobi.com/projects/optimizer/en/current/reference/attributes/model.html) · [求解状态](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/statuscodes.html)
 
@@ -1034,16 +1028,16 @@ with gp.Model("fixed_k") as model:
     # 添加约束、optimize，并在with内部读取解
 ```
 
-addVars第一个参数可以是索引对列表，此处只创建x[0,0]、x[0,1]、x[4,1]三个变量；没有x[4,0]。这用来省去无法放置的位置。with结束时释放模型；需要的状态、数值和分组先保存成普通Python数据。
+addVars第一个参数可以是索引对列表，此处创建x[0,0]、x[0,1]、x[4,1]三个变量。这用来省去无法放置的位置。with结束时释放模型；需要的状态、数值和分组先保存成普通Python数据。
 
-固定K函数的feasible返回True表示找到有效方案，False表示已证明装不下，None表示尚未确定。solver_status保存Gurobi实际状态；预处理已经排除时没有调用求解器，保留None。目标常数0不表示用了0台，实际台数通过len(hosts)读取。
+固定K函数的feasible返回True表示找到有效方案，False表示已证明装不下，None表示尚未确定。solver_status保存Gurobi实际状态；预处理已经排除时保留None。实际台数通过len(hosts)读取。
 
-solve_fixed_k(requests, host_limit, time_limit=1200)处理一次给定K；外层搜索把1200秒总优化预算分配到各次调用，不是每个K各跑20分钟。返回prep_seconds、build_seconds、solve_seconds与total_seconds，最后一项包含结果恢复和独立检查。
+solve_fixed_k(requests, host_limit, time_limit=1200)处理一次给定K。外层搜索把1200秒总优化预算分配到各次调用。返回prep_seconds、build_seconds、solve_seconds与total_seconds，最后一项包含结果恢复和独立检查。
 
 
 ### 8. 外层搜索与上下界
 
-solve_synthetic_milp(requests, initial_hosts, time_limit=1200)以初始有效分组确定上界U，以资源总量和团确定下界L。每次测试K=U-1：可行则更新U，不可行则L=K+1，尚未确定则保留现有结果。L=U时optimal=True。代码内部原有下界变量和字段不改变含义。
+solve_synthetic_milp(requests, initial_hosts, time_limit=1200)以初始有效分组确定上界U，以资源总量和团确定下界L。每次测试K=U-1：可行则更新U，不可行则L=K+1，尚未确定则保留现有结果。L=U时optimal=True。
 
 remaining_time = time_limit - solve_seconds，其中solve_seconds累计各次Gurobi Runtime；因此每次调用取得剩余预算。total_seconds另外包含检查、团计算、建模和分组恢复。
 
@@ -1053,7 +1047,7 @@ trials为字典列表，逐次保存K、可行性、状态和试探前后的上�
 
 ### 9. 类型聚合、整数变量与初始解
 
-资源需求完全相同的请求可以按数量建模。例如同为(CPU=0.1,Memory=0.2)的100条请求是一组；保留原记录，求解后再恢复各自ID。这里的类型由资源二元组确定，不直接使用vmTypeId。
+资源需求完全相同的请求可以按数量建模。例如同为(CPU=0.1,Memory=0.2)的100条请求是一组；保留原记录，求解后再恢复各自ID。这里的类型由资源二元组确定。
 
 ```python
 groups = {}
@@ -1078,7 +1072,7 @@ q[0, 2].Start = 3
 
 q[t,j]表示主机j接收第t类的数量，可以取0、1、2等整数，默认下界为0；ub按索引给出数量上限。若有T类、H台候选主机，就创建T×H个数量变量，另有H个主机启用变量y[j]。
 
-.Start给求解器提供初始值；上述语句建议先在主机2放3条第0类请求，没有增加q[0,2]==3的约束。完整初始分组需要逐台统计各类数量，并分别赋给q[t,j].Start和y[j].Start。[Gurobi初始解说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/attributes/variable.html#attr:Start)
+.Start给求解器提供初始值。上述语句建议先在主机2放3条第0类请求，求解器可以调整这个分组。完整初始分组需要逐台统计各类数量，并分别赋给q[t,j].Start和y[j].Start。[Gurobi初始解说明](https://docs.gurobi.com/projects/optimizer/en/current/reference/attributes/variable.html#attr:Start)
 
 ```python
 amount = int(round(q[t, j].X))
@@ -1108,11 +1102,11 @@ A是算法使用的主机数，OPT是已证明最优值，U是MIP结束时的最
 
 质量表统计“有效方案/条件”“达到MIP效果”“平均A/OPT(U)”和“最大已知差距”。达到MIP效果的分母是全部条件数，例如xx/30；没有有效方案不计为达到。已知与未知参照合并计算平均比值和最大差距。
 
-平均或最大差距纳入未证优MIP参照时加*。按规模的平均差距写为xxx%(3+2*)，表示3个已证优、2个未证优参照的有效实例；没有有效方案仍显示缺失。带星号的结果只表示与MIP方案的差距，可能低估距真正最优值的差距；MILP自身比值为1*也不表示证优。
+平均或最大差距纳入未证优MIP参照时加*。按规模的平均差距写为xxx%(3+2*)，表示3个已证优、2个未证优参照的有效实例；没有有效方案仍显示缺失。
 
-optimum及仅对OPT定义的旧指标在未证优时继续留空，真实下界字段不会被MIP方案台数覆盖。没有运行MIP的synthetic-scale不伪造MIP参照或达到MIP效果，可继续使用L指标。
+optimum及仅对OPT定义的指标在未证优时留空。synthetic-scale使用相对下界L的指标，MIP参照字段留空。
 
-启发式seconds为全部规定重复完成后的中位数，100000条每实例只运行一次。upper_bound_seconds累计各方法第一遍调用的实际耗时，对应产生初始上界；mip_total_seconds为MIP封装函数全程，solve_seconds仅为Gurobi优化时间。MILP行seconds为upper_bound_seconds+mip_total_seconds；其他重复调用只用于测量启发式时间，不再次计入初解生成。
+启发式seconds为全部规定重复完成后的中位数，100000条每实例只运行一次。upper_bound_seconds累计各方法第一遍调用的实际耗时，对应产生初始上界；mip_total_seconds为MIP封装函数全程，solve_seconds仅为Gurobi优化时间。MILP行seconds为upper_bound_seconds+mip_total_seconds。
 
 批量入口run_batch中的upper_bound_seconds采用首遍外部耗时，包含进程启动、读取、检查及失败尝试；历史pilot采用首遍纯算法耗时，两种记录按各自metadata解释。算法首遍失败且无完整方案时，台数与质量比值留空；后续重复失败时，首遍完整方案仍可用于质量和MIP初值，中位时间留空。
 
@@ -1134,19 +1128,19 @@ observe是我们定义的函数名。将函数本身交给optimize后，Gurobi�
 | 写法 | 读取什么 |
 |---|---|
 | GRB.Callback.MIP | 整数规划求解进度事件，可查询当前全局下界 |
-| GRB.Callback.MIPSOL | 整数候选方案事件；候选未必优于已有方案 |
+| GRB.Callback.MIPSOL | 整数候选方案事件 |
 | model.cbGet(GRB.Callback.RUNTIME) | 本次模型的优化秒数 |
 | model.cbGet(GRB.Callback.MIP_OBJBND) | MIP事件中的当前目标下界 |
 | model.cbGetSolution(q) | MIPSOL事件中变量q的候选数值；随后按数量恢复分组 |
 | model.getAttr("X", q) | 优化结束后批量读取q的最终值 |
 
-cbGetSolution应在MIPSOL中使用。本项目不使用节点LP松弛作为放置方案。[Gurobi回调查询](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/callbacks.html) · [cbGetSolution](https://docs.gurobi.com/projects/optimizer/en/current/reference/python/model.html#Model.cbGetSolution)
+cbGetSolution应在MIPSOL中使用。[Gurobi回调查询](https://docs.gurobi.com/projects/optimizer/en/current/reference/numericcodes/callbacks.html) · [cbGetSolution](https://docs.gurobi.com/projects/optimizer/en/current/reference/python/model.html#Model.cbGetSolution)
 
 聚合模型允许y[j]=1但主机上暂时没有请求，所以整数候选的sum(y)可能大于恢复后的非空主机数。记录器先恢复每个整数候选，再按实际台数比较；最终返回值也保留其中已经验证的最好方案。
 
 本项目的MipProgress对象保存当前最好有效方案、下界和时钟。progress.callback(...)返回一个观测函数；model.optimize(callback)将它交给Gurobi。函数保留外部参数的写法叫闭包，例如保留本次模型之前已用的time_offset。
 
-合成实例累计时间为time_offset + 当前模型Runtime。固定K模型的目标为常数0，因此其目标下界也不能用作主机数下界；K不可行的证明交回外层后，才把主机数下界提高到K+1。
+合成实例累计时间为time_offset + 当前模型Runtime。K不可行的证明交回外层后，将主机数下界提高到K+1。
 
 ### 12. 截止快照与结束结果
 
@@ -1167,12 +1161,12 @@ time_limit是总优化预算，当前为1200秒；snapshot_seconds仍为60秒，
 | upper_bound / lower_bound | 有效方案台数U / 已证下界L |
 | placement_ids | 该时点每台主机上的请求ID，可从实例恢复并检查 |
 
-收到60秒之后的事件时，先保存之前的状态，再更新当前状态；不能把后来找到的更好方案写回60秒记录。回调不是固定频率采样，因此observed_seconds可能小于60。
+收到60秒之后的事件时，先保存之前的状态，再更新当前状态。回调按求解事件触发，observed_seconds可能小于60。
 
 reason=early_optimal表示未到目标时点就已证优；ended_before_target表示提前结束但尚未证优；observed_cutoff表示已跨过目标时点并冻结此前观测状态。CSV中的checkpoint_*列只填写在MILP行；完整两份方案位于每实例JSON的mip_details.progress中。
 
-保留60秒记录点，用来比较继续优化是否减少主机数、提高下界或新增最优证明；它来自同一次求解，无需另跑一轮。当前真实批次在60秒后有7个实例继续改善、共少用48台，并新增2个最优证明。
+60秒记录点用于比较继续优化是否减少主机数、提高下界或新增最优证明。当前真实批次在60秒后有7个实例继续改善、共少用48台，并新增2个最优证明。
 
-教学演示的0.01、0.0001秒只是缩短测试等待时间；正式观测点仍为60秒，MIP预算为1200秒。新预算结果保存到例如results/formal_real_600_1200；被替代的旧实验与预检输出已清理。
+教学演示的0.01、0.0001秒用于缩短测试等待时间。正式观测点为60秒，MIP预算为1200秒。
 
-analyze_real默认读取results/formal_real_600_1200，并从metadata显示该批实际预算；需要分析其他结果目录时传入--results-dir。旧输出已清理。重新生成报告只读取已有结果，不会重新求解；新预算结果由正式实验运行生成。
+analyze_real默认读取results/formal_real_600_1200，并从metadata显示该批实际预算。需要分析其他结果目录时传入--results-dir。

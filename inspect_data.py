@@ -1,5 +1,6 @@
 # sqlite3 是 Python 自带的 SQLite 数据库模块，无需另外安装。
 import sqlite3
+from instance_io import ROOT
 # machineId 硬件规格；vmTypeId 类型编号
 
 def show_rows(connection, sql):
@@ -14,7 +15,8 @@ def show_rows(connection, sql):
         print(row)
 
 # mode=ro 以只读方式打开现有文件，避免误写或误建空数据库。
-database = "file:D:/PythonProjects/azure-vm-packing/data/raw/packing_trace_zone_a_v1.sqlite?mode=ro"
+database_path = ROOT / "data" / "raw" / "packing_trace_zone_a_v1.sqlite"
+database = database_path.as_uri() + "?mode=ro"
 # uri=True 表示按带选项的文件地址解析上面的字符串。
 connection = sqlite3.connect(database, uri=True)
 

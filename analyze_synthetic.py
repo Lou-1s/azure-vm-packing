@@ -189,10 +189,10 @@ def build_report(rows, metadata):
     config = metadata["config"]
     parts = [f"# {title}",
              f"本批{metadata['instances']}个实例、{len(rows)}行方法结果。"
-             "来源为同目录summary.csv与metadata.json；不重新求解。",
-             f"启发式每次预算{config['heuristic_seconds']:g}秒；"
+             "来源为同目录summary.csv与metadata.json。",
+             f"启发式每次预算{config['heuristic_seconds']:g}秒。"
              + (f"MIP每实例累计优化预算{config['mip_seconds']:g}秒，截止记录点{config['snapshot_seconds']:g}秒。"
-                if quality else "本组没有运行MIP。"),
+                if quality else "规模组比较七种启发式。"),
              "## 1. 完成情况", status_table(rows, methods), incomplete_conditions(rows),
              "time_budget是触及算法预算，error是执行错误，具体堆栈保存在对应实例JSON的calls中。"
              "首遍成功但后续失败时，保留有效方案用于质量评价，中位耗时仍留空。"]
@@ -201,41 +201,38 @@ def build_report(rows, metadata):
         parts += ["## 2. 放置质量", f"本组已证明最优{len(known)}/{metadata['instances']}个实例。",
                   quality_table(rows),
                   "已证优使用OPT，未证优使用MIP最终有效台数U作参照。"
-                  "平均值先逐实例计算再汇总；包含未证优参照时标*，只表示相对MIP方案的表现，"
-                  "可能低估距真正OPT的差距。达到MIP效果按A不大于MIP最终台数计数，分母保留全部实例。"
-                  "MILP自比较的比值1和差距0不代表全部已证优。",
+                  "平均值先逐实例计算再汇总，包含未证优参照时标*。"
+                  "达到MIP效果的分子为有有效方案且A≤U的实例数，分母为全部条件数。",
                   "### 按规模和alpha的平均差距",
-                  "单元格为平均(A-OPT)/OPT或(A-U)/U；例如(3+7*)表示3个已证优、7个未证优MIP参照。"
-                  "-表示没有可评价的有效方案。", quality_by_condition(rows)]
+                  "单元格为平均(A-OPT)/OPT或(A-U)/U。例如(3+7*)表示3个已证优、7个未证优MIP参照。"
+                  "缺失方案以-标记。", quality_by_condition(rows)]
     else:
         parts += ["## 2. 相对有效下界的质量", scale_quality(rows),
-                  "L是真实有效下界，不是MIP方案。A/L是A/OPT的上界，不能与质量组的A/OPT(U)混称。"
-                  "各方法只统计有有效方案的实例，阅读平均值时须同时查看覆盖率。",
+                  "L是有效下界。A/L是A/OPT的上界。各方法只统计有有效方案的实例。",
                   "### 按规模和alpha的平均下界差距",
-                  "单元格为平均(A-L)/L，括号是有效实例数；没有方案不填0。",
+                  "单元格为平均(A-L)/L，括号是有效实例数。缺失方案以-标记。",
                   scale_gap_by_condition(rows)]
     parts += ["## 3. 启发式耗时",
-              "单位秒；单元格为中位数(完成规定重复的实例数/该条件全部实例数)。"
+              "单元格为中位秒数(完成规定重复的实例数/该条件全部实例数)。"
               "先取每实例保存的重复中位数，再取不同seed间的中位数。"
               "100000条每条件仅一个seed、每实例仅测一次，其余规模每实例测三次。"
-              f"一次失败后不补跑；只比较成功条件的耗时须同时报告覆盖率，不以预算{config['heuristic_seconds']:g}秒或0填补超时。",
+              "任一次尝试失败时结束该条件的计时，缺失耗时以-标记。",
               timing_by_condition(rows), "## 4. FFD两种排序的配对比较",
-              "同一(n,alpha,seed)配对比较台数；正差表示max更省，负差表示sum更省。",
+              "同一(n,alpha,seed)配对比较台数。正差表示max更省，负差表示sum更省。",
               sorting_comparison(rows)]
     if quality:
         parts += ["## 5. MIP截止与最终结果", mip_summary(rows),
-                  "截止后改善实例是上界减少的实例数，共省台数是这些差值之和；提高L表示证明推进。"
-                  "提前结束使用实际截止记录，没有另跑第二次模型。真实下界始终记L。",
+                  "截止后改善实例是上界减少的实例数，共省台数是这些差值之和。"
+                  "提前结束使用实际截止记录。",
                   "### MIP完整流程计时", mip_timing(rows),
                   "初解时间包含七方法首遍外部尝试；封装时间包含预处理、建模、优化及恢复。"
-                  "逐实例先相加再取中位数，不把两个中位数直接相加；这些时间与启发式纯函数耗时分开解释。"]
+                  "逐实例先相加再取中位数。"]
     else:
         parts += ["## 5. 采样私有内存最大值（MiB）", memory_by_size(rows),
-                  "统计包含成功及失败尝试，是进程私有内存的采样最大值，不是精确峰值或Gurobi内存。"]
-    parts += ["## 6. 统计解释",
-              "同一(n,seed)的五个alpha共用基础数对、方向优先序和输入顺序，属于配对条件；"
-              "不同seed是不同随机实例，三次计时调用不是三个质量样本。按(n,alpha)分层阅读，"
-              "不把所有规模混成一个总体结论。FFD的比较仅改变排序规则，不能将有限样本性能比当作理论近似保证。"]
+                  "统计成功及失败尝试中进程私有内存的采样最大值。"]
+    parts += ["## 6. 统计口径",
+              "同一(n,seed)的五个alpha共用基础数对、方向优先序和输入顺序，属于配对条件。"
+              "不同seed生成不同随机实例。质量以实例为单位，重复调用用于计时。结果按(n,alpha)分层汇总。"]
     return "\n\n".join(parts) + "\n"
 
 

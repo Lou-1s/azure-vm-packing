@@ -18,7 +18,8 @@ from instance_io import ROOT, write_json, load_instance
 machine_id = 12
 
 # mode=ro 只读；uri=True 让 connect 识别地址里的文件选项。
-database = "file:D:/PythonProjects/azure-vm-packing/data/raw/packing_trace_zone_a_v1.sqlite?mode=ro"
+database_path = ROOT / "data" / "raw" / "packing_trace_zone_a_v1.sqlite"
+database = database_path.as_uri() + "?mode=ro"
 connection = sqlite3.connect(database, uri=True)
 
 # 查询返回五项元组：(请求 ID, 类型 ID, 开始时间, CPU 份额, 内存份额)。

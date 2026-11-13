@@ -270,22 +270,22 @@ def pair_counts(rows):
 def write_guide(output_dir, real, quality, scale):
     text = """# 实验图表说明
 
-七种算法使用不同虚线，并保留固定颜色与点形状；图片标签采用英文，便于导出和避免字体依赖。PNG用于直接查看，PDF用于文档排版。
+七种算法使用各自的虚线、颜色和点形状。图片标签采用英文。PNG用于直接查看，PDF用于文档排版。
 
 | 图 | 阅读内容 |
 |---|---|
 | 01_real_quality | 真实数据各规模的平均参照差距。R取OPT或最终MIP方案上界U，带星规模包含未证优参照。 |
 | 02_synthetic_quality | 四种规模下，alpha与平均参照差距的关系；每个点10个seed。 |
-| 03_runtime | 真实及合成规模组的纯算法中位耗时。空心三角是预算终止，不是完成时间。 |
+| 03_runtime | 真实及合成规模组的纯算法中位耗时。空心三角标记预算终止。 |
 | 04_timing_coverage | 与耗时图配套的完整计时条件数/总条件数。BF的感叹号标记执行错误。 |
-| 05_scale_quality | 未运行MIP的规模组，相对有效下界L的差距。 |
-| 06_mip_coverage | 同次求解60秒记录与最终的证优率；按规模及alpha分层。 |
+| 05_scale_quality | 合成规模组相对有效下界L的差距。 |
+| 06_mip_coverage | 同次求解在60秒和结束时的证优率，按规模及alpha分层。 |
 
-R与L含义不同：(A-R)/R在未证优时可能低估距OPT的差距；(A-L)/L则给出差距上界。两者不能混成同一类“最优差距”。MILP不进入启发式质量折线，避免自比较的0差距被误作全部证优。
+图01和图02采用参照差距(A-R)/R。图05采用(A-L)/L，给出相对OPT差距的上界。质量折线展示七种启发式的结果。
 
-耗时只使用完成规定重复的条件，质量只使用有效方案；缺失结果画成断线。DP没有十万条结果，不能凭较小规模均值宣布其整体最好。BF一次控制文件访问错误保留首遍有效方案，但对应中位耗时不补值。
+耗时只使用完成规定重复的条件，质量只使用有效方案。缺失结果画成断线。BF一次控制文件访问错误保留首遍有效方案，中位耗时留空。
 
-plot_data.json保存每个绘图点、有效/完成数量及输入指纹，便于将图追溯到原始结果。图表属于样本实验结论，不替代理论近似保证。
+plot_data.json保存每个绘图点、有效/完成数量及输入指纹，便于将图追溯到原始结果。
 """
     synthetic_pairs = pair_counts(quality)
     real_pairs = pair_counts(real)
@@ -294,13 +294,13 @@ plot_data.json保存每个绘图点、有效/完成数量及输入指纹，便�
     real_proof = proof_point(select(real, "MILP"))
     quality_proof = proof_point(select(quality, "MILP"))
     text += f"""
-## 当前数据支持的结果
+## 实验结果
 
-1. 合成质量组中，FFD-max相对FFD-sum为{synthetic_pairs[0]}胜、{synthetic_pairs[1]}平、{synthetic_pairs[2]}负；达到MIP最终效果{reached}/{len(ffd)}。这支持max排序适合本批合成分布，不是所有分布上的支配证明。
+1. 合成质量组中，FFD-max相对FFD-sum为{synthetic_pairs[0]}胜、{synthetic_pairs[1]}平、{synthetic_pairs[2]}负，达到MIP最终效果{reached}/{len(ffd)}。
 2. 真实组中，同样的FFD-max相对FFD-sum为{real_pairs[0]}胜、{real_pairs[1]}平、{real_pairs[2]}负，说明排序规则的效果依赖数据结构。
-3. MIP在真实组从60秒记录的{real_proof['at_checkpoint']}/{real_proof['total']}证优提高到最终{real_proof['at_end']}/{real_proof['total']}；合成质量组从{quality_proof['at_checkpoint']}/{quality_proof['total']}提高到{quality_proof['at_end']}/{quality_proof['total']}。这是同一次求解继续运行带来的证明收益。
+3. MIP在真实组从60秒记录的{real_proof['at_checkpoint']}/{real_proof['total']}证优提高到最终{real_proof['at_end']}/{real_proof['total']}。合成质量组从{quality_proof['at_checkpoint']}/{quality_proof['total']}提高到{quality_proof['at_end']}/{quality_proof['total']}。
 
-十万条合成实例的速度与质量取舍如下，两方法均完成同一组五个实例：
+KK2003与FFD-max均完成同一组五个十万条合成实例。
 
 | 方法 | 纯算法中位秒数 | 平均A/L |
 |---|---:|---:|
@@ -309,7 +309,7 @@ plot_data.json保存每个绘图点、有效/完成数量及输入指纹，便�
         rows = select(scale, method, n=100000)
         valid = [row for row in rows if row["valid"]]
         text += f"| {method} | {time_point(rows)['seconds']:.2f} | {mean(row['ratio_to_bound'] for row in valid):.5f} |\n"
-    text += "\nKK在该组更快，但相对下界的质量比值更大；不能用较好的最坏理论保证代替实测比较。当前DP实现未在十万条条件的600秒预算内返回完整方案，因此图中不报告其完成时间。\n"
+    text += "\nDP在十万条条件中达到600秒预算上限。\n"
     (output_dir / "FIGURE_GUIDE.md").write_text(text, encoding="utf-8")
 
 
